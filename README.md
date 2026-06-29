@@ -1,10 +1,18 @@
 # kortex
 
-Agent Skills for Kotlin development, packaged as a plugin for both **Codex** and **Claude Code**.
+Agent Skills for Kotlin development, packaged as an extension/plugin for **Junie**, **Codex**, and **Claude Code**.
 
-Installing the plugin is non-destructive: Claude Code namespaces the skills as `plugin:skill`, and Codex installs into an isolated plugin cache — neither touches your personal `~/.claude/skills` or `~/.codex/skills`.
+Installing the plugin is non-destructive: Junie, Claude Code, and Codex install into isolated extension/plugin caches
+instead of copying into your personal skills directories.
 
 ## Install
+
+**Codex**
+
+```
+codex plugin marketplace add Heapy/kortex
+codex plugin add kortex@kortex
+```
 
 **Claude Code**
 
@@ -13,11 +21,11 @@ Installing the plugin is non-destructive: Claude Code namespaces the skills as `
 /plugin install kortex@kortex
 ```
 
-**Codex**
+**Junie**
 
 ```
-codex plugin marketplace add Heapy/kortex
-codex plugin add kortex@kortex
+/extensions marketplace add Heapy/kortex
+/extensions install kortex
 ```
 
 ## Usage
@@ -32,4 +40,10 @@ $kortex:kotlin-toolchain convert current project to Kotlin Toolchain
 
 ```
 /kortex:kotlin-toolchain create a setup for a Kotlin Native CLI application
+```
+
+**Junie**
+
+```
+Use the kotlin-toolchain skill to create a setup for a Kotlin Native CLI application
 ```

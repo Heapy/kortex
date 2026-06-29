@@ -6,14 +6,21 @@
   },
   "metadata": {
     "description": "Agent Skills for Kotlin development",
-    "version": "1.0.3"
+    "version": "1.0.3",
+    "homepage": "https://github.com/Heapy/kortex"
   },
-  "plugins": [
+  "extensions": [
     {
       "name": "kortex",
       "source": "./plugins/kortex",
-      "description": "Kotlin Agent Skills — Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
+      "description": "Kotlin Agent Skills - Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
       "version": "1.0.3",
+      "author": {
+        "name": "Ruslan Ibrahimau",
+        "email": "ruslan@heapy.io"
+      },
+      "category": "language",
+      "homepage": "https://github.com/Heapy/kortex/tree/main/plugins/kortex",
       "keywords": [
         "kotlin",
         "amper",
@@ -21,8 +28,7 @@
         "jvm",
         "multiplatform",
         "gradle"
-      ],
-      "category": "languages"
+      ]
     }
   ]
 }
