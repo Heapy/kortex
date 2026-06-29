@@ -19,3 +19,17 @@ Installing the plugin is non-destructive: Claude Code namespaces the skills as `
 codex plugin marketplace add Heapy/kortex
 codex plugin add kortex@kortex
 ```
+
+## Usage
+
+**Codex**
+
+```
+$kortex:kotlin-toolchain convert current project to Kotlin Toolchain
+```
+
+**Claude Code**
+
+```
+/kortex:kotlin-toolchain create a setup for a Kotlin Native CLI application
+```
