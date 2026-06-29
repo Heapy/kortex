@@ -1,0 +1,35 @@
+{
+  "name": "kortex",
+  "version": "1.0.0",
+  "description": "Kotlin Agent Skills for Codex - Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
+  "author": {
+    "name": "Ruslan Ibrahimau",
+    "email": "ruslan@heapy.io"
+  },
+  "repository": "https://github.com/Heapy/kortex",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kotlin",
+    "amper",
+    "toolchain",
+    "jvm",
+    "multiplatform",
+    "gradle"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "kortex - Kotlin Skills",
+    "shortDescription": "Agent Skills for Kotlin development",
+    "longDescription": "Kotlin-focused agent skills for working with JetBrains Kotlin Toolchain, Kotlin/JVM, and Multiplatform projects.",
+    "developerName": "Heapy",
+    "category": "Productivity",
+    "capabilities": [
+      "Kotlin",
+      "Toolchain",
+      "Build"
+    ],
+    "defaultPrompt": [
+      "Use $kotlin-toolchain to configure a Kotlin Toolchain project."
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kotlin Toolchain"
+  short_description: "Help with Kotlin Toolchain tasks"
+  default_prompt: "Use $kotlin-toolchain to configure a Kotlin Toolchain project."
