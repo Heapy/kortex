@@ -1,6 +1,6 @@
 {
   "name": "kortex",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Kotlin Agent Skills — Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
   "author": {
     "name": "Ruslan Ibrahimau",

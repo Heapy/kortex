@@ -1,9 +1,9 @@
 ---
-name: kotlin-toolchain
-description: Use when working with JetBrains Kotlin Toolchain v0.11.x, formerly Amper, including module.yaml, project.yaml, module templates, libs.versions.toml, the kotlin CLI wrapper, Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm, Kotlin/Native, server-side apps, dependencies, testing, publishing, plugins, built-in technologies, Maven migration, and toolchain provisioning.
+name: kotlin-toolchain-main
+description: Current upstream main snapshot for JetBrains Kotlin Toolchain docs. Use when a project explicitly tracks main/dev behavior instead of the default v0.11.x skill.
 ---
 
-# Kotlin Toolchain
+# Kotlin Toolchain Main Snapshot
 
 Use this skill for JetBrains Kotlin Toolchain work: declarative YAML build configuration, the `kotlin` CLI, product
 types, dependency wiring, multiplatform layout, publishing, and local build plugins.
@@ -13,14 +13,12 @@ to Kotlin Toolchain. Kotlin Toolchain is not Gradle, not Maven, and not the old 
 
 ## Source Snapshot
 
-This file is generated from the official upstream docs for `v0.11.1`, which is the default supported version for this
-skill right now:
+This file is generated from the official upstream docs on `main`:
 
 - Repository: `https://github.com/JetBrains/kotlin-toolchain`
-- Ref: `v0.11.1`
-- SHA: `801e9d4b2d1c12a15cca4ac7efc8e3b5270721e0`
-- Full aggregate: `generation/upstream-docs-v0.11.1.md`
-- Main/dev guide: `SKILL-main.md`
+- Ref: `main`
+- SHA: `a049d011217fc302fcdece9c7d0f48eac184a88d`
+- Full aggregate: `generation/upstream-docs-main.md`
 - Generation notes: `generation/generation-steps.md`
 
 The project is Alpha and the docs move quickly. Treat defaults and edge-case syntax as version-sensitive. When precision
@@ -29,12 +27,11 @@ matters, inspect the local project, run `./kotlin show ...`, and check the pinne
 Internal names still contain `Amper` in expected places: `jvm/amper-plugin`, `org.jetbrains.amper.plugins`, AMPER
 YouTrack, and some distribution paths. Do not rename those to `kotlin`.
 
-## Other Snapshots
+## Default Version
 
-`SKILL.md` is the default guide for `v0.11.x`. Do not reduce it to a version index: most tasks need immediate
-operational guidance, not another routing hop.
+This file preserves the upstream `main` snapshot. The default `SKILL.md` currently targets `v0.11.x`; use this file only
+when the user or repository explicitly tracks current main/dev behavior.
 
-When the user or repository explicitly tracks current upstream main/dev behavior, load `SKILL-main.md` instead.
 
 ## First Moves
 
@@ -45,8 +42,8 @@ When working in a repo:
 2. Prefer project-local `./kotlin` over a global `kotlin` command when the wrapper exists.
 3. Use `./kotlin show modules|settings|dependencies|tasks|checks|commands` to understand the effective model.
 4. Keep YAML declarative. Do not invent loops, conditionals, Gradle task wiring, or Maven lifecycle behavior.
-5. Preserve the project's existing path style. For new `v0.11.x` examples, prefer explicit relative paths such as
-   `./lib` and `../shared`, because the 0.11 docs predate the newer `//` path guidance.
+5. Use current path notation: `//` for project-root paths in module dependencies, templates, plugin refs, and other
+   path values; plain paths in `project.yaml.modules`.
 
 Useful CLI commands:
 
@@ -78,16 +75,16 @@ on each other.
 ```yaml
 # project.yaml
 modules:
-  - ./app
-  - ./libs/lib1
-  - ./plugins/*
+  - app
+  - libs/lib1
+  - plugins/*
 
 plugins:
-  - ./plugins/build-config
+  - //plugins/build-config
 ```
 
-`modules:` entries are root-relative path globs. In the 0.11 docs, examples usually include a leading `./`. Globs
-support `*`, `?`, and `[abc]`/`[a-z]`, but not recursive `**`.
+`modules:` entries are root-relative path globs. They support `*`, `?`, and `[abc]`/`[a-z]`, but not recursive `**`.
+Do not write `//app` in `modules:`.
 
 Common `module.yaml` keys:
 
@@ -105,8 +102,9 @@ Common `module.yaml` keys:
 Path notation:
 
 - Use `/` as the separator on all platforms.
-- In 0.11 docs, local module dependencies, templates, and local plugin paths are written with `./` or `../`.
-- Do not rewrite a 0.11 project to newer `//` paths unless the installed CLI is verified to support them.
+- `//path` resolves from the project root and is preferred for module dependencies, templates, plugin dependencies, and
+  other project paths.
+- `./path` and `../path` resolve relative to the YAML file declaring them.
 - Bare values like `my-lib` in `dependencies:` are parsed as external dependencies, not local modules.
 
 Layouts:
@@ -157,7 +155,7 @@ Dependency forms:
 
 ```yaml
 dependencies:
-  - ../ui/utils
+  - //ui/utils
   - io.ktor:ktor-client-core:2.2.0
   - $libs.ktor.client.cio
   - $compose.material3
@@ -216,16 +214,16 @@ Rules:
 
 ## Settings Defaults
 
-Defaults from the pinned `v0.11.1` docs:
+Defaults from the pinned `main` docs:
 
 - Default JDK major version: 21
-- `settings.android.compileSdk`: 36
+- `settings.android.compileSdk`: 37
 - `settings.android.minSdk`: 21
 - `settings.kotlin.version`: 2.3.20
 - `settings.compose.version`: 1.10.3
 - `settings.compose.experimental.hotReload.version`: 1.0.0
-- `settings.kotlin.serialization.version`: 1.10.0
-- `settings.kotlin.ksp.version`: 2.3.6
+- `settings.kotlin.serialization.version`: 1.11.0
+- `settings.kotlin.ksp.version`: 2.3.9
 - `settings.jvm.test.junitPlatformVersion`: 6.0.1
 - `settings.ktor.version`: 3.4.1
 - `settings.lombok.version`: 1.18.38
@@ -285,14 +283,12 @@ Apply them with `apply:`.
 
 ```yaml
 apply:
-  - ../common.module-template.yaml
+  - //common.module-template.yaml
 ```
 
-In `v0.11.1`, template files cannot contain `product:` or `apply:`. Do not rely on nested templates or sibling
-template conflict-resolution behavior unless the installed 0.11 CLI has been verified to support it.
-
-Merge rules are the same as multiplatform propagation: scalars override, maps/lists append. Module content is applied
-last and wins.
+Current main docs support nested templates. Each template is applied once even if reached multiple ways. Merge rules are
+the same as multiplatform propagation: scalars override, maps/lists append. Module content is applied last and wins.
+Conflicting sibling scalar values fail unless resolved by the module or a more-specific intermediate template.
 
 ## Maven Migration And Maven Plugins
 
@@ -398,7 +394,7 @@ Shorthand notation does not currently work with references.
 
 - Alpha means defaults and syntax drift; verify exact behavior against a tag, SHA, or installed toolchain.
 - Do not remove expected `Amper` names from plugin/product/package references.
-- Use explicit relative paths such as `./lib` and `../shared` for 0.11 module dependencies/templates/plugin refs.
+- Use `//` for module dependencies/templates/plugin refs, but not in `project.yaml.modules`.
 - `product.platforms` requires leaf platform names, not family shortcuts.
 - `settings.android` and `settings@android` are different.
 - `layout: maven-like` is only for JVM-only modules.
