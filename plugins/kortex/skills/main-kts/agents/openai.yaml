@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kotlin Scripts (.main.kts)"
+  short_description: "Create and run executable Kotlin .main.kts scripts"
+  default_prompt: "$kortex:main-kts create an executable Kotlin script that fetches a URL and prints the response"
