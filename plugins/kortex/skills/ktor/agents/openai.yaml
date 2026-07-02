@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ktor"
+  short_description: "Ktor 3.5.x server and client development"
+  default_prompt: "$kortex:ktor add a JSON REST endpoint to this Ktor server and cover it with a test"

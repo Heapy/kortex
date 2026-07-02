@@ -12,6 +12,8 @@ Multiplatform, and related build workflows.
   publishing, migration, and toolchain provisioning.
 - Modern Kotlin language features (2.0–2.4.x, including 2.4.10 and the 2.4.20-Beta1 EAP) with experimental compiler
   flags and per-version references back to Kotlin 1.4.
+- Ktor 3.5.x server and client development: routing, requests/responses, plugins, serialization, authentication,
+  sessions, WebSockets, SSE, engines, testing, deployment, and multiplatform client work.
 
 ## Files
 
@@ -22,6 +24,9 @@ Multiplatform, and related build workflows.
 - `skills/main-kts/SKILL.md` - executable Kotlin `.main.kts` scripts.
 - `skills/modern-kotlin/SKILL.md` - modern Kotlin language features and experimental flags.
 - `skills/modern-kotlin/references/` - detailed per-version notes (1.4 through 2.4.20-Beta1) and the flag index.
+- `skills/ktor/SKILL.md` - Ktor 3.5.x server and client development.
+- `skills/ktor/references/` - compressed server and client guides.
+- `skills/ktor/generation/generation-steps.md` - regeneration notes for the Ktor skill.
 
 ## Usage
 

@@ -44,6 +44,7 @@ codex plugin add heapy@kortex
 $kortex:kotlin-toolchain convert current project to Kotlin Toolchain
 $kortex:main-kts create an executable Kotlin script that fetches a URL and prints the response
 $kortex:modern-kotlin rewrite this service using context parameters and guard conditions
+$kortex:ktor add a JSON REST endpoint to this Ktor server and cover it with a test
 $heapy:fix-issues fix issue #123 and verify the change
 ```
 
@@ -53,6 +54,7 @@ $heapy:fix-issues fix issue #123 and verify the change
 /kortex:kotlin-toolchain create a setup for a Kotlin Native CLI application
 /kortex:main-kts create an executable Kotlin script that parses a CSV and prints a summary
 /kortex:modern-kotlin which experimental flags do I need for collection literals in 2.4
+/kortex:ktor set up JWT authentication for this Ktor server
 /heapy:fix-issues resolve the failing CI check
 ```
 
@@ -62,5 +64,6 @@ $heapy:fix-issues fix issue #123 and verify the change
 Use the kotlin-toolchain skill to create a setup for a Kotlin Native CLI application
 Use the main-kts skill to create an executable Kotlin script that calls an HTTP API
 Use the modern-kotlin skill to modernize this code for Kotlin 2.4
+Use the ktor skill to build a REST API with an HTTP client integration
 Use the fix-issues skill to reproduce and fix this bug
 ```
