@@ -1,6 +1,6 @@
 {
   "name": "kortex",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Kotlin Agent Skills for Codex - Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
   "author": {
     "name": "Ruslan Ibrahimau",
@@ -29,7 +29,7 @@
       "Build"
     ],
     "defaultPrompt": [
-      "$kortex:kotlin-toolchain convert current project to Kotlin Toolchain"
+      "$kortex:kotlin-toolchain help with my Kotlin Toolchain project"
     ]
   }
 }

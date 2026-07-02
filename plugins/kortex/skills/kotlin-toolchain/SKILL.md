@@ -24,7 +24,8 @@ skill right now:
 - Generation notes: `generation/generation-steps.md`
 
 The project is Alpha and the docs move quickly. Treat defaults and edge-case syntax as version-sensitive. When precision
-matters, inspect the local project, run `./kotlin show ...`, and check the pinned aggregate or current upstream docs.
+matters, inspect the local project, run `./kotlin show ...`, and grep the pinned aggregate (it is ~300 KB — search it,
+do not read it whole) or the current upstream docs.
 
 Internal names still contain `Amper` in expected places: `jvm/amper-plugin`, `org.jetbrains.amper.plugins`, AMPER
 YouTrack, and some distribution paths. Do not rename those to `kotlin`.
@@ -34,7 +35,8 @@ YouTrack, and some distribution paths. Do not rename those to `kotlin`.
 `SKILL.md` is the default guide for `v0.11.x`. Do not reduce it to a version index: most tasks need immediate
 operational guidance, not another routing hop.
 
-When the user or repository explicitly tracks current upstream main/dev behavior, load `SKILL-main.md` instead.
+When the user or repository explicitly tracks current upstream main/dev behavior, load `SKILL-main.md` and prefer it
+wherever the two disagree (notably `//` path notation and nested templates).
 
 ## First Moves
 
@@ -67,6 +69,19 @@ Wrapper/provisioning environment variables include `KOTLIN_CLI_BOOTSTRAP_CACHE_D
 `KOTLIN_CLI_NO_WELCOME_BANNER`, `KOTLIN_CLI_JAVA_OPTIONS`, `KOTLIN_CLI_JAVA_HOME`, and
 `KOTLIN_CLI_DOWNLOAD_ROOT`. The CLI is currently JVM-based, but this is an implementation detail.
 
+## Installation And Wrapper
+
+The `./kotlin` wrapper may not exist yet. To obtain the CLI:
+
+- Global install: `sdk install kotlintoolchain` (SDKMAN), or the installer script
+  `curl -fsSL https://kotl.in/install.sh | sh` (macOS/Linux) or
+  `powershell -ExecutionPolicy ByPass -c "irm 'https://kotl.in/install.ps1' | iex"` (Windows). The script installs the
+  wrapper into `~/.local/bin` and updates `PATH`; restart the shell afterward.
+- Per-project wrapper: the IntelliJ IDEA new-project wizard generates the wrapper scripts, and creating a `module.yaml`
+  in a blank project makes IDEA offer to add them. The wrapper is two small files, `kotlin` and `kotlin.bat`; check them
+  into the project root so anyone can run `./kotlin` without a global install.
+- Discover commands and flags with `kotlin --help` and `kotlin <command> --help` rather than guessing.
+
 ## Project Model
 
 A project is rooted at `project.yaml`. A module is a directory containing `module.yaml`. A single-module project does
@@ -86,8 +101,9 @@ plugins:
   - ./plugins/build-config
 ```
 
-`modules:` entries are root-relative path globs. In the 0.11 docs, examples usually include a leading `./`. Globs
-support `*`, `?`, and `[abc]`/`[a-z]`, but not recursive `**`.
+`modules:` entries are root-relative path globs. The 0.11 docs write these both with and without a leading `./`, and
+both are accepted; the `plugins:` list examples consistently use `./`. Globs support `*`, `?`, and `[abc]`/`[a-z]`, but
+not recursive `**`.
 
 Common `module.yaml` keys:
 
@@ -145,10 +161,13 @@ Current product types:
 - `ios/app`: requires `module.xcodeproj` beside `module.yaml`; entry point is a Swift `@main` struct in `src`. For
   manual Xcode migration, keep `KOTLIN_CLI_WRAPPER_PATH`, the `Build Kotlin with Amper` phase, and framework search
   paths. Swift can reference Kotlin through `KotlinModules`; Kotlin cannot currently reference Swift.
-- `js/app`: incomplete preview. Build emits `.mjs`; CLI cannot run it directly.
-- `wasmJs/app` and `wasmWasi/app`: incomplete preview. Build emits `.wasm` and `.mjs`; CLI cannot run them directly.
+- `js/app`: incomplete preview. `build` emits `.mjs` in `build/tasks/_<module>_linkJs`; run it with an external JS
+  runtime, not the CLI.
+- `wasmJs/app` and `wasmWasi/app`: incomplete preview. `build` emits `.wasm` plus a `.mjs` loader in
+  `build/tasks/_<module>_linkWasmJs` or `_linkWasmWasi`; run via an external JS runtime, not the CLI.
 - `linux/app`, `macos/app`, `windows/app`: native apps. Default entry point is top-level `main` in `src/main.kt`;
-  override with `settings.native.entryPoint`. `package` is not supported yet.
+  override with `settings.native.entryPoint`. Build output is a `.kexe` binary (`.exe` on Windows). `package` is not
+  supported yet.
 - `jvm/amper-plugin`: local Kotlin Toolchain plugin module.
 
 ## Dependencies
@@ -247,6 +266,21 @@ settings:
 Selection modes are `auto`, `alwaysProvision`, and `javaHome`. Paid vendors such as Oracle require explicit
 `acknowledgedLicenses`.
 
+## Compiler And Runtime Settings
+
+Common keys beyond the version defaults:
+
+- `settings.jvm.release`: minimum JVM release the code must be compatible with — the bytecode target plus Java API and
+  language limits. This is the "target Java N" knob, defaulting from `jdk.version`. Do not repurpose `jdk.version` for
+  it.
+- `settings.jvm.mainClass`: fully-qualified entry-point class for `jvm/app`.
+- `settings.jvm.runtimeClasspathMode`: `jars` (default) or `classes`.
+- `settings.kotlin.languageVersion`, `apiVersion`, `freeCompilerArgs`, `allWarningsAsErrors`, `progressiveMode`,
+  `suppressWarnings`: standard Kotlin compiler knobs. Pass `-X` flags through `freeCompilerArgs`, for example
+  `freeCompilerArgs: [ -Xexpect-actual-classes ]`.
+- JVM test process: `settings.jvm.test.systemProperties`, `freeJvmArgs`, and `extraEnvironment` (also under
+  `test-settings.jvm`).
+
 ## Built-In Technologies
 
 Prefer short settings forms unless customization is needed:
@@ -269,6 +303,14 @@ Prefer short settings forms unless customization is needed:
   `options`. IDE support is best effort.
 - Compiler plugin shortcuts include all-open, no-arg, JS plain objects, Parcelize, Power Assert, Compose,
   serialization, RPC, and Lombok.
+
+## Android Identity And Signing
+
+- Identity keys under `settings.android`: `namespace`, `applicationId` (defaults from `namespace`), `versionCode`,
+  `versionName`, `compileSdk`, `minSdk`, `targetSdk` (defaults from `compileSdk`), and `maxSdk`.
+- Release signing: `settings.android.signing: enabled` reads `keystore.properties` beside `module.yaml`, containing
+  `storeFile`, `storePassword`, `keyAlias`, and `keyPassword`. Override the path with `signing.propertiesFile`. Generate
+  a keystore with `./kotlin tool generate-keystore`. Do not commit the keystore or `keystore.properties`.
 
 ## Testing
 

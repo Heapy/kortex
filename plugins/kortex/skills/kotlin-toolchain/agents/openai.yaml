@@ -1,4 +1,4 @@
 interface:
   display_name: "Kotlin Toolchain"
   short_description: "Help with Kotlin Toolchain tasks"
-  default_prompt: "$kortex:kotlin-toolchain convert current project to Kotlin Toolchain"
+  default_prompt: "$kortex:kotlin-toolchain help with my Kotlin Toolchain project"
