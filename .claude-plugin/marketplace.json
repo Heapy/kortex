@@ -5,15 +5,15 @@
     "email": "ruslan@heapy.io"
   },
   "metadata": {
-    "description": "Agent Skills for Kotlin development",
-    "version": "1.0.5"
+    "description": "Agent Skills for Kotlin development, personal workflows, and Heapy packages",
+    "version": "1.0.6"
   },
   "plugins": [
     {
       "name": "kortex",
       "source": "./plugins/kortex",
       "description": "Kotlin Agent Skills — Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "keywords": [
         "kotlin",
         "amper",
@@ -23,6 +23,21 @@
         "gradle"
       ],
       "category": "languages"
+    },
+    {
+      "name": "heapy",
+      "source": "./plugins/heapy",
+      "description": "Personal skills and Heapy package skills for komok, kinetica, and related workflows",
+      "version": "1.0.0",
+      "keywords": [
+        "heapy",
+        "heapy-packages",
+        "komok",
+        "kinetica",
+        "personal",
+        "issues"
+      ],
+      "category": "productivity"
     }
   ]
 }
