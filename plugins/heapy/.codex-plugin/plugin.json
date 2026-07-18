@@ -1,0 +1,35 @@
+{
+  "name": "heapy",
+  "version": "1.0.0",
+  "description": "Personal skills and Heapy package skills for komok, kinetica, and related workflows",
+  "author": {
+    "name": "Ruslan Ibrahimau",
+    "email": "ruslan@heapy.io"
+  },
+  "repository": "https://github.com/Heapy/kortex",
+  "license": "Apache-2.0",
+  "keywords": [
+    "heapy",
+    "heapy-packages",
+    "komok",
+    "kinetica",
+    "personal",
+    "issues"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "heapy - Personal Skills",
+    "shortDescription": "Personal and Heapy package skills",
+    "longDescription": "Personal skills and Heapy package skills for projects such as komok, kinetica, and related engineering workflows.",
+    "developerName": "Heapy",
+    "category": "Productivity",
+    "capabilities": [
+      "Personal Workflows",
+      "Heapy Packages",
+      "Issue Fixing"
+    ],
+    "defaultPrompt": [
+      "$heapy:fix-issues fix the current repository issue and verify the change"
+    ]
+  }
+}
