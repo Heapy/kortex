@@ -1,9 +1,14 @@
 # kortex
 
-Agent Skills for Kotlin development, packaged as an extension/plugin for **Junie**, **Codex**, and **Claude Code**.
+Agent Skills packaged as extensions/plugins for **Junie**, **Codex**, and **Claude Code**.
 
-Installing the plugin is non-destructive: Junie, Claude Code, and Codex install into isolated extension/plugin caches
+Installing the plugins is non-destructive: Junie, Claude Code, and Codex install into isolated extension/plugin caches
 instead of copying into your personal skills directories.
+
+## Plugins
+
+- `kortex` - Kotlin development skills for Kotlin Toolchain, `.main.kts` scripts, Kotlin/JVM, Multiplatform, and related build workflows.
+- `heapy` - Personal skills and Heapy package skills for projects such as `komok`, `kinetica`, and related workflows.
 
 ## Install
 
@@ -12,6 +17,7 @@ instead of copying into your personal skills directories.
 ```
 codex plugin marketplace add Heapy/kortex
 codex plugin add kortex@kortex
+codex plugin add heapy@kortex
 ```
 
 **Claude Code**
@@ -19,6 +25,7 @@ codex plugin add kortex@kortex
 ```
 /plugin marketplace add Heapy/kortex
 /plugin install kortex@kortex
+/plugin install heapy@kortex
 ```
 
 **Junie**
@@ -26,6 +33,7 @@ codex plugin add kortex@kortex
 ```
 /extensions marketplace add Heapy/kortex
 /extensions install kortex
+/extensions install heapy
 ```
 
 ## Usage
@@ -34,16 +42,25 @@ codex plugin add kortex@kortex
 
 ```
 $kortex:kotlin-toolchain convert current project to Kotlin Toolchain
+$kortex:main-kts create an executable Kotlin script that fetches a URL and prints the response
+$kortex:modern-kotlin rewrite this service using context parameters and guard conditions
+$heapy:fix-issues fix issue #123 and verify the change
 ```
 
 **Claude Code**
 
 ```
 /kortex:kotlin-toolchain create a setup for a Kotlin Native CLI application
+/kortex:main-kts create an executable Kotlin script that parses a CSV and prints a summary
+/kortex:modern-kotlin which experimental flags do I need for collection literals in 2.4
+/heapy:fix-issues resolve the failing CI check
 ```
 
 **Junie**
 
 ```
 Use the kotlin-toolchain skill to create a setup for a Kotlin Native CLI application
+Use the main-kts skill to create an executable Kotlin script that calls an HTTP API
+Use the modern-kotlin skill to modernize this code for Kotlin 2.4
+Use the fix-issues skill to reproduce and fix this bug
 ```
