@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fix Issues"
+  short_description: "Triage and fix repository issues"
+  default_prompt: "$heapy:fix-issues fix the current repository issue and verify the change"
