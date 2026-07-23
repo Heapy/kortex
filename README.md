@@ -46,6 +46,7 @@ $kortex:main-kts create an executable Kotlin script that fetches a URL and print
 $kortex:modern-kotlin rewrite this service using context parameters and guard conditions
 $kortex:ktor add a JSON REST endpoint to this Ktor server and cover it with a test
 $heapy:fix-issues fix issue #123 and verify the change
+$heapy:amnesia recap this session and tell me what I missed
 ```
 
 **Claude Code**
@@ -56,6 +57,7 @@ $heapy:fix-issues fix issue #123 and verify the change
 /kortex:modern-kotlin which experimental flags do I need for collection literals in 2.4
 /kortex:ktor set up JWT authentication for this Ktor server
 /heapy:fix-issues resolve the failing CI check
+/heapy:amnesia recap this session and tell me what I missed
 ```
 
 **Junie**
@@ -66,4 +68,5 @@ Use the main-kts skill to create an executable Kotlin script that calls an HTTP 
 Use the modern-kotlin skill to modernize this code for Kotlin 2.4
 Use the ktor skill to build a REST API with an HTTP client integration
 Use the fix-issues skill to reproduce and fix this bug
+Use the amnesia skill to recap this session and tell me what I missed
 ```

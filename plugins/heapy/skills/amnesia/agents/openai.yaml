@@ -1,0 +1,4 @@
+interface:
+  display_name: "Amnesia"
+  short_description: "Recap the session after stepping away"
+  default_prompt: "$heapy:amnesia recap this session and tell me what I missed"
