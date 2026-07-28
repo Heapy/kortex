@@ -34,6 +34,29 @@ This file preserves the upstream `main` snapshot. The default `SKILL.md` current
 when the user or repository explicitly tracks current main/dev behavior.
 
 
+## Project Version Check
+
+Run this once per session, the first time this file is used in a Kotlin Toolchain repo, before any other work.
+
+1. Read the version the project pins in its wrapper:
+
+   ```shell
+   sed -n 's/^kotlin_cli_version=//p' ./kotlin
+   ```
+
+   `kotlin.bat` carries the same value as `set kotlin_cli_version=`. A repo without a wrapper has nothing to check —
+   skip to `First Moves`.
+
+2. This file describes upstream `main`, so any released version is behind it. Tell the user what the project pins and
+   ask whether to update. Wait for an answer — never update on your own initiative.
+
+3. On approval, run `./kotlin update --dev` to follow main/dev, or plain `./kotlin update` if the user wants the latest
+   release instead. Both rewrite `kotlin` and `kotlin.bat`. Re-read `kotlin_cli_version` afterwards and report the
+   version actually installed. Leave the modified wrapper scripts uncommitted unless the user asks for a commit.
+
+4. If the user declines, keep working against the pinned version. On a released version prefer `SKILL.md`, and flag
+   guidance here that may not hold — notably `//` path notation and nested templates.
+
 ## First Moves
 
 When working in a repo:

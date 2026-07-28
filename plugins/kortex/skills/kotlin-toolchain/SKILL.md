@@ -38,6 +38,34 @@ operational guidance, not another routing hop.
 When the user or repository explicitly tracks current upstream main/dev behavior, load `SKILL-main.md` and prefer it
 wherever the two disagree (notably `//` path notation and nested templates).
 
+## Project Version Check
+
+Run this once per session, the first time this skill is used in a Kotlin Toolchain repo, before any other work.
+
+1. Read the version the project pins in its wrapper:
+
+   ```shell
+   sed -n 's/^kotlin_cli_version=//p' ./kotlin
+   ```
+
+   `kotlin.bat` carries the same value as `set kotlin_cli_version=`. A repo without a wrapper has nothing to check —
+   skip to `First Moves`.
+
+2. Compare it to `0.11.1`, the version this skill is generated from.
+
+3. If the project pins something older, tell the user both versions and ask whether to update. Wait for an answer —
+   never update on your own initiative.
+
+4. On approval, run `./kotlin update`. It rewrites `kotlin` and `kotlin.bat` and fetches the latest released
+   distribution. Re-read `kotlin_cli_version` afterwards and report the version actually installed. Leave the modified
+   wrapper scripts uncommitted unless the user asks for a commit.
+
+5. If the user declines, keep working against the pinned version and flag guidance here that may not hold for it.
+
+`./kotlin update` targets the latest release, not `0.11.1`. If it lands beyond `0.11.x` — or the wrapper already pins a
+newer version — this snapshot is behind the project: prefer what the project actually reports (`./kotlin show ...`,
+`--help`) over this file, and consider `SKILL-main.md`.
+
 ## First Moves
 
 When working in a repo:
