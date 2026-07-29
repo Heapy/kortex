@@ -38,6 +38,12 @@ operational guidance, not another routing hop.
 When the user or repository explicitly tracks current upstream main/dev behavior, load `SKILL-main.md` and prefer it
 wherever the two disagree (notably `//` path notation and nested templates).
 
+## Known Issues
+
+Before diagnosing surprising `v0.11.1` behavior, check
+[`references/known-issues.md`](references/known-issues.md) for tracked defects and current workarounds. Re-check their
+YouTrack statuses before relying on them.
+
 ## Project Version Check
 
 Run this once per session, the first time this skill is used in a Kotlin Toolchain repo, before any other work.
