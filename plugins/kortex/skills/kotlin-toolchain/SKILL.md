@@ -110,6 +110,12 @@ The `./kotlin` wrapper may not exist yet. To obtain the CLI:
   into the project root so anyone can run `./kotlin` without a global install.
 - Discover commands and flags with `kotlin --help` and `kotlin <command> --help` rather than guessing.
 
+## Shared Caches In Codex Sandboxes
+
+When running Kotlin Toolchain in Codex `workspace-write`, especially across worktrees, read
+[`references/codex-sandbox-caches.md`](references/codex-sandbox-caches.md) before invoking the toolchain. Reuse narrow
+user cache roots rather than downloading toolchains and dependencies into each worktree.
+
 ## Project Model
 
 A project is rooted at `project.yaml`. A module is a directory containing `module.yaml`. A single-module project does

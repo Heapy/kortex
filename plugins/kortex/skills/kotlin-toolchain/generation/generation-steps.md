@@ -141,6 +141,7 @@ Main/version differences used when making `SKILL.md` default to `v0.11.1`:
 
 - `SKILL.md`: default v0.11.1 skill.
 - `SKILL-main.md`: current upstream main skill.
+- `references/codex-sandbox-caches.md`: local Codex cache-sharing guidance; preserve it across snapshot regenerations.
 - `scripts/aggregate-upstream-docs.sh`: reusable aggregate generator.
 - `generation/upstream-docs-main.md`: full main docs aggregate.
 - `generation/upstream-docs-v0.11.1.md`: full v0.11.1 docs aggregate.
