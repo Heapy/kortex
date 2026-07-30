@@ -9,6 +9,8 @@ Status as of Kotlin 2.4.10 (stable) / 2.4.20-Beta1 (EAP), July 2026. Flags are p
 | Flag | Since | Status | Feature |
 |---|---|---|---|
 | `-Xcollection-literals` | 2.4.0 | Experimental | Collection literals `["a", "b"]` with `operator fun of` |
+| `-Xcompanion-blocks-and-extensions` | 2.4.20-Beta1 | Experimental | Companion blocks **and** companion extensions |
+| `-Xcompanion-blocks` | 2.4.20-Beta1 | Experimental | Companion blocks only (subset of the flag above) |
 | `-Xintrinsic-const-evaluation` | 2.4.0 | Experimental | Extended compile-time constant evaluation |
 | `-Xallow-returns-result-of` | 2.4.0 | Experimental | `returnsResultOf` contract (+ `@OptIn(ExperimentalContracts::class)`) |
 | `-Xexplicit-context-arguments` | 2.4.0 | Experimental in 2.4.0/2.4.10; Stable in 2.4.20-Beta1 | Explicit context arguments at call sites |

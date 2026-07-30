@@ -159,7 +159,8 @@ regression (b/522127447). New `kotlinr` binary in the distribution (KT-86930).
 - Experimental **language version 2.6** added (KT-85667); LV 1.9 dropped for JVM (KT-80590); K1 deprecated (KT-75372).
 - Collection literals refinements (still `-Xcollection-literals`): companion-block `of` operator (KT-84295),
   inference in delegate expressions (KT-84333), resolution to companion block and extension `invoke` (KT-84289).
-- **Companion blocks and extensions** — upcoming feature in development (KT-85770, KT-84861, KT-85188, KT-86053).
+- **Companion blocks and extensions** — in development, gated behind `-Xcompanion-blocks-and-extensions`;
+  `-Xcompanion-blocks` enables companion blocks alone (KT-85770, KT-84861, KT-85188, KT-86053).
 - Unit-conversions for arbitrary expressions in argument positions (KT-84393); warning when `_` is assigned a `Unit`
   expression (KT-84618).
 
