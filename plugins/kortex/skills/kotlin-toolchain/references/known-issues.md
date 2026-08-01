@@ -40,6 +40,8 @@ unresolved references. Reaching the same declaration through main code may compi
 `IrLinkageError` because partial linkage inserted a throwing stub. Repeating the dependency in `test-dependencies` or
 marking it `exported: true` does not help.
 
+This issue is fixed in Kotlin Toolchain `0.12.0-dev-4187`.
+
 There is no portable manifest-only workaround. An absolute `-library` path works but is machine-specific, while
 `${module.rootDir}` references are not supported in `module.yaml`. Put cinterop-dependent assertions in a separate
 `macos/app` module's `main()`, run that binary from the normal test suite, and assert its exit code. Keep the remaining
