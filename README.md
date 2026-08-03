@@ -47,6 +47,7 @@ $kortex:modern-kotlin rewrite this service using context parameters and guard co
 $kortex:ktor add a JSON REST endpoint to this Ktor server and cover it with a test
 $heapy:fix-issues fix issue #123 and verify the change
 $heapy:amnesia recap this session and tell me what I missed
+$heapy:call-codex challenge these review findings with codex
 ```
 
 **Claude Code**
@@ -58,6 +59,7 @@ $heapy:amnesia recap this session and tell me what I missed
 /kortex:ktor set up JWT authentication for this Ktor server
 /heapy:fix-issues resolve the failing CI check
 /heapy:amnesia recap this session and tell me what I missed
+/heapy:call-codex challenge these review findings with codex
 ```
 
 **Junie**
@@ -69,4 +71,5 @@ Use the modern-kotlin skill to modernize this code for Kotlin 2.4
 Use the ktor skill to build a REST API with an HTTP client integration
 Use the fix-issues skill to reproduce and fix this bug
 Use the amnesia skill to recap this session and tell me what I missed
+Use the call-codex skill to get a second opinion on these findings
 ```

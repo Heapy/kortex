@@ -1,0 +1,4 @@
+interface:
+  display_name: "Call Codex"
+  short_description: "Drive the codex CLI as a reviewer or as an executor"
+  default_prompt: "$heapy:call-codex challenge these review findings with codex"
