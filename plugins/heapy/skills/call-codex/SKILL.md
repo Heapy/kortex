@@ -157,7 +157,7 @@ scope creep. Pin the edges.
 - **Behavior when blocked.** Stop and report; do not invent a workaround, do not widen the
   scope, do not disable a failing test to make the command pass.
 - **Conventions.** Spell out the ones this task depends on. Codex picks up `AGENTS.md` on
-  its own and nothing else (rule 2).
+  its own and nothing else (rule 3).
 - **Hands off git.** No commits, no branch switching, no `git add` — leave the working tree
   dirty so the diff is the deliverable. If a commit is wanted, dictate exactly what goes in it.
 - **Final report.** What changed and why, what was deliberately not done, what remains
@@ -180,7 +180,24 @@ These cost time to rediscover. Respect them.
    launch the inherited pipe never closes and codex blocks forever on "Reading additional
    input from stdin…".
 
-2. **Codex reads `AGENTS.md`, and nothing else is yours to hand it.** It auto-loads
+2. **A literal NUL byte in the prompt truncates it at exec time.** `"$(cat prompt.md)"`
+   carries the byte through the substitution in zsh, but `execve` ends every argument at the
+   first `0x00` — codex receives what precedes the NUL and nothing else, silently. bash
+   behaves differently: it prints `warning: command substitution: ignored null byte in
+   input`, drops the byte, and passes the rest. Neither delivers what was written. This is
+   easiest to hit in exactly the run that can least afford it: a review of path-handling
+   code, where a finding about `%00` invites pasting the decoded byte into the prompt. Write
+   it as `%00` or `<NUL>`, and check before launching:
+
+   ```sh
+   perl -0777 -ne 'print "NUL: ", scalar(()=/\x00/g), " bytes: ", length($_), "\n"' prompt.md
+   ```
+
+   Codex may notice and say the input ended mid-sentence — do not rely on it. A cut that lands
+   on a section boundary reads as a complete prompt, and the answer is a confident verdict on
+   a smaller question than the one that was asked.
+
+3. **Codex reads `AGENTS.md`, and nothing else is yours to hand it.** It auto-loads
    `AGENTS.md` from the repository. Do not paste `CLAUDE.md` into the prompt and do not
    point codex at it by path — neither the project one nor the global
    `~/.claude/CLAUDE.md`. Whether a repository carries guidance for codex is the user's
@@ -189,15 +206,15 @@ These cost time to rediscover. Respect them.
 
    `@file` is inert in `codex exec` — it is literal text, not an import.
 
-3. **Read the answer from `-o`, never from stdout.** Stdout carries hook lines, a `codex`
+4. **Read the answer from `-o`, never from stdout.** Stdout carries hook lines, a `codex`
    marker, `tokens used` with a count, and the final answer **printed twice**. The `-o`
    file holds exactly the final message (no trailing newline).
 
-4. **Budget the run.** Fourteen findings at `max` cost ≈240k tokens and ~14 minutes. A
+5. **Budget the run.** Fourteen findings at `max` cost ≈240k tokens and ~14 minutes. A
    trivial question at `low` costs seconds. Match the effort to the question — and for an
    executor, to the size of the diff, not to the difficulty of the phrasing.
 
-5. **Verify what it claims.** Codex is a second opinion, not an oracle. When it refutes a
+6. **Verify what it claims.** Codex is a second opinion, not an oracle. When it refutes a
    finding, confirm the refutation in the code before acting on it — and when it confirms
    one, that is not proof either. Its value is the disagreement, which is where to look.
 
@@ -211,10 +228,10 @@ These cost time to rediscover. Respect them.
 | `-c stream_idle_timeout_ms=` | raise for long reasoning; a deep review can sit silent for minutes |
 | `-c sandbox_workspace_write.network_access=` | network inside `workspace-write`; also `writable_roots`, `exclude_slash_tmp` |
 | `-c tools.web_search=` | live web search in `exec` (no `--search` flag there) |
-| `-s, --sandbox <MODE>` | `read-only`, `workspace-write`, `danger-full-access` |
+| `-s, --sandbox <MODE>` | `read-only`, `workspace-write`, `danger-full-access`. `codex exec` only — `exec resume` rejects it, use `-c sandbox_mode=` |
 | `--dangerously-bypass-approvals-and-sandbox` | no sandbox, no prompts; externally isolated environments only |
 | `-o, --output-last-message <FILE>` | writes ONLY the final answer to a file — the one reliable way to read the result |
-| `-C, --cd <DIR>` | working root; `--add-dir` adds another writable dir, `--skip-git-repo-check` allows running outside git |
+| `-C, --cd <DIR>` | working root; `--add-dir` adds another writable dir, `--skip-git-repo-check` allows running outside git. `-C`/`--add-dir` are `codex exec` only |
 | `--json` | events as JSONL, for machine consumption |
 | `--output-schema <FILE>` | JSON Schema the final response must satisfy |
 | `-i, --image <FILE>` | attach screenshots to the prompt |
@@ -224,8 +241,16 @@ These cost time to rediscover. Respect them.
 ## Subcommands
 
 - `codex exec resume <SESSION_ID|--last> "follow-up"` — continue the same conversation
-  instead of re-explaining the context. Use it for "you said X, but line N says Y", and for
-  "the build you handed back fails at line N — fix that, nothing else".
+  instead of re-explaining the context. Use it for "you said X, but line N says Y", for
+  "the build you handed back fails at line N — fix that, nothing else", and to deliver the
+  rest of a prompt that arrived truncated (rule 2) without paying for the part already done.
+
+  **`resume` accepts a smaller flag set than `codex exec` itself.** `-m`, `-o`, `-c`, `-i`,
+  `--json`, `--output-schema` and `--ephemeral` are there; `-s/--sandbox`, `-C/--cd`,
+  `--add-dir` and `-p/--profile` are **not** — passing the first one fails the run outright
+  with `error: unexpected argument '--sandbox' found`. Set the sandbox as a config override
+  instead, `-c sandbox_mode="read-only"`, and keep passing it explicitly: a resumed run should
+  not silently inherit its grant from the session it continues or from `config.toml`.
 - `codex exec review [--uncommitted | --base <BRANCH> | --commit <SHA>] [--title <T>]` —
   the built-in review, when a plain diff review is wanted and no custom stance is needed.
 
