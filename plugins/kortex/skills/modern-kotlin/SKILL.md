@@ -1,6 +1,6 @@
 ---
 name: modern-kotlin
-description: Use when writing, reviewing, or modernizing Kotlin code with recent language versions (2.0–2.4.x, including 2.4.10 and 2.4.20-Beta1), including context parameters, collection literals, guard conditions in when, multi-dollar interpolation, non-local break/continue, explicit backing fields, nested type aliases, name-based destructuring, data objects, Enum.entries, rangeUntil, unused-return-value checker, K2 smart casts, contracts, experimental -X compiler flags, and stdlib APIs such as Uuid, Base64, HexFormat, kotlin.time Instant/Clock, and atomics.
+description: Use when writing, reviewing, or modernizing Kotlin code with recent language versions (2.0–2.4.x, including 2.4.10 and 2.4.20-Beta1), including context parameters, collection literals, guard conditions in when, multi-dollar interpolation, non-local break/continue, explicit backing fields, nested type aliases, name-based destructuring, data objects, Enum.entries, rangeUntil, unused-return-value checker, K2 smart casts, contracts, experimental -X compiler flags, exception-handling idioms (runCatching vs try/catch, Result), and stdlib APIs such as Uuid, Base64, HexFormat, kotlin.time Instant/Clock, and atomics.
 ---
 
 # Modern Kotlin
@@ -264,6 +264,24 @@ Omit the type name where it is inferable (enum entries, sealed subtypes): `when 
 
 Deprecated to error: `toLowerCase()`/`toUpperCase()` → `lowercase()`/`uppercase()`; `appendln()` → `appendLine()`
 (2.1.0).
+
+## Idioms
+
+### `runCatching` is not the default — reach for `try`/`catch` first
+
+`try`/`catch` is an expression in Kotlin, so it already yields a value. `runCatching` adds nothing to
+`val x = try { parse(s) } catch (e: SerializationException) { default }` and costs three things:
+
+- **It swallows `CancellationException`.** In a coroutine that breaks structured concurrency — the body keeps
+  running after `cancel()`. If you must use it there, rethrow: `runCatching { … }.onFailure { if (it is CancellationException) throw it }`.
+- **It catches every `Throwable`**, including `OutOfMemoryError` and `StackOverflowError`. `catch` names the one
+  type you actually handle.
+- **The error type leaves the signature.** `Result<T>` carries an opaque `Throwable`; nothing makes the caller
+  discriminate it. Expected domain outcomes belong in a sealed hierarchy, not in `Result`.
+
+It earns its place only when the failure has to outlive the block: `urls.map { runCatching { fetch(it) } }`,
+or a function returning `Result<T>` so the caller decides. Rule of thumb — handled in the same block, `try`/`catch`;
+carried out of it, `Result`.
 
 ## References
 
