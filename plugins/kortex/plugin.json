@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "kortex",
+  "version": "1.2.0",
+  "description": "Kotlin Agent Skills — Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
+  "author": {
+    "name": "Ruslan Ibrahimau",
+    "email": "ruslan@heapy.io"
+  },
+  "homepage": "https://github.com/Heapy/kortex/tree/main/plugins/kortex",
+  "repository": "https://github.com/Heapy/kortex",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kotlin",
+    "amper",
+    "toolchain",
+    "jvm",
+    "multiplatform",
+    "gradle"
+  ]
+}

@@ -4,7 +4,8 @@
  * Sets one version across every manifest.
  *
  * The tree has a single version, not one per plugin. Every `version` key in the two marketplace
- * manifests and in both manifests of every plugin gets the given value, so they cannot drift.
+ * manifests and in the three versioned manifests of every plugin gets the given value, so they
+ * cannot drift.
  *
  * Usage:
  *   ./scripts/release.main.kts 1.2.0
@@ -37,6 +38,7 @@ val manifests = buildList {
         .filter { it.isDirectory }
         .sortedBy { it.name }
     for (plugin in plugins) {
+        add(File(plugin, "plugin.json"))
         add(File(plugin, ".claude-plugin/plugin.json"))
         add(File(plugin, ".codex-plugin/plugin.json"))
     }
