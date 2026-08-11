@@ -58,7 +58,6 @@ Write the prompt to a file, then run in the background — a `max` effort review
 codex exec -m gpt-5.6-sol \
   --sandbox read-only \
   -c model_reasoning_effort="max" \
-  -c stream_idle_timeout_ms=900000 \
   -o /abs/path/codex-answer.md \
   "$(cat /abs/path/prompt.md)" < /dev/null
 ```
@@ -113,7 +112,6 @@ codex exec -m gpt-5.6-sol \
   -c sandbox_workspace_write.network_access=true \
   -c tools.web_search=true \
   -c model_reasoning_effort="high" \
-  -c stream_idle_timeout_ms=900000 \
   -C /abs/path/to/repo \
   --add-dir /abs/path/to/second/checkout \
   -o /abs/path/codex-answer.md \
@@ -138,7 +136,9 @@ What each grant buys:
 and an escalation request fails with *"permissions approval is not supported in exec mode"*.
 The model does not stop to ask; it works around the wall or reports failure. Every permission
 the task needs must be on the command line. When the needed access cannot be predicted, run
-the interactive `codex -a on-request` and let the user answer.
+the interactive `codex -a on-request` and let the user answer. `--approve-for-me` is the one
+middle ground: escalations go to an automatic review under `workspace-write` rather than
+failing outright — still nobody asks the user.
 
 ## Containment
 
@@ -218,6 +218,16 @@ These cost time to rediscover. Respect them.
    finding, confirm the refutation in the code before acting on it — and when it confirms
    one, that is not proof either. Its value is the disagreement, which is where to look.
 
+7. **An unknown `-c` key is ignored, not rejected.** A config key that a release removed or
+   renamed still parses, still looks right on the command line, and does nothing. The run
+   succeeds with the default, so nothing points at the flag. `stream_idle_timeout_ms` is the
+   live example: through 0.146.0 it was a top-level key, and in 0.147.0 it is a
+   `model_providers.<id>` field only — passing it at the top level is now a silent no-op, and
+   built-in provider ids such as `openai` cannot be overridden to reach it. Add
+   `--strict-config` when a `-c` override does not appear to take effect; it turns the silence
+   into `unknown configuration field ... in -c/--config override`. Note that it also validates
+   `config.toml`, so a stale key there will surface first.
+
 ## Flags that matter
 
 | Flag | Meaning |
@@ -225,9 +235,10 @@ These cost time to rediscover. Respect them.
 | `-m, --model <MODEL>` | model id, e.g. `gpt-5.6-sol` |
 | `-c <key=value>` | any config override; value parsed as TOML, falls back to a literal string |
 | `-c model_reasoning_effort=` | `low` … `xhigh`, `max`. `low` answers in seconds, `max` reasons for minutes |
-| `-c stream_idle_timeout_ms=` | raise for long reasoning; a deep review can sit silent for minutes |
 | `-c sandbox_workspace_write.network_access=` | network inside `workspace-write`; also `writable_roots`, `exclude_slash_tmp` |
 | `-c tools.web_search=` | live web search in `exec` (no `--search` flag there) |
+| `--strict-config` | fail on config fields this build does not recognize — **including `-c` overrides**. Without it an unknown key is accepted and ignored |
+| `--approve-for-me` | route escalation requests through automatic review in the `workspace-write` sandbox instead of failing them |
 | `-s, --sandbox <MODE>` | `read-only`, `workspace-write`, `danger-full-access`. `codex exec` only — `exec resume` rejects it, use `-c sandbox_mode=` |
 | `--dangerously-bypass-approvals-and-sandbox` | no sandbox, no prompts; externally isolated environments only |
 | `-o, --output-last-message <FILE>` | writes ONLY the final answer to a file — the one reliable way to read the result |
@@ -256,7 +267,7 @@ These cost time to rediscover. Respect them.
 
 ## When this file is wrong
 
-Everything above was checked against `codex-cli 0.146.0`. Flags, config keys, and sandbox
+Everything above was checked against `codex-cli 0.147.0`. Flags, config keys, and sandbox
 behavior move between releases; `codex --version` is the first thing to compare when
 something does not line up.
 
