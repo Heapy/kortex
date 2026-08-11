@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clean Comments and Guidance"
+  short_description: "Prune low-value comments and agent guidance"
+  default_prompt: "$heapy:clean-comments-and-guidance audit this repository's comments and drop what adds no information"
