@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clean Claude Memory"
+  short_description: "Audit and prune Claude Code project memory"
+  default_prompt: "$heapy:clean-claude-memory review this project's memory and drop what is stale"
