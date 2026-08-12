@@ -9,6 +9,8 @@ Reduce noise, not information. Build a tracked-file inventory and review every c
 
 Delete comments that narrate code, restate signatures or types, duplicate tests or configuration, label obvious sections, preserve implementation history, cite completed plans, record transient counts, or repeat an authoritative source.
 
+Treat recorded plans as historical artifacts only, not as documentation or a source of truth. Never use them to implement other features or as authoritative evidence about current behavior; verify relevant claims against current code, tests, configuration, requirements, and project documentation.
+
 Keep comments concise and only when they preserve non-obvious intent, external constraints, security or concurrency guarantees, platform or compatibility behavior, wire or persistence contracts, deliberate UX trade-offs, or warnings against plausible but unsafe changes.
 
 Prefer clearer code, types, assertions, tests, project documentation, backlog tasks, or reusable skills over comments. Move information to its authoritative home instead of duplicating it. Preserve licenses, attribution, required directives, and generated-file contracts.

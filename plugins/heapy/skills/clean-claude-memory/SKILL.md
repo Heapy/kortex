@@ -11,6 +11,8 @@ Claude Code stores project-scoped durable notes outside the repository:
 
 `MEMORY.md` is the index. Other Markdown files are topic memories. Memory is a hint for future sessions, not an authoritative source; verify every claim against current code, docs, configuration, tools, and project state.
 
+Treat recorded plans as historical artifacts only, not as documentation or a source of truth. Never use them to implement other features or as authoritative evidence about current behavior; verify relevant claims against current code, tests, configuration, requirements, and project documentation.
+
 Do not include these unless the user explicitly expands the scope:
 
 - repository `CLAUDE.md` or `AGENTS.md`;
