@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Kotgent Tasks"
+  short_description: "Audit todo tasks against repository evidence"
+  default_prompt: "Use $kotgent:review-tasks to audit todo tasks against current repository evidence."

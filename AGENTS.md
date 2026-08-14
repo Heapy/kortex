@@ -43,10 +43,10 @@ drift. Neither marketplace manifest is covered by any spec.
 
 ## Releasing
 
-**The tree has one version, not one per plugin.** It is written into twelve lines across eight
-manifests: `metadata.version` and one entry per plugin in each of the two marketplace manifests,
-plus the three versioned manifests of each plugin. All twelve always hold the same value. Do not
-edit them by hand — one gets forgotten, and then the manifests disagree with each other.
+**The tree has one version, not one per plugin.** It is written into seventeen fields across eleven
+versioned manifests: `metadata.version` and one entry per plugin in each of the two marketplace
+manifests, plus the three versioned manifests of each plugin. All seventeen always hold the same
+value. Do not edit them by hand — one gets forgotten, and then the manifests disagree with each other.
 
 ```sh
 ./scripts/release.main.kts 1.2.0

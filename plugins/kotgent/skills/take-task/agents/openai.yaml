@@ -1,0 +1,4 @@
+interface:
+  display_name: "Take Kotgent Task"
+  short_description: "Claim safe kotgent work and begin execution"
+  default_prompt: "Use $kotgent:take-task to take the next eligible task and work it through review."

@@ -5,8 +5,8 @@
     "email": "ruslan@heapy.io"
   },
   "metadata": {
-    "description": "Agent Skills for Kotlin development, personal workflows, and Heapy packages",
-    "version": "1.6.0",
+    "description": "Agent Skills for Kotlin development, task workflows, personal workflows, and Heapy packages",
+    "version": "1.7.0",
     "homepage": "https://github.com/Heapy/kortex"
   },
   "extensions": [
@@ -14,7 +14,7 @@
       "name": "kortex",
       "source": "./plugins/kortex",
       "description": "Kotlin Agent Skills - Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "author": {
         "name": "Ruslan Ibrahimau",
         "email": "ruslan@heapy.io"
@@ -34,7 +34,7 @@
       "name": "heapy",
       "source": "./plugins/heapy",
       "description": "Personal skills and Heapy package skills for komok, kinetica, and related workflows",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "author": {
         "name": "Ruslan Ibrahimau",
         "email": "ruslan@heapy.io"
@@ -48,6 +48,25 @@
         "kinetica",
         "personal",
         "issues"
+      ]
+    },
+    {
+      "name": "kotgent",
+      "source": "./plugins/kotgent",
+      "description": "Repository-aware task workflows using the kotgent CLI and git",
+      "version": "1.7.0",
+      "author": {
+        "name": "Ruslan Ibrahimau",
+        "email": "ruslan@heapy.io"
+      },
+      "category": "productivity",
+      "homepage": "https://github.com/Heapy/kortex/tree/main/plugins/kotgent",
+      "keywords": [
+        "kotgent",
+        "tasks",
+        "backlog",
+        "workflow",
+        "repository"
       ]
     }
   ]

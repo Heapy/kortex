@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Kotgent Tasks"
+  short_description: "Create repository tasks in kotgent"
+  default_prompt: "Use $kotgent:create-tasks to create focused backlog tasks from this request."

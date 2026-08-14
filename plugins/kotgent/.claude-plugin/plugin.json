@@ -1,7 +1,7 @@
 {
-  "name": "kortex",
+  "name": "kotgent",
   "version": "1.7.0",
-  "description": "Kotlin Agent Skills — Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
+  "description": "Repository-aware task workflows using the kotgent CLI and git",
   "author": {
     "name": "Ruslan Ibrahimau",
     "email": "ruslan@heapy.io"
@@ -9,12 +9,11 @@
   "repository": "https://github.com/Heapy/kortex",
   "license": "Apache-2.0",
   "keywords": [
-    "kotlin",
-    "amper",
-    "toolchain",
-    "jvm",
-    "multiplatform",
-    "gradle"
+    "kotgent",
+    "tasks",
+    "backlog",
+    "workflow",
+    "repository"
   ],
   "components": {
     "skills": [

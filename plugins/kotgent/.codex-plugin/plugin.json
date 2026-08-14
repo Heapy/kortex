@@ -1,0 +1,36 @@
+{
+  "name": "kotgent",
+  "version": "1.7.0",
+  "description": "Repository-aware task workflows using the kotgent CLI and git",
+  "author": {
+    "name": "Ruslan Ibrahimau",
+    "email": "ruslan@heapy.io"
+  },
+  "repository": "https://github.com/Heapy/kortex",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kotgent",
+    "tasks",
+    "backlog",
+    "workflow",
+    "repository"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "kotgent – Task Workflows",
+    "shortDescription": "Repository-aware kotgent task workflows",
+    "longDescription": "Create, reconcile, review, claim, and execute repository tasks through the kotgent CLI and git, with explicit session and concurrency safeguards.",
+    "developerName": "Heapy",
+    "category": "Productivity",
+    "capabilities": [
+      "Backlog Management",
+      "Task Lifecycle",
+      "Repository Sync"
+    ],
+    "defaultPrompt": [
+      "$kotgent:create-tasks create focused backlog tasks from this implementation plan",
+      "$kotgent:sync-tasks compare the active backlog with this repository",
+      "$kotgent:take-task take the next eligible task and work it through review"
+    ]
+  }
+}

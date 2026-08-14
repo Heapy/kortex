@@ -9,6 +9,7 @@ instead of copying into your personal skills directories.
 
 - `kortex` - Kotlin development skills for Kotlin Toolchain, `.main.kts` scripts, Kotlin/JVM, Multiplatform, and related build workflows.
 - `heapy` - Personal skills and Heapy package skills for projects such as `komok`, `kinetica`, and related workflows.
+- `kotgent` - Repository-aware backlog creation, synchronization, review, claiming, and execution through the `kotgent` CLI.
 
 ## Install
 
@@ -18,6 +19,7 @@ instead of copying into your personal skills directories.
 codex plugin marketplace add Heapy/kortex
 codex plugin add kortex@kortex
 codex plugin add heapy@kortex
+codex plugin add kotgent@kortex
 ```
 
 **Claude Code**
@@ -26,6 +28,7 @@ codex plugin add heapy@kortex
 /plugin marketplace add Heapy/kortex
 /plugin install kortex@kortex
 /plugin install heapy@kortex
+/plugin install kotgent@kortex
 ```
 
 **Junie**
@@ -34,6 +37,7 @@ codex plugin add heapy@kortex
 /extensions marketplace add Heapy/kortex
 /extensions install kortex
 /extensions install heapy
+/extensions install kotgent
 ```
 
 ## Usage
@@ -48,6 +52,9 @@ $kortex:ktor add a JSON REST endpoint to this Ktor server and cover it with a te
 $heapy:fix-issues fix issue #123 and verify the change
 $heapy:amnesia recap this session and tell me what I missed
 $heapy:call-codex challenge these review findings with codex
+$kotgent:create-tasks create focused backlog tasks from this implementation plan
+$kotgent:sync-tasks compare the active backlog with this repository
+$kotgent:take-task take the next eligible task and work it through review
 ```
 
 **Claude Code**
@@ -60,6 +67,9 @@ $heapy:call-codex challenge these review findings with codex
 /heapy:fix-issues resolve the failing CI check
 /heapy:amnesia recap this session and tell me what I missed
 /heapy:call-codex challenge these review findings with codex
+/kotgent:create-tasks create focused backlog tasks from this implementation plan
+/kotgent:review-tasks audit the todo backlog against the current repository
+/kotgent:work-task implement the task linked to this session and submit it for review
 ```
 
 **Junie**
@@ -72,4 +82,7 @@ Use the ktor skill to build a REST API with an HTTP client integration
 Use the fix-issues skill to reproduce and fix this bug
 Use the amnesia skill to recap this session and tell me what I missed
 Use the call-codex skill to get a second opinion on these findings
+Use the create-tasks skill to create focused backlog tasks from this implementation plan
+Use the sync-tasks skill to compare the active backlog with this repository
+Use the take-task skill to take the next eligible task and work it through review
 ```

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Work Kotgent Task"
+  short_description: "Execute a linked task through review"
+  default_prompt: "Use $kotgent:work-task to implement the linked task, verify it, and submit it for review."

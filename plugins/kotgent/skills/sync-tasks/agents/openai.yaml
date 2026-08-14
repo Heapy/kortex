@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sync Kotgent Tasks"
+  short_description: "Compare kotgent tasks with the repository"
+  default_prompt: "Use $kotgent:sync-tasks to compare the active backlog with this repository."

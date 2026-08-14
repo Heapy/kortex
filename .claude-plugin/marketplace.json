@@ -5,15 +5,15 @@
     "email": "ruslan@heapy.io"
   },
   "metadata": {
-    "description": "Agent Skills for Kotlin development, personal workflows, and Heapy packages",
-    "version": "1.6.0"
+    "description": "Agent Skills for Kotlin development, task workflows, personal workflows, and Heapy packages",
+    "version": "1.7.0"
   },
   "plugins": [
     {
       "name": "kortex",
       "source": "./plugins/kortex",
       "description": "Kotlin Agent Skills — Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "keywords": [
         "kotlin",
         "amper",
@@ -28,7 +28,7 @@
       "name": "heapy",
       "source": "./plugins/heapy",
       "description": "Personal skills and Heapy package skills for komok, kinetica, and related workflows",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "keywords": [
         "heapy",
         "heapy-packages",
@@ -36,6 +36,20 @@
         "kinetica",
         "personal",
         "issues"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "kotgent",
+      "source": "./plugins/kotgent",
+      "description": "Repository-aware task workflows using the kotgent CLI and git",
+      "version": "1.7.0",
+      "keywords": [
+        "kotgent",
+        "tasks",
+        "backlog",
+        "workflow",
+        "repository"
       ],
       "category": "productivity"
     }
