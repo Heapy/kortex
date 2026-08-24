@@ -11,13 +11,21 @@ script for kotgent.
 
 ## Read the task and repository first
 
-Require a concrete current kotgent session ID from the invocation context or user. Never infer it from a
-provider conversation ID, names, cwd, recency, or `kotgent list`. Require `git` and `kotgent`, resolve the
-Git root, then run:
+Use the live kotgent pane as identity by default. Never read `KOTGENT_SESSION_ID` as identity or copy it
+into `--session`. Outside a kotgent pane, require an exact session ID explicitly supplied by the invocation
+context or user. Never infer one from provider conversation IDs, environment variables, names, cwd,
+recency, or `kotgent list`. Keep one identity mode for the whole run.
+
+Require `git` and `kotgent`, resolve the Git root, then run the pane form:
 
 ```text
-kotgent task show --session <session-id>
+kotgent task show
 ```
+
+Use `kotgent task show --session <session-id>` only in explicit outside-pane mode.
+
+Keep `task show`, `task comment`, and `task review` ref-less throughout this linked-task workflow. In
+explicit mode `--session` names the caller while the CLI still resolves that session's current task.
 
 Stop if the session is not linked. Require the returned task state to be `in_progress`; send `todo` work
 through `take-task`, and stop for `review` or `done`. Read the complete body, dependencies, activity, and
@@ -39,8 +47,10 @@ already established a division of work. Leave one evidence-rich coordination com
 direction rather than racing:
 
 ```text
-kotgent task comment <ref> -m <coordination-evidence-and-request> --session <session-id>
+kotgent task comment -m <coordination-evidence-and-request>
 ```
+
+Append `--session <session-id>` only in explicit outside-pane mode.
 
 Keep the task `in_progress` and linked. Never use `unlink` as conflict handling.
 
@@ -54,8 +64,9 @@ Add progress comments only when they give a human durable new information: a con
 meaningful milestone, a scope change, a consequential design choice, or a verification result. Do not
 post start announcements, running narration, repeated status, or estimates.
 
-Re-read the task before a major or destructive change and before final review so new activity or linked
-sessions are not missed.
+Re-read the task with the same ref-less identity form before a major or destructive change and before
+final review. Require its ref to remain the original one so a changed session link cannot redirect the
+workflow silently, and inspect new activity and linked sessions.
 
 ## Handle blockers
 
@@ -80,8 +91,10 @@ committed.`
 Then perform the only completion transition:
 
 ```text
-kotgent task review <ref> -m <summary-checks-and-commits> --session <session-id>
+kotgent task review -m <summary-checks-and-commits>
 ```
+
+Append `--session <session-id>` only in explicit outside-pane mode.
 
 For a long message, use the CLI's `-m -` stdin form without introducing a helper script. Confirm the
 returned state is `review`, report the same summary to the user, and stop. Never run `task done`,

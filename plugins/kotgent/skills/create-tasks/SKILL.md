@@ -18,9 +18,9 @@ repository identity and provenance. Do not use an MCP server, SDK, direct daemon
   command and stderr; do not retry it unchanged.
 - Never run `project init`, `project restore`, or `project delete` in this workflow.
 - Never delete already-created tasks to roll back a partial batch.
-- All `task` subcommands accept `--session`, even when their short usage line omits it. On `task add` it
-  identifies the activity author and supplies project context when `--project` is absent; it does not link
-  the new task to the session.
+- Resolve the current session from the live kotgent pane by default. Never read `KOTGENT_SESSION_ID` as
+  identity or copy it into `--session`. Use `--session` only for a caller outside a kotgent pane when the
+  invocation context or user explicitly supplied the exact current session ID.
 
 ## Preflight
 
@@ -28,10 +28,17 @@ Complete every check before creating the first task:
 
 1. Run `git --version` and `kotgent --version`. Stop if either command is unavailable.
 2. Resolve the repository root with `git rev-parse --show-toplevel`. Stop outside a Git worktree.
-3. Read the exact `KOTGENT_SESSION_ID` variable with `printenv KOTGENT_SESSION_ID`. Use a non-blank value
-   as the current kotgent session ID; if it is absent, require the user to supply the current ID. Never use
-   a provider conversation ID, inspect the whole environment, or choose a session by name, cwd, recency,
-   or `kotgent list` output.
+3. Establish one identity mode before any tracker mutation:
+   - In the normal pane mode, run a ref-less `kotgent task show`. Accept exit `0`, or exit `1` with empty
+     stdout, no `status`, and `error` exactly equal to ``this session is not linked to a task — name one,
+     or link one with `kotgent task claim <ref>` ``. Any other response means pane resolution failed; stop
+     rather than adding `--session` from the environment.
+   - Outside a kotgent pane, require an exact session ID explicitly supplied by the invocation context or
+     user, then run `kotgent task show --session <session-id>`. Accept exit `0`, or exit `1` with empty
+     stdout, no `status`, and `error` exactly equal to `session '<session-id>' is not linked to a task —
+     name one: kotgent task <command> <ref> --session <session-id>`.
+   Never infer an ID from a provider conversation, environment variable, name, cwd, recency, or
+   `kotgent list`. Keep the chosen mode for the whole run.
 4. Inspect `<root>/.kotgent.json` and resolve one of these project states:
    - If the file exists, require valid JSON and a UUID-shaped `id`. Run `kotgent project list`. If it
      contains that ID, record the live project UUID and run `kotgent task list --project <project-uuid>`.
@@ -40,13 +47,10 @@ Complete every check before creating the first task:
      first contextual `task add` adopts the committed descriptor.
    - If the file is absent, do not stop and do not run `project init`. Leave the project unresolved so the
      first contextual `task add` creates the descriptor and project.
-5. Do not validate the session with `task list --session`: that command asks which project is stamped on
-   the session, and a valid current session may predate the repository descriptor. `task add --session`
-   validates the session when creation begins.
-6. Resolve the full commit with `git rev-parse HEAD`; stop if HEAD does not exist or is not a full SHA.
+5. Resolve the full commit with `git rev-parse HEAD`; stop if HEAD does not exist or is not a full SHA.
    Resolve the branch with `git symbolic-ref --quiet --short HEAD`; use the literal `detached` only when
    that command reports detached HEAD.
-7. Select the exact active host label: `Codex`, `Claude Code`, or `Junie`.
+6. Select the exact active host label: `Codex`, `Claude Code`, or `Junie`.
 
 ## Shape the batch
 
@@ -66,26 +70,31 @@ Append this visible footer to every body, after any task description:
 ```text
 ---
 Created by: <Codex|Claude Code|Junie>
-Kotgent session: <session-id>
 Git branch: <branch or detached>
 Git HEAD: <full SHA>
 ```
 
-Do not put the footer in an HTML comment or omit it from an otherwise empty body.
+Do not put the footer in an HTML comment or omit it from an otherwise empty body. Kotgent records the
+actual acting session as the `created` activity author; do not duplicate an ambient session label in the
+body as if it were authoritative identity.
 
 Create one task at a time with concrete values. When preflight found a live project, include it from the
 first command:
 
 ```text
-kotgent task add <title> --body <body-with-footer> --project <project-uuid> --session <session-id>
+kotgent task add <title> --body <body-with-footer> --project <project-uuid>
 ```
+
+In explicit outside-pane mode only, append `--session <session-id>`.
 
 When the descriptor was missing or not yet registered, omit `--project` from the first command. Let the
 current session context create or adopt the repository project:
 
 ```text
-kotgent task add <title> --body <body-with-footer> --session <session-id>
+kotgent task add <title> --body <body-with-footer>
 ```
+
+In explicit outside-pane mode only, append `--session <session-id>`.
 
 After that success, record the returned `project` UUID, read `<root>/.kotgent.json`, and require its ID to
 match. Use the returned UUID explicitly for every remaining add. If the first add created the descriptor,
@@ -103,5 +112,6 @@ Stop at the first failed add or dependency command. Preserve every successful ta
 Report the successful refs in creation order, the exact failed command, exit code, and complete stderr.
 Never issue compensating deletes.
 
-Finish with the created refs, titles, dependency edges, project UUID, session ID, branch, HEAD, and whether
-this run created `.kotgent.json`. Say explicitly when the batch is partial.
+Finish with the created refs, titles, dependency edges, project UUID, identity mode (and the explicit
+session ID only in outside-pane mode), branch, HEAD, and whether this run created `.kotgent.json`. Say
+explicitly when the batch is partial.

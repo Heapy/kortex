@@ -70,8 +70,9 @@ For every proposed tracker change, print the exact supported `kotgent` command w
 project UUID, body, and dependency direction. There is no CLI command to rewrite an existing title or
 body; for `drifted`, propose a replacement add and a separately confirmed delete instead of inventing an
 update command. Mutations require either a proven current kotgent pane or a supplied session ID. Never
-probe IDs found in task `sessions` or infer the current session from names, cwd, environment values, or
-recency. If needed, use at most one ref-less `kotgent task show` to prove current-pane resolution: accept
+probe IDs found in task `sessions`, read `KOTGENT_SESSION_ID` as identity, or infer the current session
+from names, cwd, other environment values, or recency. If needed, use at most one ref-less
+`kotgent task show` to prove current-pane resolution: accept
 only success or the exact free-session error; this permits the implicit current-pane command form but
 does not reveal an ID. If neither form is available, say `session ID required` rather than guessing or
 printing a misleading runnable command. Do not execute any proposed command.

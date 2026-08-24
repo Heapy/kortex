@@ -1,6 +1,6 @@
 {
   "name": "kotgent",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "Repository-aware task workflows using the kotgent CLI and git",
   "author": {
     "name": "Ruslan Ibrahimau",
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "kotgent – Task Workflows",
     "shortDescription": "Repository-aware kotgent task workflows",
-    "longDescription": "Create, reconcile, review, claim, and execute repository tasks through the kotgent CLI and git, with explicit session and concurrency safeguards.",
+    "longDescription": "Create, reconcile, review, claim, and execute repository tasks through the kotgent CLI and git, with pane-resolved session identity and concurrency safeguards.",
     "developerName": "Heapy",
     "category": "Productivity",
     "capabilities": [

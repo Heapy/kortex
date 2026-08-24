@@ -7,10 +7,11 @@ and provenance come from `git`. The plugin includes no MCP server, SDK, or helpe
 ## Requirements
 
 - `git` and `kotgent` available on `PATH`, with the kotgent daemon reachable.
-- A Git worktree whose root contains a valid `.kotgent.json`.
-- A live project registered under that file's UUID.
-- A concrete current kotgent session for any mutating workflow. Skills never guess a session from names,
-  paths, or the output of `kotgent list`.
+- A Git worktree. Existing-backlog workflows require a valid `.kotgent.json` and registered project;
+  `create-tasks` can create or adopt them through the current session context.
+- Mutating workflows run from the live kotgent pane by default. A caller outside the pane must supply an
+  exact session ID explicitly; skills never treat `KOTGENT_SESSION_ID` as identity or guess from names,
+  paths, recency, or `kotgent list`.
 
 ## Skills
 
