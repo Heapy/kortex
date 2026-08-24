@@ -1,0 +1,4 @@
+interface:
+  display_name: "JShell"
+  short_description: "Run Java snippets without orphaning JShell"
+  default_prompt: "$heapy:jshell run this Java snippet safely and return the result"

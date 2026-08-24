@@ -1,6 +1,6 @@
 {
   "name": "kotgent",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "description": "Repository-aware task workflows using the kotgent CLI and git",
   "author": {
     "name": "Ruslan Ibrahimau",

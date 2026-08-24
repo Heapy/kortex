@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "heapy",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "description": "Personal skills and Heapy package skills for komok, kinetica, and related workflows",
   "author": {
     "name": "Ruslan Ibrahimau",
