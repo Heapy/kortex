@@ -1,0 +1,4 @@
+interface:
+  display_name: "JShell"
+  short_description: "Run Java snippets with JShell"
+  default_prompt: "$kortex:jshell run this Java snippet safely and return the result"

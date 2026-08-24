@@ -1,7 +1,7 @@
 # kortex
 
-Junie extension that provides Kotlin-focused agent skills for JetBrains Kotlin Toolchain, Kotlin/JVM,
-Multiplatform, and related build workflows.
+Kotlin- and JVM-focused agent skills for JetBrains Kotlin Toolchain, Kotlin/JVM, Multiplatform,
+JShell, and related development workflows.
 
 ## What it covers
 
@@ -14,6 +14,7 @@ Multiplatform, and related build workflows.
   flags and per-version references back to Kotlin 1.4.
 - Ktor 3.5.x server and client development: routing, requests/responses, plugins, serialization, authentication,
   sessions, WebSockets, SSE, engines, testing, deployment, and multiplatform client work.
+- Java snippets and scratchpad work with JShell.
 
 ## Files
 
@@ -27,11 +28,13 @@ Multiplatform, and related build workflows.
 - `skills/ktor/SKILL.md` - Ktor 3.5.x server and client development.
 - `skills/ktor/references/` - compressed server and client guides.
 - `skills/ktor/generation/generation-steps.md` - regeneration notes for the Ktor skill.
+- `skills/jshell/SKILL.md` - Java snippets and scratchpad work with JShell.
 
 ## Usage
 
-Ask Junie to use the skill explicitly when needed:
+Ask the agent to use a skill explicitly when needed:
 
 ```text
 Use the kotlin-toolchain skill to create a setup for a Kotlin Native CLI application
+Use the jshell skill to evaluate this Java snippet without leaving an interactive process behind
 ```

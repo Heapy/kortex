@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "kortex",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Kotlin Agent Skills — Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
   "author": {
     "name": "Ruslan Ibrahimau",

@@ -1,6 +1,6 @@
 ---
 name: jshell
-description: Use when running Java snippets in JShell or using JShell as a Java REPL or scratchpad. Launches a tracked JShell process and terminates that exact process instead of relying on /exit.
+description: Use when running Java snippets in JShell or using JShell as a Java REPL or scratchpad.
 ---
 
 # JShell
