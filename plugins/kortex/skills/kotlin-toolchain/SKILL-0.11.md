@@ -1,9 +1,14 @@
 ---
-name: kotlin-toolchain-main
-description: Current upstream main snapshot for JetBrains Kotlin Toolchain docs. Use when a project explicitly tracks main/dev behavior instead of the default v0.11.x skill.
+name: kotlin-toolchain-0-11
+description: Historical snapshot of the JetBrains Kotlin Toolchain skill for v0.11.x. Use only when a project's ./kotlin wrapper still pins a 0.11.x version; the default SKILL.md targets v0.12.x, where path notation, templates, product-type names, and publishing all changed.
 ---
 
-# Kotlin Toolchain Main Snapshot
+# Kotlin Toolchain (v0.11.x, historical)
+
+**Historical.** This file is kept for projects still pinned to `0.11.x`. The current skill is
+[`SKILL.md`](SKILL.md), generated from `v0.12.0`. Confirm the project's pinned version with
+`sed -n 's/^kotlin_cli_version=//p' ./kotlin` before using anything here. Upgrade guidance is in
+[`references/migrating-0.11-to-0.12.md`](references/migrating-0.11-to-0.12.md).
 
 Use this skill for JetBrains Kotlin Toolchain work: declarative YAML build configuration, the `kotlin` CLI, product
 types, dependency wiring, multiplatform layout, publishing, and local build plugins.
@@ -13,12 +18,13 @@ to Kotlin Toolchain. Kotlin Toolchain is not Gradle, not Maven, and not the old 
 
 ## Source Snapshot
 
-This file is generated from the official upstream docs on `main`:
+This file is generated from the official upstream docs for `v0.11.1`, which is the default supported version for this
+skill right now:
 
 - Repository: `https://github.com/JetBrains/kotlin-toolchain`
-- Ref: `main`
-- SHA: `a049d011217fc302fcdece9c7d0f48eac184a88d`
-- Full aggregate: `generation/upstream-docs-main.md`
+- Ref: `v0.11.1`
+- SHA: `801e9d4b2d1c12a15cca4ac7efc8e3b5270721e0`
+- Full aggregate: `generation/upstream-docs-v0.11.1.md`
 - Generation notes: `generation/generation-steps.md`
 
 The project is Alpha and the docs move quickly. Treat defaults and edge-case syntax as version-sensitive. When precision
@@ -28,15 +34,24 @@ do not read it whole) or the current upstream docs.
 Internal names still contain `Amper` in expected places: `jvm/amper-plugin`, `org.jetbrains.amper.plugins`, AMPER
 YouTrack, and some distribution paths. Do not rename those to `kotlin`.
 
-## Default Version
+## Other Snapshots
 
-This file preserves the upstream `main` snapshot. The default `SKILL.md` currently targets `v0.11.x`; use this file only
-when the user or repository explicitly tracks current main/dev behavior.
+This file is the `v0.11.x` guide. The default skill is [`SKILL.md`](SKILL.md), generated from `v0.12.0`. Prefer it
+whenever the project is on `0.12` or later — the two disagree on `//` path notation, nested templates, product-type
+names, JDK and Kotlin defaults, and publishing.
 
+The separate upstream `main` snapshot that used to sit beside this file was dropped: at the `v0.12.0` release the
+`main` docs matched that tag.
+
+## Known Issues
+
+Before diagnosing surprising `v0.11.1` behavior, check
+[`references/known-issues.md`](references/known-issues.md) for tracked defects and current workarounds. Re-check their
+YouTrack statuses before relying on them.
 
 ## Project Version Check
 
-Run this once per session, the first time this file is used in a Kotlin Toolchain repo, before any other work.
+Run this once per session, the first time this skill is used in a Kotlin Toolchain repo, before any other work.
 
 1. Read the version the project pins in its wrapper:
 
@@ -47,15 +62,20 @@ Run this once per session, the first time this file is used in a Kotlin Toolchai
    `kotlin.bat` carries the same value as `set kotlin_cli_version=`. A repo without a wrapper has nothing to check —
    skip to `First Moves`.
 
-2. This file describes upstream `main`, so any released version is behind it. Tell the user what the project pins and
-   ask whether to update. Wait for an answer — never update on your own initiative.
+2. Compare it to `0.11.1`, the version this skill is generated from.
 
-3. On approval, run `./kotlin update --dev` to follow main/dev, or plain `./kotlin update` if the user wants the latest
-   release instead. Both rewrite `kotlin` and `kotlin.bat`. Re-read `kotlin_cli_version` afterwards and report the
-   version actually installed. Leave the modified wrapper scripts uncommitted unless the user asks for a commit.
+3. If the project pins something older, tell the user both versions and ask whether to update. Wait for an answer —
+   never update on your own initiative.
 
-4. If the user declines, keep working against the pinned version. On a released version prefer `SKILL.md`, and flag
-   guidance here that may not hold — notably `//` path notation and nested templates.
+4. On approval, run `./kotlin update`. It rewrites `kotlin` and `kotlin.bat` and fetches the latest released
+   distribution. Re-read `kotlin_cli_version` afterwards and report the version actually installed. Leave the modified
+   wrapper scripts uncommitted unless the user asks for a commit.
+
+5. If the user declines, keep working against the pinned version and flag guidance here that may not hold for it.
+
+`./kotlin update` targets the latest release, not `0.11.1`. If it lands beyond `0.11.x` — or the wrapper already pins a
+newer version — this snapshot is behind the project: switch to [`SKILL.md`](SKILL.md) and prefer what the project
+actually reports (`./kotlin show ...`, `--help`).
 
 ## First Moves
 
@@ -66,8 +86,8 @@ When working in a repo:
 2. Prefer project-local `./kotlin` over a global `kotlin` command when the wrapper exists.
 3. Use `./kotlin show modules|settings|dependencies|tasks|checks|commands` to understand the effective model.
 4. Keep YAML declarative. Do not invent loops, conditionals, Gradle task wiring, or Maven lifecycle behavior.
-5. Use current path notation: `//` for project-root paths in module dependencies, templates, plugin refs, and other
-   path values; plain paths in `project.yaml.modules`.
+5. Preserve the project's existing path style. For new `v0.11.x` examples, prefer explicit relative paths such as
+   `./lib` and `../shared`, because the 0.11 docs predate the newer `//` path guidance.
 
 Useful CLI commands:
 
@@ -118,16 +138,17 @@ on each other.
 ```yaml
 # project.yaml
 modules:
-  - app
-  - libs/lib1
-  - plugins/*
+  - ./app
+  - ./libs/lib1
+  - ./plugins/*
 
 plugins:
-  - //plugins/build-config
+  - ./plugins/build-config
 ```
 
-`modules:` entries are root-relative path globs. They support `*`, `?`, and `[abc]`/`[a-z]`, but not recursive `**`.
-Do not write `//app` in `modules:`.
+`modules:` entries are root-relative path globs. The 0.11 docs write these both with and without a leading `./`, and
+both are accepted; the `plugins:` list examples consistently use `./`. Globs support `*`, `?`, and `[abc]`/`[a-z]`, but
+not recursive `**`.
 
 Common `module.yaml` keys:
 
@@ -145,9 +166,8 @@ Common `module.yaml` keys:
 Path notation:
 
 - Use `/` as the separator on all platforms.
-- `//path` resolves from the project root and is preferred for module dependencies, templates, plugin dependencies, and
-  other project paths.
-- `./path` and `../path` resolve relative to the YAML file declaring them.
+- In 0.11 docs, local module dependencies, templates, and local plugin paths are written with `./` or `../`.
+- Do not rewrite a 0.11 project to newer `//` paths unless the installed CLI is verified to support them.
 - Bare values like `my-lib` in `dependencies:` are parsed as external dependencies, not local modules.
 
 Layouts:
@@ -201,7 +221,7 @@ Dependency forms:
 
 ```yaml
 dependencies:
-  - //ui/utils
+  - ../ui/utils
   - io.ktor:ktor-client-core:2.2.0
   - $libs.ktor.client.cio
   - $compose.material3
@@ -260,16 +280,16 @@ Rules:
 
 ## Settings Defaults
 
-Defaults from the pinned `main` docs:
+Defaults from the pinned `v0.11.1` docs:
 
 - Default JDK major version: 21
-- `settings.android.compileSdk`: 37
+- `settings.android.compileSdk`: 36
 - `settings.android.minSdk`: 21
 - `settings.kotlin.version`: 2.3.20
 - `settings.compose.version`: 1.10.3
 - `settings.compose.experimental.hotReload.version`: 1.0.0
-- `settings.kotlin.serialization.version`: 1.11.0
-- `settings.kotlin.ksp.version`: 2.3.9
+- `settings.kotlin.serialization.version`: 1.10.0
+- `settings.kotlin.ksp.version`: 2.3.6
 - `settings.jvm.test.junitPlatformVersion`: 6.0.1
 - `settings.ktor.version`: 3.4.1
 - `settings.lombok.version`: 1.18.38
@@ -352,12 +372,14 @@ Apply them with `apply:`.
 
 ```yaml
 apply:
-  - //common.module-template.yaml
+  - ../common.module-template.yaml
 ```
 
-Current main docs support nested templates. Each template is applied once even if reached multiple ways. Merge rules are
-the same as multiplatform propagation: scalars override, maps/lists append. Module content is applied last and wins.
-Conflicting sibling scalar values fail unless resolved by the module or a more-specific intermediate template.
+In `v0.11.1`, template files cannot contain `product:` or `apply:`. Do not rely on nested templates or sibling
+template conflict-resolution behavior unless the installed 0.11 CLI has been verified to support it.
+
+Merge rules are the same as multiplatform propagation: scalars override, maps/lists append. Module content is applied
+last and wins.
 
 ## Maven Migration And Maven Plugins
 
@@ -463,7 +485,7 @@ Shorthand notation does not currently work with references.
 
 - Alpha means defaults and syntax drift; verify exact behavior against a tag, SHA, or installed toolchain.
 - Do not remove expected `Amper` names from plugin/product/package references.
-- Use `//` for module dependencies/templates/plugin refs, but not in `project.yaml.modules`.
+- Use explicit relative paths such as `./lib` and `../shared` for 0.11 module dependencies/templates/plugin refs.
 - `product.platforms` requires leaf platform names, not family shortcuts.
 - `settings.android` and `settings@android` are different.
 - `layout: maven-like` is only for JVM-only modules.

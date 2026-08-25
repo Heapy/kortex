@@ -11,7 +11,7 @@ instead of copying into your personal skills directories.
 
 Kotlin and JVM development skills:
 
-- `kotlin-toolchain` - JetBrains Kotlin Toolchain v0.11.x projects, migrations, dependencies, and multiplatform builds.
+- `kotlin-toolchain` - JetBrains Kotlin Toolchain v0.12.x projects, migrations, dependencies, and multiplatform builds.
 - `main-kts` - standalone executable Kotlin `.main.kts` scripts and script dependencies.
 - `modern-kotlin` - Kotlin 2.0-2.4 language features, standard-library APIs, and experimental flags.
 - `ktor` - Ktor 3.5.x server and client development.

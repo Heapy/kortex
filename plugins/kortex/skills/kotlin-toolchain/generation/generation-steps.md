@@ -1,8 +1,15 @@
 # Kotlin Toolchain skill generation steps
 
+This is a running log. The **current** snapshot is `v0.12.0` — see
+[2026-08-25: regeneration for v0.12.0](#2026-08-25-regeneration-for-v0120) at the end of this file. The section below
+records the original `v0.11.1` run and is kept for reference; its artifact list and regeneration procedure are
+superseded.
+
+## 2026-06-30: initial generation for v0.11.1
+
 Generated on 2026-06-30 in `/Users/yoda/dev/pet/kortex`.
 
-## Goal
+### Goal
 
 Create a better `plugins/kortex/skills/kotlin-toolchain/SKILL.md` by:
 
@@ -14,7 +21,7 @@ Create a better `plugins/kortex/skills/kotlin-toolchain/SKILL.md` by:
 6. Generating the final `SKILL.md`.
 7. Saving enough process detail to regenerate future versioned skill files.
 
-## Upstream discovery
+### Upstream discovery
 
 Commands used:
 
@@ -31,7 +38,7 @@ Relevant results:
 - Release branch found: `release/0.11`
 - `claude` binary found at `/Users/yoda/.local/bin/claude`.
 
-## Upstream checkout
+### Upstream checkout
 
 Commands used:
 
@@ -44,7 +51,7 @@ git -C /private/tmp/kotlin-toolchain-main-docs rev-parse HEAD
 git -C /private/tmp/kotlin-toolchain-v0.11.1-docs rev-parse HEAD
 ```
 
-## Aggregate generation
+### Aggregate generation
 
 Generator added. It writes all upstream Markdown content, sorted by source path, with CR line endings, trailing
 horizontal whitespace, and final blank lines normalized for cleaner diffs:
@@ -75,7 +82,7 @@ Observed:
 - Both aggregates contain 48 upstream Markdown documents.
 - Main and `v0.11.1` differ.
 
-## Reading and compression
+### Reading and compression
 
 The `main` aggregate was read in ranges and targeted source files were checked where terminal output was too dense.
 The local compression was used to draft `SKILL-main.md` and then removed from the retained artifacts.
@@ -95,7 +102,7 @@ Important docs and topics read:
 - Templates, testing, YAML primer
 - Plugin docs: overview, quick start, checks, commands, configuration, references, structure, tasks
 
-## Claude second opinion
+### Claude second opinion
 
 Smoke test:
 
@@ -112,7 +119,7 @@ claude -p --tools Read --permission-mode dontAsk "Read plugins/kortex/skills/kot
 Claude's output was used as a second opinion while drafting the skill files and then removed from the retained
 artifacts.
 
-## Version diff checks
+### Version diff checks
 
 Commands used:
 
@@ -137,7 +144,7 @@ Main/version differences used when making `SKILL.md` default to `v0.11.1`:
   ID `31850-kotlin-toolchain`.
 - `v0.11.1` defaults included Android `compileSdk` 36, serialization 1.10.0, and KSP 2.3.6.
 
-## Generated artifacts
+### Generated artifacts
 
 - `SKILL.md`: default v0.11.1 skill.
 - `SKILL-main.md`: current upstream main skill.
@@ -147,7 +154,7 @@ Main/version differences used when making `SKILL.md` default to `v0.11.1`:
 - `generation/upstream-docs-v0.11.1.md`: full v0.11.1 docs aggregate.
 - `generation/generation-steps.md`: this reproducibility log.
 
-## Regenerating For A Future Version
+### Regenerating For A Future Version
 
 1. Check upstream tags and branches:
 
@@ -172,3 +179,117 @@ Main/version differences used when making `SKILL.md` default to `v0.11.1`:
 6. Optionally re-run `claude -p` on the new aggregate or on a local compression as a second opinion.
 
 7. Update this log with the new commands and decisions.
+
+
+## 2026-08-25: regeneration for v0.12.0
+
+Upstream released `v0.12.0` on 2026-08-25. The skill was regenerated and restructured from one monolithic file into a
+base skill plus topic references.
+
+### Upstream discovery
+
+```shell
+git ls-remote --tags --refs https://github.com/JetBrains/kotlin-toolchain.git
+curl -sL https://api.github.com/repos/JetBrains/kotlin-toolchain/releases/tags/v0.12.0
+```
+
+- Latest release tag: `v0.12.0` at `2039c5371bf5812f0061b2b11b6581b4e9de3a97`, published 2026-08-25.
+- Upstream `main` at the time: `1cb8b790557e2ea6b9613a5ab50dd3fc1c59f54b`.
+- Release notes body saved and read in full (197 lines: breaking changes, new features, cosmetics, usability, fixed
+  bugs, IDE changes).
+
+### Upstream checkout
+
+```shell
+git clone --depth 1 --branch v0.12.0 --filter=blob:none --sparse https://github.com/JetBrains/kotlin-toolchain.git kt-v0.12.0
+git clone --depth 1 --branch v0.11.1 --filter=blob:none --sparse https://github.com/JetBrains/kotlin-toolchain.git kt-v0.11.1
+git clone --depth 1 --branch main     --filter=blob:none --sparse https://github.com/JetBrains/kotlin-toolchain.git kt-main
+git -C <each> sparse-checkout set --skip-checks docs examples README.md
+```
+
+### Aggregate generation
+
+```shell
+bash plugins/kortex/skills/kotlin-toolchain/scripts/aggregate-upstream-docs.sh \
+  <scratch>/kt-v0.12.0 v0.12.0 2039c5371bf5812f0061b2b11b6581b4e9de3a97 \
+  plugins/kortex/skills/kotlin-toolchain/generation/upstream-docs-v0.12.0.md
+```
+
+`upstream-docs-v0.12.0.md` is 8,279 lines over 48 upstream Markdown documents.
+
+### Version diff checks
+
+```shell
+git diff --no-index --stat   kt-v0.11.1/docs/src kt-v0.12.0/docs/src
+git diff --no-index -U2      kt-v0.11.1/docs/src kt-v0.12.0/docs/src > docs-diff.patch
+git diff --no-index --stat   kt-v0.12.0/docs/src kt-main/docs/src
+```
+
+Observed:
+
+- `v0.11.1` → `v0.12.0`: 34 files changed, 1,072 insertions, 353 deletions. The 2,381-line patch was read in full,
+  then individual `v0.12.0` topic files were opened while writing each reference.
+- `v0.12.0` → `main`: **1 line** in `user-guide/product-types/wasm-wasi-app.md`.
+
+That last result is why `SKILL-main.md` and `generation/upstream-docs-main.md` were deleted rather than regenerated:
+a separate main snapshot would be a near-duplicate free to drift. Reinstate the pair only if a future `main` diverges
+meaningfully from the latest tag again.
+
+### Structural decisions
+
+- `SKILL.md` was rewritten against `v0.12.0` and reduced to an operational base plus a reference map. It still carries
+  the version check, first moves, CLI list, product-type table, defaults table, and pitfalls inline — the split is not
+  allowed to turn the entry point into a routing hop.
+- The old monolithic file was renamed `SKILL-0.11.md` and marked historical in its frontmatter and body. Its `name`
+  is `kotlin-toolchain-0-11`, mirroring what `SKILL-main.md` did.
+- Detail moved into thirteen `references/*.md` files, roughly mirroring the upstream docs tree.
+- `references/migrating-0.11-to-0.12.md` was written from the release notes plus the docs diff.
+- `references/known-issues.md` was re-checked against the release notes: KTC-5573 is fixed; KTC-4871 and KTC-5603
+  remain open; KTC-5698 and KTC-5576 were added from the `v0.12.0` docs.
+- `references/codex-sandbox-caches.md` was updated for the removed `--shared-caches-root` and the new
+  `KOTLIN_SHARED_CACHE_DIR` / `--shared-cache-dir`.
+
+### Content flips from v0.11.1
+
+Every one of these inverts a claim the old skill made, so none of its sentences could be carried over untouched:
+
+- `//` project-root paths are supported and preferred; `./`/`../` guidance is obsolete.
+- Templates can apply other templates, and sibling conflicts are now build errors.
+- KMP publishing works, with Gradle module metadata and commonized cinterop.
+- `wasmJs/app`/`wasmWasi/app` renamed to `wasm-js/app`/`wasm-wasi/app`; `wasm-js/app` gained `run`.
+- `iosX64` dropped from `ios/app`; `macosX64` dropped from `macos/app` defaults; `watchosArm32` deprecated.
+- Minimum JDK 17, minimum Kotlin 2.2.20, default JDK 25, default Kotlin 2.4.10, `minSdk` 24, `compileSdk` 37.
+- New settings: `publishing`, `kotlin.dataframe`, `kotlin.powerAssert`, `kotlin.rpc`, `android.resourcePackaging`.
+- Spring Boot no longer adds starters; `no-arg` uses the `jpa` preset.
+- CLI options `--root`, `--build-output`, `--shared-caches-root` removed; `publish -m` needs `--transitive`.
+- Plugin references: `module.sources` → `module.kotlinJavaSources`; `markOutputAs` → `generated:`.
+- YouTrack project `AMPER` → `KTC`; IDEA plugin `23076-amper` → `31850-kotlin-toolchain`.
+
+### Retained artifacts
+
+- `SKILL.md` — default `v0.12.0` skill, base plus reference map.
+- `SKILL-0.11.md` — historical `v0.11.1` skill.
+- `references/` — thirteen topic references; `codex-sandbox-caches.md` is local guidance, preserve it across
+  regenerations.
+- `generation/upstream-docs-v0.12.0.md` — full `v0.12.0` docs aggregate.
+- `generation/upstream-docs-v0.11.1.md` — full `v0.11.1` docs aggregate, kept alongside `SKILL-0.11.md`.
+- `generation/generation-steps.md` — this log.
+- `scripts/aggregate-upstream-docs.sh` — reusable aggregate generator.
+
+### Regenerating for a future version
+
+1. `git ls-remote --tags --refs https://github.com/JetBrains/kotlin-toolchain.git` for the latest tag, and
+   `curl -sL https://api.github.com/repos/JetBrains/kotlin-toolchain/releases/tags/<tag>` for the release notes.
+2. Sparse-clone the new tag, the current pinned tag, and `main`.
+3. Run `scripts/aggregate-upstream-docs.sh` into `generation/upstream-docs-<tag>.md`.
+4. Diff the new tag against the pinned one and read the whole patch. Diff it against `main` too — if they are close,
+   do not create a main snapshot.
+5. Update `SKILL.md` and every affected `references/*.md`. Update the frontmatter `description`: it is the trigger
+   text, and it names the version.
+6. Write `references/migrating-<old>-to-<new>.md` from the breaking-changes list, and fold the previous migration file
+   into it or drop it once nobody is on that version.
+7. Re-check `references/known-issues.md` against the release notes' fixed-bugs list.
+8. Rename the outgoing `SKILL.md` to `SKILL-<old>.md` only if projects are plausibly still pinned there; otherwise
+   delete it along with its aggregate.
+9. Update the root `README.md`, `plugins/kortex/README.md`, and this log.
+10. Bump the tree version with `./scripts/release.main.kts <version>`.

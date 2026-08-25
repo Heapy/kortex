@@ -1,8 +1,8 @@
-# Kotlin Toolchain upstream docs aggregate (main)
+# Kotlin Toolchain upstream docs aggregate (v0.12.0)
 
 - Source repository: https://github.com/JetBrains/kotlin-toolchain
-- Ref: main
-- SHA: a049d011217fc302fcdece9c7d0f48eac184a88d
+- Ref: v0.12.0
+- SHA: 2039c5371bf5812f0061b2b11b6581b4e9de3a97
 - Scope: all Markdown files under docs/src at this ref, sorted by path
 
 ## Source file list
@@ -50,7 +50,8 @@
 - docs/src/user-guide/product-types/jvm-lib.md
 - docs/src/user-guide/product-types/kmp-lib.md
 - docs/src/user-guide/product-types/native-app.md
-- docs/src/user-guide/product-types/wasm-app.md
+- docs/src/user-guide/product-types/wasm-js-app.md
+- docs/src/user-guide/product-types/wasm-wasi-app.md
 - docs/src/user-guide/publishing.md
 - docs/src/user-guide/templates.md
 - docs/src/user-guide/testing.md
@@ -60,7 +61,7 @@
 
 ### docs/src/cli/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/cli/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/cli/index.md
 - HTML: https://kotlin-toolchain.org/dev/cli/index/
 
 ---
@@ -114,14 +115,15 @@ kotlin --help       # shows the available commands and general options
 kotlin build --help # shows the options for the 'build' command specifically
 ```
 
-Useful commands:
+Here are the most commonly used commands:
 
 - `kotlin init` to create a new Kotlin project
 - `kotlin build` to compile and link all code in the project
 - `kotlin run` to run your application
 - `kotlin test` to run tests in the project
-- `kotlin show (modules|settings|dependencies|tasks)` to introspect the project's configuration
+- `kotlin show (modules|settings|dependencies|tasks|checks|commands)` to introspect the project's configuration
 - `kotlin clean` to remove the project's build output and caches
+- `kotlin publish` to publish modules to a repository
 
 !!! example "Try it out!"
 
@@ -176,7 +178,7 @@ See `kotlin update -h` for more information about the available options.
 
 ### docs/src/cli/provisioning.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/cli/provisioning.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/cli/provisioning.md
 - HTML: https://kotlin-toolchain.org/dev/cli/provisioning/
 
 ---
@@ -186,10 +188,11 @@ description: |
 ---
 # Wrapper script & provisioning
 
-Part of our philosophy is to avoid the hassle of setting up toolchains, including the JDK and the Kotlin Toolchain itself.
+Part of our philosophy is to avoid the hassle of setting up toolchains, including the JDK and the Kotlin Toolchain
+itself.
 
-The recommended way to use the Kotlin Toolchain is to check the Kotlin wrapper script into your project's root folder, so that anyone
-cloning your project can just run `./kotlin build` and start working right away — that's it.
+The recommended way to use the Kotlin Toolchain is to check the Kotlin wrapper script into your project's root folder,
+so that anyone cloning your project can just run `./kotlin build` and start working right away — that's it.
 No installation needed, no matter their OS.
 
 ## What's the wrapper script?
@@ -200,9 +203,18 @@ application[^1], and serves as an entry point for all Kotlin CLI commands.
 Of course, the Kotlin CLI application is only downloaded once (per version) and subsequent calls to the wrapper
 immediately delegate to it.
 
-[^1]: The Kotlin CLI is, at the moment, a JVM application. The Kotlin Toolchain distribution is therefore a bunch of JAR files, and
-      they need a Java Runtime Environment (JRE) to run. This is an implementation detail and may change in the future,
-      so you should not rely on it.
+[^1]: The Kotlin CLI is, at the moment, a JVM application. The Kotlin Toolchain distribution is therefore a bunch of JAR
+      files, and they need a Java Runtime Environment (JRE) to run. This is an implementation detail and may change in
+      the future, so you should not rely on it.
+
+## Project-local version detection
+
+The wrapper script is the source of truth for the version of the Kotlin Toolchain used in your project.
+A globally installed wrapper (for instance, installed [via SDKMAN or the installer script](index.md#installation)) doesn't blindly use its own
+version. When run, it searches the current directory and its ancestors for a project (a directory with a `project.yaml` or
+`module.yaml` file) containing its own `kotlin` wrapper script.
+If it finds one, it reads the Kotlin Toolchain version and distribution checksum from that wrapper and uses them
+instead of its own, so the project is built with the version it declares.
 
 ## Concurrency
 
@@ -224,6 +236,13 @@ for the current OS:
       It is, however, respected for the regular Kotlin cache.
 
 This location can be customized by setting the `KOTLIN_CLI_BOOTSTRAP_CACHE_DIR` environment variable.
+
+## Shared cache location
+
+Once running, the Kotlin CLI itself uses another cache directory, shared between all Kotlin projects (for downloaded
+dependencies, JDKs, and other tools).
+This location can be customized by setting the `KOTLIN_SHARED_CACHE_DIR` environment variable, or by using the
+`--shared-cache-dir` command line option (which takes precedence over the environment variable).
 
 ## Disabling the welcome banner
 
@@ -271,7 +290,7 @@ This is, again, not recommended — please use with care.
 
 ### docs/src/faq.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/faq.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/faq.md
 - HTML: https://kotlin-toolchain.org/dev/faq/
 
 ---
@@ -338,7 +357,7 @@ still in the experimental phase, and we cannot guarantee that all scenarios can 
 
 ### How do I report a bug?
 
-Please report problems to our [:jetbrains-youtrack: YouTrack issue tracker](https://youtrack.jetbrains.com/issues/AMPER).
+Please report problems to our [:jetbrains-youtrack: YouTrack issue tracker](https://youtrack.jetbrains.com/issues/KTC).
 Since this project is in the experimental phase, we would also greatly appreciate feedback and suggestions regarding
 the configuration experience – join our
 [:material-slack: Slack channel](https://kotlinlang.slack.com/archives/C062WG3A7T8) for discussion.
@@ -397,14 +416,19 @@ See the documentation on the [project layout](user-guide/basics.md#project-layou
 
 ### Is there an automated migration tool?
 
-Not currently, but it's certainly something we’re looking into.
+Yes, for Maven projects: the `./kotlin tool convert-project` command does the bulk of the conversion for you, on a
+best-effort basis. See the [Migrating from Maven](getting-started/migrating-from-maven.md) guide for details.
+
+For Gradle projects, there is no conversion tool at the moment. Gradle build scripts contain arbitrary code, which makes
+it hard to define a proper automatic and deterministic conversion. However, AI agents are quite good at this, especially
+with the [Kotlin Toolchain skills](https://github.com/singleton11/kotlin-toolchain-skills).
 
 ### Feature X is not yet supported, what can I do?
 
 Please let us know about it! We're eager to hear what you're trying to do, because we plan to expand the list of
 supported use cases based on demand.
 Please submit your requests and suggestions in the
-[:jetbrains-youtrack: YouTrack issue tracker](https://youtrack.jetbrains.com/issues/AMPER) or join the
+[:jetbrains-youtrack: YouTrack issue tracker](https://youtrack.jetbrains.com/issues/KTC) or join the
 [:material-slack: Slack channel](https://kotlinlang.slack.com/archives/C062WG3A7T8) for discussions.
 
 ### Can I write a custom task or use a plugin?
@@ -414,7 +438,7 @@ Yes! The Kotlin Toolchain now includes a preview of a plugin system. See the ded
 
 ### docs/src/getting-started/ide-setup.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/getting-started/ide-setup.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/getting-started/ide-setup.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/ide-setup/
 
 ---
@@ -446,7 +470,7 @@ description: This page describes how to set up your IDE to work with the Kotlin 
 
 ### docs/src/getting-started/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/getting-started/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/getting-started/index.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/index/
 
 ---
@@ -491,7 +515,7 @@ Ready to try the Kotlin Toolchain? Choose the right approach for you:
 
 ### docs/src/getting-started/migrating-from-maven.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/getting-started/migrating-from-maven.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/getting-started/migrating-from-maven.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/migrating-from-maven/
 
 ---
@@ -595,6 +619,9 @@ mavenPlugins:
 The `mavenPlugins` section allows you to run third-party Maven plugins directly in your Kotlin project.
 However, not all plugins are guaranteed to work, so by default they are disabled. You can selectively enable
 plugins you need by setting `enabled: true` in their configuration after the conversion.
+Alternatively, you can run the converter with the `--enable-compatibility-plugins` flag to generate these plugins
+already enabled, at the risk of issues from untested plugin configurations.
+
 Please refer to the [Maven plugins](../user-guide/advanced/maven-plugins.md) section for more details.
 
 ## Dependency mapping
@@ -705,7 +732,7 @@ The following Maven features are not handled by the converter and require manual
 
 ### docs/src/getting-started/tutorial.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/getting-started/tutorial.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/getting-started/tutorial.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/tutorial/
 
 ---
@@ -1081,13 +1108,13 @@ Here is the project structure that we need:
 ```
 ├─ android-app/
 │  ├─ src/
-│  │  ├─ main.kt
-│  │  ╰─ AndroidManifest.xml
+│  │  ├─ AndroidManifest.xml
+│  │  ╰─ MainActivity.kt
 │  ╰─ module.yaml
 ├─ ios-app/
 │  ├─ src/
 │  │  ├─ iosApp.swift
-│  │  ╰─ main.kt
+│  │  ╰─ ViewController.kt
 │  ├─ module.yaml
 │  ╰─ module.xcodeproj
 ├─ jvm-app/
@@ -1139,7 +1166,7 @@ and add the new platforms and a couple of additional dependencies for Android:
 ```yaml hl_lines="3 9-10 12-15"
 product:
   type: kmp/lib
-  platforms: [ jvm, android, iosArm64, iosSimulatorArm64, iosX64 ]
+  platforms: [ jvm, android, iosArm64, iosSimulatorArm64 ]
 
 dependencies:
   - $compose.foundation: exported
@@ -1150,8 +1177,8 @@ dependencies@jvm:
 
 dependencies@android:
   # Compose integration with Android activities
-  - androidx.activity:activity-compose:1.7.2: exported
-  - androidx.appcompat:appcompat:1.6.1: exported
+  - androidx.activity:activity-compose:1.13.0: exported
+  - androidx.appcompat:appcompat:1.7.1: exported
 
 settings:
   compose:
@@ -1200,16 +1227,16 @@ into `android-app/src` folder, and the [iosApp.swift file]({{ examples_base_url 
 These files bind the Compose UI code with the native application entry points.
 
 Make sure that your project structure looks like this:
-``` hl_lines="4 8"
+``` hl_lines="3 8"
 ├─ android-app/
 │  ├─ src/
-│  │  ├─ main.kt
-│  │  ╰─ AndroidManifest.xml
+│  │  ├─ AndroidManifest.xml
+│  │  ╰─ MainActivity.kt
 │  ╰─ module.yaml
 ├─ ios-app/
 │  ├─ src/
 │  │  ├─ iosApp.swift
-│  │  ╰─ main.kt
+│  │  ╰─ ViewController.kt
 │  ╰─ module.yaml
 ├─ jvm-app/
 ├─ shared/
@@ -1279,7 +1306,7 @@ Now we will apply these templates to our module files:
 ```yaml title="shared/module.yaml" hl_lines="5-6"
 product:
   type: kmp/lib
-  platforms: [ jvm, android, iosArm64, iosSimulatorArm64, iosX64 ]
+  platforms: [ jvm, android, iosArm64, iosSimulatorArm64 ]
 
 apply:
   - //compose.module-template.yaml
@@ -1293,8 +1320,8 @@ dependencies@jvm:
 
 dependencies@android:
   # Compose integration with Android activities
-  - androidx.activity:activity-compose:1.7.2: exported
-  - androidx.appcompat:appcompat:1.6.1: exported
+  - androidx.activity:activity-compose:1.13.0: exported
+  - androidx.appcompat:appcompat:1.7.1: exported
 ```
 
 ```yaml title="jvm-app/module.yaml"
@@ -1333,7 +1360,7 @@ Check the [user guide](../user-guide/index.md) and explore [example projects]({{
 
 ### docs/src/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/index.md
 - HTML: https://kotlin-toolchain.org/dev/
 
 ---
@@ -1462,7 +1489,7 @@ Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850
     # Produce a shared library for the JVM, Android, and iOS platforms:
     product:
       type: kmp/lib
-      platforms: [jvm, android, iosArm64, iosSimulatorArm64, iosX64]
+      platforms: [jvm, android, iosArm64, iosSimulatorArm64]
 
     # Shared Compose dependencies:
     dependencies:
@@ -1472,8 +1499,8 @@ Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850
     # Android-only dependencies
     dependencies@android:
       # Android-specific integration with Compose
-      - androidx.activity:activity-compose:1.7.2: exported
-      - androidx.appcompat:appcompat:1.6.1: exported
+      - androidx.activity:activity-compose:1.13.0: exported
+      - androidx.appcompat:appcompat:1.7.1: exported
 
     settings:
       # Enable Kotlin serialization
@@ -1494,7 +1521,7 @@ Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850
 
 The Kotlin Toolchain is [Alpha](https://kotlinlang.org/docs/components-stability.html#stability-levels-explained). We'd love your feedback!
 
-[:jetbrains-youtrack: Report an issue](https://youtrack.jetbrains.com/newIssue?project=AMPER){ .md-button }
+[:jetbrains-youtrack: Report an issue](https://youtrack.jetbrains.com/newIssue?project=KTC){ .md-button }
 [:material-slack: Join Slack](https://kotlinlang.slack.com/archives/C062WG3A7T8){ .md-button }
 
 </div>
@@ -1513,7 +1540,7 @@ The Kotlin Toolchain is [Alpha](https://kotlinlang.org/docs/components-stability
 
 ### docs/src/reference/module.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/reference/module.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/reference/module.md
 - HTML: https://kotlin-toolchain.org/dev/reference/module/
 
 ---
@@ -1572,13 +1599,15 @@ Read more in the [Testing](../user-guide/testing.md) section.
 
 Supported dependency types:
 
-| Notation                                                 | Description                                                                                                                |
-|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| `- //<project path>`                             | Dependency on [another module](../user-guide/dependencies.md#module-dependencies) in the codebase.                         |
-| `- <group ID>:<artifact ID>:<version>`           | Dependency on [a Kotlin or Java library](../user-guide/dependencies.md#external-maven-dependencies) in a Maven repository. |
-| `- $<catalog.key>`                               | Dependency from [a dependency catalog](../user-guide/dependencies.md#library-catalogs).                                    |
-| `- bom: <group ID>:<artifact ID>:<version>`      | Dependency on [a BOM](../user-guide/dependencies.md#using-a-maven-bom).                                                    |
-| `- bom: $<catalog.key>`                          | Dependency on [a BOM from a dependency catalog](../user-guide/dependencies.md#library-catalogs).                           |
+| Item notation                                                       | Description                                                                                                                                                                          |
+|---------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `- //<project path>`                                                | Dependency on [another module](../user-guide/dependencies.md#module-dependencies) in the codebase.                                                                                   |
+| `- <groupId>:<artifactId>[:<version>[:<classifier>]][@<packaging>]` | Dependency on [a Kotlin or Java library](../user-guide/dependencies.md#external-maven-dependencies) in a Maven repository. The version, classifier, and packaging type are optional. |
+| `- $<catalog.key>`                                                  | Dependency from [a dependency catalog](../user-guide/dependencies.md#library-catalogs).                                                                                              |
+| `- bom: <groupId>:<artifactId>:<version>`                           | Dependency on [a BOM](../user-guide/dependencies.md#using-a-maven-bom).                                                                                                              |
+| `- bom: $<catalog.key>`                                             | Dependency on [a BOM from a dependency catalog](../user-guide/dependencies.md#library-catalogs).                                                                                     |
+| `- swiftPackage: ...`                                               | Dependency on a remote Swift package, only for [iOS apps](../user-guide/product-types/ios-app.md).                                                                                   |
+| `- localSwiftPackage: <path>`                                       | Dependency on a local Swift package, only for [iOS apps](../user-guide/product-types/ios-app.md).                                                                                    |
 
 Each dependency (except BOM) has the following attributes:
 
@@ -1666,6 +1695,13 @@ settings:
 
 ```
 
+## `mavenPlugins`
+
+The `mavenPlugins` section enables and configures Maven plugin mojos from Maven plugins registered in the project's
+`project.yaml` file. Read more in the [Maven plugins](../user-guide/advanced/maven-plugins.md) section.
+
+!!! warning "This is a prototype that can be dropped at any time."
+
 ## `pluginInfo`
 
 The `pluginInfo` section is only available if the `product.type` is `jvm/amper-plugin`.
@@ -1677,47 +1713,60 @@ It configures plugin-specific build settings.
 | ~~`description: string`~~ | `null`                      | **Deprecated**. Use the plugin module's top-level `description` instead.                                                                                                                        |
 | `settingsClass: string`   | `null` (no plugin settings) | The fully qualified name of the @Configurable-annotated interface to be used as plugin configuration. This interface can't come from a dependency, it must be declared in the source directory. |
 
+## `plugins`
+
+The `plugins` section enables and configures plugins registered in the project's `project.yaml` file, for this
+particular module. Read more in the [Plugins](../user-guide/plugins/overview.md) section.
+
 ## `product`
 
 The `product` section defines what should be produced out of the module.
 Read more about the [product types](../user-guide/basics.md#product-type).
 
-| Attribute             | Default               | Description                                 |
-|-----------------------|-----------------------|---------------------------------------------|
-| `platform: enum list` | (derived from `type`) | What platforms to generate the product for. |
-| `type: enum`          | -                     | What type of product to generate.           |
+| Attribute              | Default               | Description                                 |
+|------------------------|-----------------------|---------------------------------------------|
+| `platforms: enum list` | (derived from `type`) | What platforms to generate the product for. |
+| `type: enum`           | -                     | What type of product to generate.           |
 
 Supported product types and platforms:
 
-| Product Type       | Description                                                                              | Platforms                                                        |
-|--------------------|------------------------------------------------------------------------------------------|------------------------------------------------------------------|
-| `android/app`      | An Android VM application.                                                               | `android`                                                        |
-| `ios/app`          | An iOS application.                                                                      | device: `iosArm64`<br> simulators: `iosX64`, `iosSimulatorArm64` |
-| `js/app`           | A JavaScript application.                                                                | `js`                                                             |
-| `jvm/amper-plugin` | A plugin for the Kotlin Toolchain (see [Plugins](../user-guide/plugins/quick-start.md)). | `jvm`                                                            |
-| `jvm/app`          | A JVM application (console, desktop, server...).                                         | `jvm`                                                            |
-| `jvm/lib`          | A JVM library that other modules can depend on.                                          | `jvm`                                                            |
-| `kmp/lib`          | A reusable Kotlin Multiplatform library that other modules can depend on.                | any (the list must be specified explicitly)                      |
-| `linux/app`        | A native Linux application.                                                              | `linuxX86`, `linuxArm64`                                         |
-| `macos/app`        | A native macOS application.                                                              | `macosX64`, `macosArm64`                                         |
-| `wasmJs/app`       | A Wasm (JS) application.                                                                 | `wasmJs`                                                         |
-| `wasmWasi/app`     | A Wasm (WASI) application.                                                               | `wasmWasi`                                                       |
-| `windows/app`      | A native Windows application.                                                            | `mingwX64`                                                       |
+| Product Type       | Description                                                                              | Supported platforms                                   |
+|--------------------|------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| `android/app`      | An Android VM application.                                                               | `android`                                             |
+| `ios/app`          | An iOS application.                                                                      | `iosArm64` (device)<br/>`iosSimulatorArm64` (simulator) |
+| `js/app`           | A JavaScript application.                                                                | `js`                                                  |
+| `jvm/amper-plugin` | A plugin for the Kotlin Toolchain (see [Plugins](../user-guide/plugins/quick-start.md)). | `jvm`                                                 |
+| `jvm/app`          | A JVM application (console, desktop, server...).                                         | `jvm`                                                 |
+| `jvm/lib`          | A JVM library that other modules can depend on.                                          | `jvm`                                                 |
+| `kmp/lib`          | A reusable Kotlin Multiplatform library that other modules can depend on.                | any (the list must be specified explicitly)           |
+| `linux/app`        | A native Linux application.                                                              | `linuxArm64`, `linuxX64`       |
+| `macos/app`        | A native macOS application.                                                              | `macosArm64`<br/>~~`macosX64`~~ (deprecated)          |
+| `wasm-js/app`      | A Wasm (JS) application.                                                                 | `wasmJs`                                              |
+| `wasm-wasi/app`    | A Wasm (WASI) application.                                                               | `wasmWasi`                                            |
+| `windows/app`      | A native Windows application.                                                            | `mingwX64`                                            |
 
 Check the list of all [Kotlin Multiplatform targets](https://kotlinlang.org/docs/native-target-support.html) and the
 level of their support.
+
+!!! info "Apple Intel is being phased out"
+
+    The `iosX64` (Intel iOS simulator) platform is not available for `ios/app`, only for `kmp/lib`.
+    This platform will eventually be phased out (even though it's not deprecated yet), and Compose libraries already
+    don't support it.
+
+    The `macosX64` platform (Intel macs) is deprecated since Kotlin 2.3.20.
 
 Examples:
 
 ```yaml title="Short form"
 # Defaults to all supported platforms for the corresponding target
-product: macos/app
+product: linux/app
 ```
 
 ```yaml title="Full form, explicitly specified platforms"
 product:
-  type: macos/app
-  platforms: [ macosArm64, macosArm64 ]
+  type: linux/app
+  platforms: [ linuxX64, linuxArm64 ]
 ```
 
 ```yaml title="Multiplatform Library for JVM and Android platforms"
@@ -1731,11 +1780,13 @@ product:
 The `repositories` section defines the list of repositories used to look up and download the module dependencies.
 Read more about [Managing Maven repositories](../user-guide/dependencies.md#managing-maven-repositories).
 
-| Attribute              | Default          | Description                                            |
-|------------------------|------------------|--------------------------------------------------------|
-| `credentials: object?` | `null`           | Credentials to connect to this repository (if needed). |
-| `id: string`           | (set from `url`) | The ID of the repository, used to reference it.        |
-| `url: string`          | -                | The URL of the repository.                             |
+| Attribute              | Default          | Description                                              |
+|------------------------|------------------|----------------------------------------------------------|
+| `credentials: object?` | `null`           | Credentials to connect to this repository (if needed).   |
+| `id: string`           | (set from `url`) | The ID of the repository, used to reference it.          |
+| `publish: boolean`     | `false`          | Whether this repository can be used to publish artifacts. |
+| `resolve: boolean`     | `true`           | Whether this repository can be used to resolve artifacts. |
+| `url: string`          | -                | The URL of the repository.                               |
 
 Credentials support username/password authentication and have the following attributes:
 
@@ -1753,7 +1804,7 @@ repositories:
   - https://jitpack.io
 ```
 
-1. When using just a string, it is used as both the `url` and `uuidValue` of the repository
+1. When using just a string, it is used as the `url` of the repository (and the `id` defaults to the url)
 
 ```yaml title="Full form"
 repositories:
@@ -1787,18 +1838,63 @@ Read more in the [Testing](../user-guide/testing.md) section.
 
 `settings.android` configures the Android toolchain and platform.
 
-| Attribute                     | Default                 | Description                                                                                                                                                                                                                   |
-|-------------------------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `applicationId: string`       | (set from `namespace`)  | The ID for the application on a device and in the Google Play Store. [Read more](https://developer.android.com/build/configure-app-module#set-namespace).                                                                     |
-| `namespace: string`           | `org.example.namespace` | A Kotlin or Java package name for the generated `R` and `BuildConfig` classes. [Read more](https://developer.android.com/build/configure-app-module#set-namespace).                                                           |
-| `compileSdk: int`             | 37                      | The API level to compile the code. The code can use only the Android APIs up to that API level. [Read more](https://developer.android.com/reference/tools/gradle-api/com/android/build/api/dsl/CommonExtension#compileSdk()). |
-| `targetSdk: int`              | (set from `compileSdk`) | The target API level for the application. [Read more](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html).                                                                                             |
-| `minSdk: int`                 | 21                      | Minimum API level needed to run the application. [Read more](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html).                                                                                      |
-| `maxSdk: int?`                | `null`                  | Maximum API level on which the application can run. [Read more](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html).                                                                                   |
-| `signing: object`             |                         | Android signing settings. [Read more](https://developer.android.com/studio/publish/app-signing).                                                                                                                              |
-| `versionCode: int`            | 1                       | Version code. [Read more](https://developer.android.com/studio/publish/versioning).                                                                                                                                           |
-| `versionName: string`         | `unspecified`           | Version name. [Read more](https://developer.android.com/studio/publish/versioning).                                                                                                                                           |
-| `parcelize: object \| string` | (disabled)              | Configure [Parcelize](https://developer.android.com/kotlin/parcelize).                                                                                                                                                        |
+| Attribute                     | Default                 | Description                                                                                                                                                                                                                                     |
+|-------------------------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `applicationId: string`       | (set from `namespace`)  | The ID for the application on a device and in the Google Play Store. [Read more](https://developer.android.com/build/configure-app-module#set-namespace).                                                                                       |
+| `namespace: string`           | `org.example.namespace` | A Kotlin or Java package name for the generated `R` and `BuildConfig` classes. [Read more](https://developer.android.com/build/configure-app-module#set-namespace).                                                                             |
+| `compileSdk: object \| int`   | 37                      | The Android SDK version to compile the code against. The code can use only the Android APIs up to that API level. [Read more](https://developer.android.com/reference/tools/gradle-api/com/android/build/api/dsl/CommonExtension#compileSdk()). |
+| `targetSdk: int`              | (set from `compileSdk`) | The target API level for the application. [Read more](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html).                                                                                                               |
+| `minSdk: int`                 | 24                      | Minimum API level needed to run the application. [Read more](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html).                                                                                                        |
+| `signing: object`             |                         | Android signing settings. [Read more](https://developer.android.com/studio/publish/app-signing).                                                                                                                                                |
+| `versionCode: int`            | 1                       | Version code. [Read more](https://developer.android.com/studio/publish/versioning).                                                                                                                                                             |
+| `versionName: string`         | `unspecified`           | Version name. [Read more](https://developer.android.com/studio/publish/versioning).                                                                                                                                                             |
+| `resourcePackaging: object`   | (empty)                 | Configure how duplicate Java resources from dependencies are packaged in an Android app. See [Resolving duplicate Java resources](../user-guide/product-types/android-app.md#resolving-duplicate-java-resources).                               |
+| `parcelize: object \| string` | (disabled)              | Configure [Parcelize](https://developer.android.com/kotlin/parcelize).                                                                                                                                                                          |
+| `buildToolsVersion: string`   | 37.0.0                  | Version of [SDK Build Tools](https://developer.android.com/tools/releases/build-tools) to use.                                                                                                                                                  |
+
+#### `settings.android.compileSdk`
+
+`settings.android.compileSdk` configures the Android SDK version used to compile the module. Use an API level directly as a shorthand, or use an object to configure the API level, minor API level, and SDK extension level.
+
+| Attribute            | Default | Description                                                                                                                 |
+|----------------------|---------|-----------------------------------------------------------------------------------------------------------------------------|
+| `apiLevel: int`      | 37      | The Android API level to compile the project against.                                                                       |
+| `minorApiLevel: int` | 0       | Minor API level of the Android API.                                                                                         |
+| `sdkExtension: int?` | `null`  | Android SDK extension level to compile the project against. [Read more](https://developer.android.com/guide/sdk-extensions) |
+
+```yaml title="Shorthand"
+settings:
+  android:
+    compileSdk: 37
+```
+
+```yaml title="Full form"
+settings:
+  android:
+    compileSdk:
+      apiLevel: 37
+      minorApiLevel: 1
+      sdkExtension: 2
+```
+
+#### `settings.android.resourcePackaging`
+
+`settings.android.resourcePackaging` configures how Java resources from dependencies are packaged in an Android app.
+Use it to resolve duplicate-resource failures from `MergeJavaResWorkAction`.
+
+| Attribute                 | Default | Description                                                                                       |
+|---------------------------|---------|---------------------------------------------------------------------------------------------------|
+| `excludes: string list`   | `[]`    | Glob patterns matching Java resources that should not be packaged in the APK.                     |
+| `merges: string list`     | `[]`    | Glob patterns matching Java resources whose contents should be concatenated into one APK entry.   |
+| `pickFirsts: string list` | `[]`    | Glob patterns matching Java resources for which only the first occurrence should be packaged.     |
+
+```yaml title="Excluding a duplicated Java resource"
+settings:
+  android:
+    resourcePackaging:
+      excludes:
+        - META-INF/versions/9/OSGI-INF/MANIFEST.MF
+```
 
 #### `settings.android.parcelize`
 
@@ -1844,16 +1940,16 @@ framework. Read more about [Compose configuration](../user-guide/builtin-tech/co
 | Attribute              | Default  | Description                                                    |
 |------------------------|----------|----------------------------------------------------------------|
 | `enabled: boolean`     | `false`  | Enable Compose runtime, dependencies and the compiler plugins. |
-| `version: string`      | `1.10.3` | The Compose plugin version to use.                             |
+| `version: string`      | `1.11.1` | The Compose plugin version to use.                             |
 | `resources: object`    |          | Compose Resources settings.                                    |
 | `experimental: object` |          | Experimental Compose settings.                                 |
 
 `settings.compose.resources` configures Compose Resources settings.
 
-| Attribute                   | Default | Description                                                                                                                                                                                     |
-|-----------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `packageName: string`       | `""`    | A unique identifier for the resources in the current module. Used as package for the generated Res class and for isolating resources in the final artifact.                                     |
-| `exposedAccessors: boolean` | `false` | Whether the generated resources accessors should be exposed to other modules (public) or internal.                                                                                              |
+| Attribute                   | Default | Description                                                                                                                                                                            |
+|-----------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `packageName: string`       | `""`    | A unique identifier for the resources in the current module. Used as package for the generated Res class and for isolating resources in the final artifact.                            |
+| `exposedAccessors: boolean` | `false` | Whether the generated resources accessors should be exposed to other modules (public) or internal.                                                                                     |
 | `nameOfResClass: string`    | `"Res"` | The name of the Kotlin object on which all the resource accessors are generated. `Res` by default. Can be customized to avoid name clashes when using resources from multiple modules. |
 
 `settings.compose.experimental` configures experimental Compose features.
@@ -1866,7 +1962,7 @@ framework. Read more about [Compose configuration](../user-guide/builtin-tech/co
 
 | Attribute         | Default | Description                                      |
 |-------------------|---------|--------------------------------------------------|
-| `version: string` | `1.0.0` | The Compose Hot Reload toolchain version to use. |
+| `version: string` | `1.2.0` | The Compose Hot Reload toolchain version to use. |
 
 Examples:
 
@@ -1879,14 +1975,14 @@ settings:
 settings:
   compose:
     enabled: true
-    version: 1.6.10
+    version: 1.11.1
 ```
 
 ```yaml title="Full form with resources configuration"
 settings:
   compose:
     enabled: true
-    version: 1.6.10
+    version: 1.11.1
     resources:
       packageName: "com.example.myapp.resources"
       exposedAccessors: true
@@ -1975,12 +2071,12 @@ Supported values for `distributions` and `acknowledgedLicenses`:
 - `jetbrains` (JetBrains Runtime)
 - `oracleOpenJdk` (Oracle OpenJDK)
 - `microsoft` (Microsoft)
-- `bisheng` (BiSheng)
 - `dragonwell` (Alibaba Dragonwell)
 - `liberica` (BellSoft Liberica)
 - `sapMachine` (SapMachine)
 - `semeru` (IBM Semeru Open Edition)
-- `oracle` (Oracle JDK; requires license)
+- `graalVM` (GraalVM Community Edition)
+- `oracleGraalVM` (Oracle GraalVM; requires license)
 
 Values for `selectionMode`:
 
@@ -1997,7 +2093,7 @@ Read more about [testing support](../user-guide/testing.md).
 
 | Value                          | Default | Description                                   |
 |--------------------------------|---------|-----------------------------------------------|
-| `junitPlatformVersion: string` | 6.0.1   | The JUnit platform version used to run tests. |
+| `junitPlatformVersion: string` | 6.1.3   | The JUnit platform version used to run tests. |
 | `extraEnvironment: map`        | `{}`    | Environment variables for the test process.   |
 | `freeJvmArgs: string list`     | `[]`    | Free JVM arguments for the test process.      |
 | `systemProperties: map`        | `{}`    | JVM system properties for the test process.   |
@@ -2006,32 +2102,38 @@ Read more about [testing support](../user-guide/testing.md).
 
 `settings.kotlin` configures the Kotlin language and the compiler.
 
-| Attribute                        | Default                      | Description                                                                                                                                                          |
-|----------------------------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `version: string`                | 2.3.20                       | The version of the Kotlin compiler and stdlib to use.                                                                                                                |
-| `allOpen: object`                |                              | Configure the [Kotlin all-open compiler plugin](https://kotlinlang.org/docs/all-open-plugin.html).                                                                   |
-| `allWarningsAsErrors: boolean`   | `false`                      | Turn any warnings into a compilation error.                                                                                                                          |
-| `apiVersion: enum`               | (set from `languageVersion`) | Allow using declarations only from the specified version of Kotlin bundled libraries.                                                                                |
-| `compilerPlugins: object list`   | `[]`                         | Configure third-party Kotlin compiler plugins.                                                                                                                       |
-| `debug: boolean`                 | `true`                       | (Only for [native targets](https://kotlinlang.org/docs/native-target-support.html)) Enable emitting debug information.                                               |
-| `freeCompilerArgs: string list`  | `[]`                         | Pass any [compiler option](https://kotlinlang.org/docs/compiler-reference.html#compiler-options) directly.                                                           |
-| `jsPlainObjects: object \| enum` |                              | Enable the Kotlin JS-plain-objects compiler plugin.                                                                                                                  |
-| `ksp: object`                    |                              | Configure [Kotlin Symbol Processing](../user-guide/advanced/ksp.md).                                                                                                 |
-| `languageVersion: enum`          | (major.minor from `version`) | Provide source compatibility with the specified version of Kotlin.                                                                                                   |
-| `noArg: object`                  |                              | Configure the [Kotlin no-arg compiler plugin](https://kotlinlang.org/docs/no-arg-plugin.html).                                                                       |
-| `optIns: enum list`              | `[]`                         | Enable usages of API that [requires opt-in](https://kotlinlang.org/docs/opt-in-requirements.html) with a requirement annotation with the given fully qualified name. |
-| `progressiveMode: boolean`       | `false`                      | Enable the [progressive mode for the compiler](https://kotlinlang.org/docs/compiler-reference.html#progressive).                                                     |
-| `serialization: object \| enum`  |                              | Configure [Kotlin serialization](https://github.com/Kotlin/kotlinx.serialization).                                                                                   |
-| `suppressWarnings: boolean`      | `false`                      | Suppress the compiler from displaying warnings during compilation.                                                                                                   |
-| `verbose: boolean`               | `false`                      | Enable verbose logging output which includes details of the compilation process.                                                                                     |
+| Attribute                         | Default                          | Description                                                                                                                                                          |
+|-----------------------------------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `version: string`                 | 2.4.10                           | The version of the Kotlin compiler and stdlib to use.                                                                                                                |
+| `allOpen: object`                 |                                  | Configure the [Kotlin all-open compiler plugin](https://kotlinlang.org/docs/all-open-plugin.html).                                                                   |
+| `allWarningsAsErrors: boolean`    | `false`                          | Turn any warnings into a compilation error.                                                                                                                          |
+| `apiVersion: enum`                | (set from `languageVersion`)     | Allow using declarations only from the specified version of Kotlin bundled libraries.                                                                                |
+| `compileIncrementally: boolean`   | (enabled for Kotlin >= 2.4.0)    | Whether Kotlin code should be compiled incrementally (only recompile what's necessary depending on the changes).                                                     |
+| `compilerPlugins: object list`    | `[]`                             | Configure third-party Kotlin compiler plugins.                                                                                                                       |
+| `dataframe: object \| enum`       |                                  | Configure the [Kotlin DataFrame compiler plugin](https://kotlin.github.io/dataframe/home.html).                                                                      |
+| `debug: boolean`                  | (enabled in debug variants)      | (Only for [native targets](https://kotlinlang.org/docs/native-target-support.html)) Enable emitting debug information.                                               |
+| `freeCompilerArgs: string list`   | `[]`                             | Pass any [compiler option](https://kotlinlang.org/docs/compiler-reference.html#compiler-options) directly.                                                           |
+| `jsPlainObjects: object \| enum`  |                                  | Enable the Kotlin JS-plain-objects compiler plugin.                                                                                                                  |
+| `ksp: object`                     |                                  | Configure [Kotlin Symbol Processing](../user-guide/advanced/ksp.md).                                                                                                 |
+| `languageVersion: enum`           | (major.minor from `version`)     | Provide source compatibility with the specified version of Kotlin.                                                                                                   |
+| `linkerOptions: string list`      | `[]`                             | (Only for [native targets](https://kotlinlang.org/docs/native-target-support.html)) Additional arguments to pass to the linker during binary building.               |
+| `noArg: object`                   |                                  | Configure the [Kotlin no-arg compiler plugin](https://kotlinlang.org/docs/no-arg-plugin.html).                                                                       |
+| `optIns: string list`             | `[]`                             | Enable usages of API that [requires opt-in](https://kotlinlang.org/docs/opt-in-requirements.html) with a requirement annotation with the given fully qualified name. |
+| `optimization: boolean`           | (enabled in release variants)    | (Only for [native targets](https://kotlinlang.org/docs/native-target-support.html)) Enable compilation optimizations and produce a binary with better runtime performance. |
+| `powerAssert: object \| enum`     |                                  | Configure the [Kotlin power-assert compiler plugin](https://kotlinlang.org/docs/power-assert.html).                                                                  |
+| `progressiveMode: boolean`        | `false`                          | Enable the [progressive mode for the compiler](https://kotlinlang.org/docs/compiler-reference.html#progressive).                                                     |
+| `rpc: object \| enum`             |                                  | Configure the [kotlinx.rpc compiler plugin](https://kotlin.github.io/kotlinx-rpc/).                                                                                  |
+| `serialization: object \| enum`   |                                  | Configure [Kotlin serialization](https://github.com/Kotlin/kotlinx.serialization).                                                                                   |
+| `suppressWarnings: boolean`       | `false`                          | Suppress the compiler from displaying warnings during compilation.                                                                                                   |
+| `verbose: boolean`                | `false`                          | Enable verbose logging output which includes details of the compilation process.                                                                                     |
 
 The `serialization` attribute is an object with the following properties:
 
-| Attribute          | Default                | Description                                                                                                                                                                           |
-|--------------------|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `enabled: boolean` | `false`                | Enable the `@Serializable` annotation processing, and add the core serialization library. When enabled, a built-in catalog for kotlinx.serialization format dependencies is provided. |
-| `version: string`  | `1.11.0`               | The version to use for the core serialization library and the serialization formats.                                                                                                  |
-| `format: enum`     | `none` (only core lib) | A shortcut for `enabled: true` and adding the given serialization format dependency. For instance, `json` adds the JSON format in addition to enabling serialization.                 |
+| Attribute          | Default                       | Description                                                                                                                                                                           |
+|--------------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled: boolean` | (enabled if `format` is set)  | Enable the `@Serializable` annotation processing, and add the core serialization library. When enabled, a built-in catalog for kotlinx.serialization format dependencies is provided. Automatically enabled when `format` is specified, `false` otherwise. |
+| `version: string`  | `1.11.0`                      | The version to use for the core serialization library and the serialization formats.                                                                                                  |
+| `format: string`   | `null` (only core lib)        | A shortcut for `enabled: true` and adding the given serialization format dependency. For instance, `json` adds the JSON format in addition to enabling serialization. Known formats: `json`, `json-io`, `json-okio`, `hocon`, `protobuf`, `cbor`, `properties`. |
 
 You can also use a short form and directly specify `serialization: enabled` or `serialization: json`.
 
@@ -2041,7 +2143,7 @@ Examples:
 # Set Kotlin language version and opt-ins
 settings:
   kotlin:
-    languageVersion: 1.8
+    languageVersion: 2.3
     optIns: [ kotlin.io.path.ExperimentalPathApi ]
 ```
 
@@ -2129,6 +2231,16 @@ compilation.
 Check the [third-party compiler plugins](../user-guide/advanced/kotlin-compiler-plugins.md#third-party-compiler-plugins)
 section for more information and examples.
 
+#### `settings.kotlin.dataframe`
+
+`settings.kotlin.dataframe` configures the [Kotlin DataFrame](https://kotlin.github.io/dataframe/home.html) compiler
+plugin.
+
+| Attribute          | Default      | Description                                        |
+|--------------------|--------------|----------------------------------------------------|
+| `enabled: boolean` | `false`      | Enable the Kotlin DataFrame compiler plugin        |
+| `version: string`  | `1.0.0-rc01` | The version of the Kotlin DataFrame library to use |
+
 #### `settings.kotlin.jsPlainObjects`
 
 `settings.kotlin.jsPlainObjects` configures the [JS plain objects compiler plugin](https://kotlinlang.org/docs/js-plain-objects.html),
@@ -2180,9 +2292,30 @@ which allows processing Kotlin source code with custom processors (usually to ge
 
 | Attribute                               | Default | Description                                                                                                              |
 |-----------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------|
-| `version: string`                       | `2.3.9` | The version of KSP to use                                                                                                |
+| `version: string`                       | `2.3.11` | The version of KSP to use                                                                                               |
 | `processors: string list`               | `[]`    | The list of KSP processors to use. Each item can be a path to a local module, a catalog reference, or maven coordinates. |
 | `processorOptions: map<string, string>` | `{}`    | Some options to pass to KSP processors. Refer to each processor documentation for details.                               |
+
+#### `settings.kotlin.powerAssert`
+
+`settings.kotlin.powerAssert` configures the [Kotlin power-assert compiler plugin](https://kotlinlang.org/docs/power-assert.html),
+which enriches assertion failure messages with intermediate values.
+
+| Attribute                 | Default           | Description                                                                                                                                             |
+|---------------------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled: boolean`        | `false`           | Enable the Kotlin power-assert compiler plugin                                                                                                          |
+| `functions: string list`  | `[kotlin.assert]` | A list of fully-qualified function names that the Power-assert plugin should transform. If not specified, only `kotlin.assert()` calls are transformed. |
+
+#### `settings.kotlin.rpc`
+
+`settings.kotlin.rpc` configures the [kotlinx.rpc compiler plugin](https://kotlin.github.io/kotlinx-rpc/).
+
+| Attribute                              | Default  | Description                                                                                                                                              |
+|----------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled: boolean`                     | `false`  | Enable the kotlinx.rpc compiler plugin                                                                                                                   |
+| `applyBom: boolean`                    | `true`   | Apply the kotlinx.rpc BOM to enforce dependency version alignment                                                                                        |
+| `version: string`                      | `0.10.3` | The version of kotlinx.rpc to use                                                                                                                        |
+| `annotationTypeSafetyEnabled: boolean` | `true`   | Controls `@Rpc` annotation type-safety compile-time checkers. Disabling is considered unsafe and is only needed when type-safety analysis fails on valid code. |
 
 ### `settings.ktor`
 
@@ -2191,7 +2324,7 @@ which allows processing Kotlin source code with custom processors (usually to ge
 | Attribute           | Default | Description                                                                                                          |
 |---------------------|---------|----------------------------------------------------------------------------------------------------------------------|
 | `enabled: boolean`  | `false` | Enable the Ktor server framework. This is just a convenience to generate library catalog entries for Ktor libraries. |
-| `version: string`   | `3.4.1` | The Ktor version used for the BOM and in the generated library catalog entries                                       |
+| `version: string`   | `3.5.2` | The Ktor version used for the BOM and in the generated library catalog entries                                       |
 | `applyBom: boolean` | `true`  | Whether to apply the Ktor BOM                                                                                        |
 
 Example:
@@ -2210,7 +2343,7 @@ settings:
 | Attribute          | Default   | Description                                         |
 |--------------------|-----------|-----------------------------------------------------|
 | `enabled: boolean` | `false`   | Enable Lombok                                       |
-| `version: string`  | `1.18.38` | Lombok version for runtime and annotation processor |
+| `version: string`  | `1.18.46` | Lombok version for runtime and annotation processor |
 
 Example:
 
@@ -2237,6 +2370,50 @@ settings:
     entryPoint: com.example.MainKt.main
 ```
 
+### `settings.publishing`
+
+`settings.publishing` configures the publication of the module to Maven repositories.
+Read more in the [Publishing](../user-guide/publishing.md) section.
+
+| Attribute              | Default          | Description                                                                                                                                                                                                                                    |
+|------------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled: boolean`     | `false`          | Enables the publication of the module to Maven repositories (via `./kotlin publish`).                                                                                                                                                         |
+| `group: string`        | `null`           | Group ID of the published Maven artifact.                                                                                                                                                                                                      |
+| `version: string`      | `null`           | Version of the published Maven artifact.                                                                                                                                                                                                      |
+| `artifactId: string`   | (module name)    | Base artifact ID of the published Maven artifacts (for multiplatform libraries, a suffix may be appended to distinguish artifacts from different platforms).                                                                                   |
+| `pom: object`          |                  | Custom metadata to configure in the published `pom.xml` file.                                                                                                                                                                                  |
+| `signArtifacts: boolean` | `false`        | If set to true, artifacts published to Maven repositories are signed with a private PGP signing key, and these signatures are published as extra artifacts. The key must be specified via the `KOTLIN_TOOLCHAIN_SIGNING_KEY` environment variable in the ASCII-armored format (and its passphrase, if any, via `KOTLIN_TOOLCHAIN_SIGNING_KEY_PASSPHRASE`). |
+| `publishSources: boolean` | `false`       | If set to true, JARs with sources for each platform are published as extra artifacts.                                                                                                                                                          |
+| `checksums: enum list` | `[md5, sha1]`    | The list of checksums to publish for each artifact (possible values: `md5`, `sha1`, `sha256`, `sha512`). By default, only the checksums required by Maven Central are published to reduce the number of files.                                 |
+| `mavenCentral: object` | (disabled)       | Configures publication to Maven Central (via the Publish portal).                                                                                                                                                                              |
+
+`settings.publishing.pom` configures custom metadata in the published `pom.xml` file. Most of it is required for
+Maven Central publication, and is usually the same for the whole project, thus configured in a common template.
+
+| Attribute                 | Default              | Description                                                                                                                              |
+|---------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `name: string`            | (module name)        | A user-readable name for this module.                                                                                                    |
+| `description: string`     | (module description) | A description for this module.                                                                                                           |
+| `url: string`             | `null`               | The URL to the module's homepage in the POM metadata.                                                                                    |
+| `licenses: object list`   | `[]`                 | The licenses that apply to this module. Each license has a `name` and a `url`.                                                           |
+| `scm: object`             |                      | The source control management information for this module.                                                                               |
+| `developers: object list` | `[]`                 | The developers working on this module. Each developer has a `name` (required), and optionally `id`, `url`, `email`, `organization`, and `organizationUrl`. |
+
+`settings.publishing.pom.scm` describes the source control management information:
+
+| Attribute                    | Default                    | Description                                                                                                                  |
+|------------------------------|----------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| `url: string`                | `null`                     | The URL to the repository hosting the source code of this module, e.g. `https://github.com/spring-projects/spring-boot.git`. |
+| `connection: string`         | (`scm:git:` + the `url`)   | A URL with `scm:` scheme that Maven uses to connect to the version control system with _read_ access.                       |
+| `developerConnection: string`| (`scm:git:` + the `url`)   | A URL with `scm:` scheme that Maven uses to connect to the version control system with _write_ access.                      |
+
+`settings.publishing.mavenCentral` configures publication to Maven Central (via the Publish portal):
+
+| Attribute               | Default  | Description                                                                                                                                                                            |
+|-------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled: boolean`      | `false`  | Enables publication to Maven Central, which can then be triggered using `kotlin publish mavenCentral`.                                                                                 |
+| `publishingMode: enum`  | `manual` | Whether the publication should be fully automated, or pause for manual verification. With `manual`, the publication pauses after validation of the uploaded deployment bundle and awaits a manual trigger from the Central Portal UI. With `auto`, it automatically continues and publishes the deployment without manual intervention. |
+
 ### `settings.springBoot`
 
 `settings.springBoot` configures the Spring Boot framework (JVM platform only).
@@ -2244,7 +2421,7 @@ settings:
 | Attribute           | Default | Description                          |
 |---------------------|---------|--------------------------------------|
 | `enabled: boolean`  | `false` | Enable Spring Boot                   |
-| `version: string`   | `4.0.5` | Spring Boot version                  |
+| `version: string`   | `4.1.0` | Spring Boot version                  |
 | `applyBom: boolean` | `true`  | Whether to apply the Spring Boot BOM |
 
 Example:
@@ -2259,7 +2436,7 @@ settings:
 
 ### docs/src/reference/project.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/reference/project.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/reference/project.md
 - HTML: https://kotlin-toolchain.org/dev/reference/project/
 
 ---
@@ -2286,6 +2463,10 @@ modules:
   - libs/lib1
 ```
 
+!!! info "Sorting alphabetically is recommended"
+
+    This reduces the chance of Git conflicts and makes it easier to visually locate a module in the list.
+
 You can also use [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)) to include multiple module
 directories at once. Only directories that contain a `module.yaml` file are taken into account:
 
@@ -2299,7 +2480,8 @@ Globs may contain the following special characters:
 
 - `*` matches zero or more characters of a path name component without crossing directory boundaries
 - `?` matches exactly one character of a path name component
-- `[abc]` matches exactly one character of the given set (here `a`, `b`, or `c`). A dash (`-`) can be used to match a range, such as `[a-z]`.
+- `[abc]` matches exactly one character of the given set (here `a`, `b`, or `c`). A dash (`-`) can be used to match a range, such as `[a-z]`. A leading `!` negates the set: `[!abc]` matches exactly one character that is *not* in the given set.
+- `{a,b}` matches one of the comma-separated subpatterns given in the braces (here `a` or `b`)
 
 !!! failure "Using `**` to recursively match directories at multiple depth levels is not supported."
 
@@ -2312,6 +2494,9 @@ Globs may contain the following special characters:
 The `plugins` section lists plugin dependencies that should be made available to project modules.
 Listing a plugin here does not enable it by itself; it only makes it available so that modules can opt in (by enabling
 the plugin).
+
+A plugin module referenced here must also be included in the project's [`modules`](#modules) list, otherwise an error
+is reported.
 
 Example:
 ```yaml
@@ -2338,7 +2523,7 @@ Learn more about the [plugin structure](../user-guide/plugins/topics/structure.m
 
 ### docs/src/user-guide/advanced/java-annotation-processing.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/advanced/java-annotation-processing.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/advanced/java-annotation-processing.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/java-annotation-processing/
 
 ---
@@ -2378,7 +2563,7 @@ settings:
 
 ### docs/src/user-guide/advanced/jdk-provisioning.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/advanced/jdk-provisioning.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/advanced/jdk-provisioning.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/jdk-provisioning/
 
 ---
@@ -2405,9 +2590,9 @@ This page describes how this can be configured.
 
 ## Default behavior
 
-By default, the Kotlin Toolchain doesn't constrain the JDK distribution, but it expects a specific major version: **currently 21**.
+By default, the Kotlin Toolchain doesn't constrain the JDK distribution, but it expects a specific major version: **currently 25**.
 
-Since the default [selectionMode](#jdk-selection-mode) is `auto`, the Kotlin Toolchain will look for a JDK 21 in
+Since the default [selectionMode](#jdk-selection-mode) is `auto`, the Kotlin Toolchain will look for a JDK 25 in
 `JAVA_HOME`, and if not found, will provision one.
 
 ## JDK requirements
@@ -2544,7 +2729,7 @@ settings:
 
 ### One specific commercial distribution
 
-Require Oracle JDK 21 and acknowledge its license. Find it in `JAVA_HOME` or provision it if `JAVA_HOME` is not
+Require Oracle GraalVM 21 and acknowledge its license. Find it in `JAVA_HOME` or provision it if `JAVA_HOME` is not
 suitable.
 
 ```yaml title="module.yaml"
@@ -2552,30 +2737,31 @@ settings:
   jvm:
     jdk:
       version: 21
-      distributions: [oracle]
-      acknowledgedLicenses: [oracle]
+      distributions: [oracleGraalVM]
+      acknowledgedLicenses: [oracleGraalVM]
 ```
 
 ### One specific full JDK version
 
-Manually place the specific `21.0.9+7-LTS-338` version of the Oracle JDK in `JAVA_HOME`, and ensures the Kotlin Toolchain uses it:
+Manually place a specific build of Oracle GraalVM for JDK 21 in `JAVA_HOME`, and ensure the Kotlin Toolchain uses it:
 
 ```yaml title="module.yaml"
 settings:
   jvm:
     jdk:
       version: 21
-      distributions: [oracle]
+      distributions: [oracleGraalVM]
       selectionMode: javaHome # (1)!
-      acknowledgedLicenses: [oracle] # (2)!
+      acknowledgedLicenses: [oracleGraalVM] # (2)!
 ```
 
 1.   Ensures the Kotlin Toolchain never provisions another JDK, just fail if the machine is misconfigured
-2.   Tell the Kotlin Toolchain that we know about Oracle's commercial license and accept it
+2.   Tell the Kotlin Toolchain that we know about Oracle GraalVM's commercial license and accept it
 
 ### Ignoring `JAVA_HOME`
 
-Always provision Corretto 21 regardless of JAVA_HOME
+Always use a Corretto 21 from the Kotlin Toolchain-managed cache (provision it the first time), regardless of
+`JAVA_HOME`.
 
 ```yaml title="module.yaml"
 settings:
@@ -2589,7 +2775,7 @@ settings:
 
 ### docs/src/user-guide/advanced/kotlin-compiler-plugins.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/advanced/kotlin-compiler-plugins.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/advanced/kotlin-compiler-plugins.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/kotlin-compiler-plugins/
 
 ---
@@ -2849,7 +3035,7 @@ You can learn how to configure this plugin in the
 
 ### docs/src/user-guide/advanced/ksp.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/advanced/ksp.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/advanced/ksp.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/ksp/
 
 ---
@@ -2992,7 +3178,7 @@ For more information about how to write your own processor, check out
 
 ### docs/src/user-guide/advanced/maven-like-layout.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/advanced/maven-like-layout.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/advanced/maven-like-layout.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/maven-like-layout/
 
 ---
@@ -3049,7 +3235,7 @@ layout: maven-like
 
 ### docs/src/user-guide/advanced/maven-plugins.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/advanced/maven-plugins.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/advanced/maven-plugins.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/maven-plugins/
 
 ---
@@ -3250,7 +3436,7 @@ but some plugins may rely on Maven APIs or capabilities that the Kotlin Toolchai
 
 ### docs/src/user-guide/advanced/native-interop.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/advanced/native-interop.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/advanced/native-interop.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/native-interop/
 
 ---
@@ -3285,6 +3471,15 @@ for the `cinterop` directory to limit interop definitions to specific platforms 
     instead of having separate platform-specific files under, e.g., `cinterop@linux` and `cinterop@macos`.
     Both approaches are currently valid - use the one you prefer.
 
+## Bundled C headers (`include` directory)
+
+If your interop needs C header files that are not available on the system (for example, headers vendored
+alongside your module), you can place them in an `include` directory next to your `.def` files.
+
+The Kotlin Toolchain will automatically detect this directory and pass it to the `cinterop` tool as an
+additional header search path (equivalent to passing `-I<path-to-include>` as a compiler option).
+No configuration in your `module.yaml` is required.
+
 ## Advanced usage
 
 If you need the `.def` file generated or provisioned (for example, to implement custom library location or provisioning logic),
@@ -3294,7 +3489,7 @@ See the [relevant docs](../plugins/topics/tasks.md#contributing-back-to-the-buil
 
 ### docs/src/user-guide/basics.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/basics.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/basics.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/basics/
 
 ---
@@ -3484,7 +3679,7 @@ Here are some example module files for different types of modules:
        The `jvm/app` product type means that the module produces a [JVM application](product-types/jvm-app.md).
        Read more about other product types in the [Product types](product-types/index.md) section.
     2. The `dependencies` section contains the list of dependencies for this module.
-       Here `io.ktor:ktor-client-core:2.3.0` are the
+       Here `io.ktor:ktor-client-java:2.3.0` are the
        [Maven coordinates :fontawesome-solid-external-link:](https://maven.apache.org/pom.html#Maven_Coordinates) of
        the Ktor client library (with Java engine).
        Read more about dependencies in general in the [Dependencies](dependencies.md) section.
@@ -3571,7 +3766,7 @@ All toolchain settings are specified in dedicated groups in the `settings` secti
 ```yaml
 settings:
   kotlin:
-    languageVersion: 1.8
+    languageVersion: 2.3
   android:
     compileSdk: 31
 ```
@@ -3583,26 +3778,27 @@ interact in multiplatform modules.
 
 ### Path notation
 
-Forward slash `/` is used as a path component separator on every platform. Backslashes `\` are not to be used.
+All configuration files use a forward slash `/` as a path component separator, on every platform.
+Backslashes `\` should not be used, even on Windows.
 
 To refer to a file or directory in the project, use `//`-prefixed paths, for example `//libs/utils` or `//LICENSE.txt`.
-In this notation paths are resolved from the project root directory,
+In this notation, paths are resolved from the project root directory,
 where the `project.yaml` (or the single `module.yaml`) is located.
 
-This works for module dependencies, module templates, and in other places, where a `path` value is expected, and it is the
-preferred way of working with paths.
+This works for module dependencies, module templates, and in other places, where a `Path` value is expected,
+and it is the preferred way of working with paths.
 
 Simple relative paths are also supported, for example `./foo.txt`, `resources/picture.jpg` or `../bar.bin`.
 Such paths are resolved against **the directory containing the `.yaml` file where the path is specified**.
 
 !!! note "Tip: Prefer `//` over `../`"
     It's recommended to use `//` path notation over relative `../` paths in most cases.
-    This way moving the `yaml` file will not affect the paths within.
+    This way, moving the `yaml` file will not affect the paths within.
 
 
 ### docs/src/user-guide/builtin-tech/compose-multiplatform.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/builtin-tech/compose-multiplatform.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/builtin-tech/compose-multiplatform.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/compose-multiplatform/
 
 ---
@@ -3655,7 +3851,7 @@ Use `settings.compose.enabled` to enable Compose:
     ```yaml
     product:
       type: kmp/lib
-      platforms: [ jvm, android, iosSimulatorArm64, iosX64, iosArm64 ]
+      platforms: [ jvm, android, iosSimulatorArm64, iosArm64 ]
 
     dependencies:
       - $compose.foundation: exported # (1)!
@@ -3673,7 +3869,8 @@ Use `settings.compose.enabled` to enable Compose:
 Enabling Compose does the following:
 
 * configures the Compose compiler plugin for the Kotlin compiler
-* adds the required `org.jetbrains.compose.runtime:runtime` dependency (implicitly)
+* adds the required `org.jetbrains.compose.runtime:runtime` and `org.jetbrains.compose.components:components-resources`
+  dependencies (implicitly)
 * enables the built-in `$compose.*` library catalog for all optional Compose modules
 
 ### Custom Compose version
@@ -3724,11 +3921,13 @@ Read more about setting up and using compose resources in
 
 ### Generated accessors package
 
-By default, resources accessors are generated in the package `<sanitized-module-name>.generated.resources`, where
-`<sanitized-module-name>` is the module name with all non-letter symbols replaced with `_`.
+By default, resources accessors are generated in the package `<sanitized-name>.generated.resources`, where
+`<sanitized-name>` is derived from the `group` and `artifactId` of the `settings.publishing` section if they are set,
+or from the module name otherwise. The name is sanitized by lowercasing it, replacing `-` characters with `_`, and
+prefixing it with `_` if it starts with a digit.
 
-In the above example where the module name is `my-kmp-module`, the package name for the generated resources is
-therefore `my_kmp_module.generated.resources`.
+In the above example where the module name is `my-kmp-module` (and no publishing settings are set), the package name
+for the generated resources is therefore `my_kmp_module.generated.resources`.
 
 You can customize the package name by setting the `settings.compose.resources.packageName` property in your module file:
 
@@ -3848,7 +4047,7 @@ settings:
 
 ### docs/src/user-guide/builtin-tech/kotlinx-rpc.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/builtin-tech/kotlinx-rpc.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/builtin-tech/kotlinx-rpc.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/kotlinx-rpc/
 
 ---
@@ -3873,6 +4072,7 @@ settings:
 This will automatically:
 
 * enable code generation for your `@Rpc` services via the kotlinx.rpc compiler plugin
+* add the required `org.jetbrains.kotlinx:kotlinx-rpc-core` runtime dependency (implicitly)
 * apply the kotlinx.rpc [BOM (Bill of Materials)](../dependencies.md#using-a-maven-bom) to align the versions of the
   RPC-related artifacts
 * add some useful [library catalog](../dependencies.md#library-catalogs) entries starting with `$kotlin.rpc.`
@@ -3880,7 +4080,7 @@ This will automatically:
 
 ### docs/src/user-guide/builtin-tech/kotlinx-serialization.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/builtin-tech/kotlinx-serialization.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/builtin-tech/kotlinx-serialization.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/kotlinx-serialization/
 
 ---
@@ -3968,7 +4168,7 @@ your `dependencies` section. This is useful in multiple cases:
 
 ### docs/src/user-guide/builtin-tech/ktor.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/builtin-tech/ktor.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/builtin-tech/ktor.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/ktor/
 
 ---
@@ -4014,7 +4214,7 @@ settings:
 
 ### docs/src/user-guide/builtin-tech/lombok.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/builtin-tech/lombok.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/builtin-tech/lombok.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/lombok/
 
 ---
@@ -4046,7 +4246,7 @@ settings:
 
 ### docs/src/user-guide/builtin-tech/spring.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/builtin-tech/spring.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/builtin-tech/spring.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/spring/
 
 ---
@@ -4067,10 +4267,11 @@ settings:
 
 Setting `springBoot: enabled` performs the following actions:
 
-* Applies the [Spring Boot Dependencies BOM](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies)
-* Adds the `spring-boot-starter` dependency
-* Adds the `spring-boot-starter-test` test dependency
-* Configures `all-open` and `no-arg` Kotlin compiler plugins with the `spring` preset
+* Applies the [Spring Boot Dependencies BOM](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies),
+  so you can add the Spring Boot starters you need (such as `spring-boot-starter-web` or `spring-boot-starter-test`)
+  to your dependencies without specifying their versions
+* Configures the `all-open` Kotlin compiler plugin with the `spring` preset
+* Configures the `no-arg` plugin with the `jpa` preset
 * Adds the necessary compiler arguments for `kotlinc` and `javac`:
   * For Java, `-parameters` is passed to the compiler to preserve parameter names.
   * For Kotlin, `-java-parameters` is passed to the compiler for the same reason. Also `-Xjsr305` is set to `strict`
@@ -4104,7 +4305,7 @@ settings:
 
 ### docs/src/user-guide/dependencies.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/dependencies.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/dependencies.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/dependencies/
 
 ---
@@ -4125,14 +4326,14 @@ dependencies:
   - //my-other-module #(1)!
   - org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1 #(2)!
   - $libs.apache.commons.lang3 #(3)!
-  - $kotlin.reflect #(4)!
+  - $compose.ui #(4)!
 ```
 
 1. Dependency on another module of the project (see [Module dependencies](#module-dependencies)).
 2. Dependency on an external Maven library, with the provided coordinates (see [External Maven dependencies](#external-maven-dependencies)).
 3. Dependency on a library from the project's [Library Catalog](#library-catalogs).
 4. Dependency on a library from a built-in [Library Catalog](#library-catalogs)
-   (in this case, the catalog brought by the Kotlin "toolchain").
+   (in this case, the `$compose` catalog brought by the Compose "toolchain").
 
 ### Module dependencies
 
@@ -4212,9 +4413,36 @@ If you need to customize the repositories, see [Managing Maven repositories](#ma
 [^2]: If you're not familiar with Maven repositories, check out Maven's
 [Introduction to repositories :fontawesome-solid-external-link:](https://maven.apache.org/guides/introduction/introduction-to-repositories.html).
 
+#### Classifiers and packaging types
+
+Maven coordinates can be extended with a classifier and a packaging type, using the notation
+`group:artifact:version:classifier@packagingType`. Both additions are optional.
+
+A classifier picks one of several artifacts published under the same coordinates, for example, a platform-specific
+build. A packaging type picks the kind of artifact to fetch, for example, an executable, an Android library, or an
+archive, instead of the default library archive (jar).
+
+The packaging type only plays a role for libraries published in the Maven format alone, and the kind of artifact to
+fetch is determined as follows:
+
+* the type you declare in the coordinates wins;
+* otherwise, the type the library declares for itself in the pom.xml is used;
+* if neither declares one, a regular library archive is expected.
+
+Declaring the type `pom` means that only the library's descriptor is used and no artifact is fetched, which is handy
+for libraries that merely aggregate other dependencies. Conversely, a library that declares that type for itself
+in the pom.xml still contributes its regular jar artifact when it publishes one
+(and it is not an error when it doesn't).
+
+Declaring a packaging type doesn't turn the dependency into an artifact-only dependency:
+transitive dependencies keep being resolved as usual.
+
+Libraries published with Gradle metadata describe their artifacts themselves, so declaring a packaging type has no
+effect on them.
+
 ### Catalog dependencies
 
-See [Library Catalogs](#library-catalogs).
+See [Library Catalogs](#library-catalogs) below.
 
 ### Transitivity and scope
 
@@ -4262,7 +4490,7 @@ By default, the scope is `all`. You can restrict a dependency's scope as follows
 
 #### Transitivity
 
-By default, dependencies of your module are not added to the compilation of dependent modules.
+By default, the dependencies of your module are not added to the compilation of dependent modules.
 In the following setup, `app` cannot directly use Ktor classes in its code:
 
 <div class="grid" markdown>
@@ -4419,10 +4647,10 @@ This section describes the default repositories and how to configure more.
 
 ### Default repositories
 
-| Name                        | URL                                                      |
-|-----------------------------|----------------------------------------------------------|
-| Maven Central               | `https://repo1.maven.org/maven2`                         |
-| Google                      | `https://maven.google.com`                               |
+| Name          | ID             | URL                              |
+|---------------|----------------|----------------------------------|
+| Maven Central | `mavenCentral` | `https://repo1.maven.org/maven2` |
+| Google        | `mavenGoogle`  | `https://maven.google.com`       |
 
 ### Adding repositories
 
@@ -4439,6 +4667,45 @@ repositories:
 1. When using just a string, it is used as both the `url` and `id` of the repository.
 2. When only the `url` is set, the `id` defaults to the URL. This is equivalent to just using the URL string without the `url:` key.
 3. You can use a custom `id` that is different from the URL by specifying the `id:` key explicitly.
+
+### Overriding or disabling default repositories
+
+Declaring a repository with the `id` of a [default one](#default-repositories) replaces it.
+This is how you point Maven Central or Google at a company mirror, or add credentials to them:
+
+```yaml title="module.yaml"
+repositories:
+  - id: mavenCentral
+    url: https://repo.mycompany.com/maven-central-mirror
+    credentials:
+      file: creds.properties
+      usernameKey: username
+      passwordKey: password
+```
+
+Setting `resolve: false` on such an entry disables the default repository instead of replacing it, so dependencies are
+never looked up there:
+
+```yaml title="module.yaml"
+repositories:
+  - id: mavenGoogle
+    url: https://maven.google.com #(1)!
+    resolve: false
+```
+
+1. The `url` is always required, even for a repository that is only disabled.
+
+### The local Maven repository
+
+Use the special `mavenLocal` URL to resolve dependencies from your local Maven repository:
+
+```yaml title="module.yaml"
+repositories:
+  - mavenLocal
+```
+
+This is handy to consume libraries that you install locally, for example while testing them before a release.
+The same URL can also be used to [publish](publishing.md#publishing-to-the-local-maven-repository) into it.
 
 ### Authentication
 
@@ -4499,7 +4766,7 @@ The effects are the following:
 
 ### docs/src/user-guide/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/index.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/index/
 
 ---
@@ -4522,7 +4789,7 @@ For a more hands-on experience, check out the [Getting started](../getting-start
 
 ### docs/src/user-guide/multiplatform.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/multiplatform.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/multiplatform.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/multiplatform/
 
 ---
@@ -4558,21 +4825,21 @@ common
      │   ╰─ mingwX64
      ├─ apple
      │   ├─ macos
-     │   │   ├─ macosX64
+     │   │   ├─ macosX64 (deprecated)
      │   │   ╰─ macosArm64
      │   ├─ ios
      │   │   ├─ iosArm64
      │   │   ├─ iosSimulatorArm64
      │   │   ╰─ iosX64
      │   ├─ watchos
-     │   │   ├─ watchosArm32
+     │   │   ├─ watchosArm32 (deprecated)
      │   │   ├─ watchosArm64
      │   │   ├─ watchosDeviceArm64
      │   │   ╰─ watchosSimulatorArm64
      │   ╰─ tvos
      │       ├─ tvosArm64
      │       ├─ tvosSimulatorArm64
-     │       ╰─ tvosX64
+     │       ╰─ tvosX64 (deprecated)
      ╰─ androidNative
          ├─ androidNativeArm32
          ├─ androidNativeArm64
@@ -4610,8 +4877,8 @@ We'll see in the next sections how these directories and settings interact.
 
 ## Module layout
 
-Here is an overview of what the layout of a multiplatform module looks like when `jvm`, `iosArm64`, `iosSimulatorArm64`,
-and `iosX64` platforms are enabled:
+Here is an overview of what the layout of a multiplatform module looks like when `jvm`, `iosArm64`, and
+`iosSimulatorArm64` platforms are enabled:
 
 --8<-- "includes/module-layouts/kmp-lib.md"
 
@@ -4772,7 +5039,7 @@ product:
 settings:
   # Kotlin toolchain settings that are used for both platforms
   kotlin:
-    languageVersion: 1.8
+    languageVersion: 2.3
 
   # Android-specific settings are used only when building for android
   android:
@@ -4796,7 +5063,7 @@ settings@android:    # settings to be used for Android target platform
   android:           # Android toolchain settings
     compileSdk: 33
   kotlin:        # Kotlin toolchain settings
-    languageVersion: 1.8
+    languageVersion: 2.3
 ```
 
 Luckily, there should rarely be a need for such a configuration.
@@ -4809,7 +5076,7 @@ settings:
   android:           # Android toolchain settings
     compileSdk: 33
   kotlin:        # Kotlin toolchain settings
-    languageVersion: 1.8
+    languageVersion: 2.3
 ```
 
 For settings with the `@platform`-qualifiers, the [propagation rules](#dependencysettings-propagation) apply.
@@ -4822,7 +5089,7 @@ product:
 
 settings:           # common toolchain settings
   kotlin:           # Kotlin toolchain
-    languageVersion: 1.8
+    languageVersion: 2.4
     freeCompilerArgs: [x]
   android:              # Android toolchain
     compileSdk: 33
@@ -4832,7 +5099,7 @@ settings@android:   # specialization for Android platform
 
 settings@ios:       # specialization for all iOS platforms
   kotlin:           # Kotlin toolchain
-    languageVersion: 1.9
+    languageVersion: 2.3
     freeCompilerArgs: [y]
 
 settings@iosArm64:  # specialization for iOS arm64 platform
@@ -4845,7 +5112,7 @@ The effective settings are:
 ```yaml
 settings@android:
   kotlin:
-    languageVersion: 1.8   # from settings:
+    languageVersion: 2.4   # from settings:
     freeCompilerArgs: [x]  # from settings:
   compose: enabled         # from settings@android:
   android:
@@ -4854,13 +5121,13 @@ settings@android:
 ```yaml
 settings@iosArm64:
   kotlin:
-    languageVersion: 1.9      # from settings@ios:
+    languageVersion: 2.3      # from settings@ios:
     freeCompilerArgs: [x, y]  # merged from settings: and settings@ios:
 ```
 ```yaml
 settings@iosSimulatorArm64:
   kotlin:
-    languageVersion: 1.9      # from settings@ios:
+    languageVersion: 2.3      # from settings@ios:
     freeCompilerArgs: [x, y, z]  # merged from settings: and settings@ios: and settings@iosArm64:
 ```
 
@@ -4872,7 +5139,7 @@ Common `dependencies:` and `settings:` are automatically propagated to the platf
 - Scalar values (strings, numbers etc.) are overridden by more specialized `@platform`-sections.
 - Mappings and lists are appended.
 
-Think of the rules like adding merging Java/Kotlin Maps.
+Think of the rules like adding to Java/Kotlin Maps.
 
 ## Interoperability between languages
 
@@ -4914,7 +5181,7 @@ See more in the dedicated [Swift support](product-types/ios-app.md#swift-support
 
 ### docs/src/user-guide/plugins/overview.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/plugins/overview.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/plugins/overview.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/overview/
 
 ---
@@ -4958,7 +5225,7 @@ Tasks can also serve as [checks](topics/checks.md) and [commands](topics/custom-
 Task actions can consume:
 
 - [Typed contents](topics/tasks.md#consuming-things-from-the-build) from the build:
-    - module sources/resources (via built‑in `ModuleSources` configurable, e.g., `${module.sources}`/`${module.resources}`)
+    - module sources/resources (via built‑in `ModuleSources` configurable, e.g., `${module.kotlinJavaSources}`/`${module.resources}`)
     - module compilation result (via built‑in `CompilationArtifact` configurable, e.g., `${module.jar}`)
     - module runtime/compilation classpath (via built‑in `Classpath` configurable, e.g., `${module.runtimeClasspath}`/`${module.compileClasspath}`)
     - resolve arbitrary Maven dependencies as an ad hoc classpath (via a custom `Classpath` configuration, like `myClasspath: [ "group:name:version", ... ]`)
@@ -4966,9 +5233,10 @@ Task actions can consume:
 
 Task actions can produce:
 
-- [Typed contents](topics/tasks.md#contributing-back-to-the-build):
-    - Kotlin/Java sources (via `markOutputAs`)
-    - resources (via `markOutputAs`)
+- [Typed contents](topics/tasks.md#contributing-back-to-the-build) declared in the top‑level `generated:` block:
+    - Kotlin/Java sources (via `generated.sources`)
+    - resources (via `generated.resources`)
+    - cinterop definition files (via `generated.cinteropDefinitions`)
 - arbitrary file trees in specified paths
 
 For more information on these features, see the KDocs on these built‑in configurable interfaces.
@@ -4988,12 +5256,12 @@ For more information on these features, see the KDocs on these built‑in config
 - Alternatives to YAML as the configuration language
 
 !!! question "Your requests and reports are welcome!"
-    File us a plugins-related issue [here](https://youtrack.jetbrains.com/newIssue?project=AMPER&c=Type+Bug&c=tag+amper-plugins-report).
+    File us a plugins-related issue [here](https://youtrack.jetbrains.com/newIssue?project=KTC&c=Type+Bug&c=tag+amper-plugins-report).
 
 
 ### docs/src/user-guide/plugins/quick-start.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/plugins/quick-start.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/plugins/quick-start.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/quick-start/
 
 ---
@@ -5010,7 +5278,7 @@ Our plugin should be able to parse a `.properties` file and generate Kotlin prop
 Later we may implement additional features.
 We will name our plugin `build-config`.
 
-The sources of the plugin are available in the [amper-plugins-tutorial](https://github.com/JetBrains/amper-plugins-tutorial)
+The sources of the plugin are available in the [kotlin-toolchain-plugins-tutorial](https://github.com/JetBrains/kotlin-toolchain-plugins-tutorial)
 repository on GitHub. You can clone it, checkout the initial revision, and follow the Git log to see the changes made step by step.
 
 ### Basic example
@@ -5458,7 +5726,7 @@ If you haven't already, check the more detailed reference on the specific topics
 
 ### docs/src/user-guide/plugins/topics/checks.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/plugins/topics/checks.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/plugins/topics/checks.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/checks/
 
 ---
@@ -5522,7 +5790,7 @@ checks:
 
 ### docs/src/user-guide/plugins/topics/configuration.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/plugins/topics/configuration.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/plugins/topics/configuration.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/configuration/
 
 ---
@@ -5654,8 +5922,8 @@ Task parameters use the regular default value syntax:
 
 ```kotlin
 @TaskAction fun myAction(
-    myBoolean = false,
-    myString = "default",
+    myBoolean: Boolean = false,
+    myString: String = "default",
 ) { /*...*/ }
 ```
 
@@ -5664,7 +5932,7 @@ Task parameters use the regular default value syntax:
 | `string`, `boolean`, `integer` | Kotlin constant expression of the appropriate type    |
 | `enum E`                       | enum constant references, e.g., `E.Constant`          |
 | `path`                         | not supported yet                                     |
-| `sequence [T]`                 | `emptyList()`                                         |
+| `sequence [T]`                 | `emptyList()`, `listOf(...)` with constant elements   |
 | `mapping {string : T}`         | `emptyMap()`                                          |
 | `T` \| `null`                  | `null` (not required - implicit default)              |
 | `object T`                     | not supported (instantiated implicitly, see the note) |
@@ -5747,7 +6015,7 @@ And in this case an **explicit YAML type tag** is required to communicate the ex
 
 ### docs/src/user-guide/plugins/topics/custom-commands.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/plugins/topics/custom-commands.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/plugins/topics/custom-commands.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/custom-commands/
 
 ---
@@ -5801,7 +6069,7 @@ commands:
 
 ### docs/src/user-guide/plugins/topics/references.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/plugins/topics/references.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/plugins/topics/references.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/references/
 
 ---
@@ -5937,6 +6205,7 @@ tasks:
 | `module.kotlinJavaSources` | `ModuleSources`                                               | Kotlin and Java sources (JVM, main).                                                                                  |
 | `module.resources`         | `ModuleSources`                                               | Resources (JVM, main).                                                                                                |
 | `module.jar`               | `CompilationArtifact`                                         | Compiled JAR (JVM, main).                                                                                             |
+| `module.classes`           | `CompilationArtifact`                                         | Directory with the compiled classes (JVM, main).                                                                      |
 | `module.self`              | `Dependency.Local`                                            | A dependency pointing to the module itself                                                                            |
 | `module.settings.**`       | depends on the actual setting type: `string`, `boolean`, etc. | The settings of the module where the plugin is enabled. For example, `module.settings.publishing.version`.            |
 | `project.rootDir`          | `path`                                                        | Absolute path to the project root where `project.yaml` (or `module.yaml`) is for multi- (or single-) module projects. |
@@ -5975,7 +6244,7 @@ tasks:
 
 ### docs/src/user-guide/plugins/topics/structure.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/plugins/topics/structure.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/plugins/topics/structure.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/structure/
 
 ---
@@ -6068,7 +6337,7 @@ Plugins can be enabled and [configured](configuration.md#plugin-settings) like t
 
 ### docs/src/user-guide/plugins/topics/tasks.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/plugins/topics/tasks.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/plugins/topics/tasks.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/tasks/
 
 ---
@@ -6336,7 +6605,7 @@ like other custom tasks or KSP, and include their results in `sourceDirectories`
           lint:
             action: !someKindOfLinter
               moduleName: ${module.name}
-              sources: ${module.sources}
+              sources: ${module.kotlinJavaSources}
         ```
     === "plugin.yaml (including generated sources)"
         ```yaml
@@ -6377,7 +6646,7 @@ but one can also construct a `Classpath` spec to request an ad hoc dependency re
         ```yaml
         tasks:
           package:
-            action: !packageTheApp
+            action: !packageClasspath
               appClasspath: ${module.runtimeClasspath} #(1)!
               extraClasspath: #(2)!
                 - foo:bar:1.0
@@ -6436,7 +6705,7 @@ plugin samples in the `build-sources` directory of the Kotlin project.
 
 ### docs/src/user-guide/product-types/android-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/product-types/android-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/android-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/android-app/
 
 ---
@@ -6484,8 +6753,35 @@ You can run your application using the `./kotlin run` command.
 
 You can use the `build` command to create an APK, or the `package` command to create an Android Application Bundle (AAB).
 
-The `package` command will not only build the APK, but also minify/obfuscate it with ProGuard, and sign it.
+The `package` command will not only build the AAB, but also minify/obfuscate it with R8, and sign it.
 See the dedicated [signing](#signing) and [code shrinking](#code-shrinking) sections below to learn how to configure this.
+
+### Resolving duplicate Java resources
+
+Dependencies can package Java resources under the same path. If Android packaging fails in `MergeJavaResWorkAction`
+with an error such as `2 files found with path ...`, use `settings.android.resourcePackaging` to tell the Android
+packager how to handle the conflict.
+
+For example, the following configuration excludes a duplicated resource from the APK:
+
+```yaml
+settings:
+  android:
+    resourcePackaging:
+      excludes:
+        - META-INF/versions/9/OSGI-INF/MANIFEST.MF
+```
+
+Choose the rule that matches the resource's semantics:
+
+* `excludes` omits matching resources from the APK.
+* `pickFirsts` packages only the first matching resource.
+* `merges` concatenates all matching resources into a single APK entry.
+
+The values are glob patterns accepted by Android's
+[`Packaging.Resources`](https://developer.android.com/reference/tools/gradle-api/com/android/build/api/dsl/Resources)
+API. See the [`resourcePackaging` reference](../../reference/module.md#settingsandroidresourcepackaging) for all
+available options.
 
 ### Code shrinking
 
@@ -6631,7 +6927,7 @@ This file will be found and consumed automatically.
 
 ### docs/src/user-guide/product-types/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/product-types/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/index.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/index/
 
 ---
@@ -6658,14 +6954,14 @@ Here is the list of supported product types:
 | [`android/app`](android-app.md)                      | An Android application                                                                                              |
 | [`ios/app`](ios-app.md)                              | An iOS application                                                                                                  |
 | [`js/app`](js-app.md)                                | A JavaScript application using the Kotlin/JS technology                                                             |
-| [`wasmJs/app`](wasm-app.md)                          | A WebAssembly application with browser APIs                                                                         |
-| [`wasmWasi/app`](wasm-app.md)                        | A WebAssembly application with WASI APIs                                                                            |
+| [`wasm-js/app`](wasm-js-app.md)                      | A WebAssembly application with browser APIs                                                                         |
+| [`wasm-wasi/app`](wasm-wasi-app.md)                  | A WebAssembly application with WASI APIs                                                                            |
 | [`jvm/amper-plugin`](../plugins/topics/structure.md) | A [Kotlin Toolchain plugin](../plugins/overview.md), to extend the Kotlin Toolchain build with custom functionality |
 
 
 ### docs/src/user-guide/product-types/ios-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/product-types/ios-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/ios-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/ios-app/
 
 ---
@@ -6729,13 +7025,12 @@ If you want to migrate an existing Xcode project so it has Kotlin Toolchain supp
 2. it has a single iOS application target
 3. the target has `Debug` & `Release` build configurations, each containing `KOTLIN_CLI_WRAPPER_PATH = <relative path to Kotlin wrapper script>`.
    The path is relative to the Kotlin module root.
-4. the target has a script build phase called `Build Kotlin with Amper` with the code:
+4. the target has a script build phase called `Build Kotlin` with the code:
    ```bash
-    # !AMPER KMP INTEGRATION STEP!
+    # !KOTLIN INTEGRATION STEP!
     # This script is managed by the Kotlin Toolchain, do not edit manually!
     "${KOTLIN_CLI_WRAPPER_PATH}" tool xcode-integration
    ```
-5. The _Framework Search Paths_ (`FRAMEWORK_SEARCH_PATHS`) option contains the `$(TARGET_BUILD_DIR)/AmperFrameworks` value
 
 Changes to the Xcode project that do not break these requirements are allowed.
 
@@ -6778,7 +7073,7 @@ This framework is built from:
 
 ### docs/src/user-guide/product-types/js-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/product-types/js-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/js-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/js-app/
 
 ---
@@ -6800,7 +7095,7 @@ These applications can be run in browsers or Node.js.
     types, and needs some manual work (see the [Running your application](#running-your-application)).
 
     We're eager to hear more about your use cases and how we can improve this experience!
-    Please let us know in a [:jetbrains-youtrack: YouTrack](https://youtrack.jetbrains.com/issues/AMPER) issue, or in
+    Please let us know in a [:jetbrains-youtrack: YouTrack](https://youtrack.jetbrains.com/issues/KTC) issue, or in
     our [:material-slack: Slack channel](https://kotlinlang.slack.com/archives/C062WG3A7T8).
 
 !!! tip "Using IntelliJ IDEA?"
@@ -6854,7 +7149,7 @@ To run your application, you need to:
 
 ### docs/src/user-guide/product-types/jvm-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/product-types/jvm-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/jvm-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/jvm-app/
 
 ---
@@ -6925,7 +7220,7 @@ It provides a convenient, runnable self-contained deployment unit that includes 
 
 ### docs/src/user-guide/product-types/jvm-lib.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/product-types/jvm-lib.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/jvm-lib.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/jvm-lib/
 
 ---
@@ -6980,7 +7275,7 @@ Read more about this in the [publishing](../publishing.md) guide.
 
 ### docs/src/user-guide/product-types/kmp-lib.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/product-types/kmp-lib.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/kmp-lib.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/kmp-lib/
 
 ---
@@ -7007,12 +7302,12 @@ Read more about multiplatform topics in the general [Multiplatform modules](../m
 
 ## Publishing
 
-!!! info "Publishing Kotlin Multiplatform libraries is not supported at the moment, but coming soon. Stay tuned!"
-
+The `kotlin publish <repository>` command can be used to publish the library to a Maven repository.
+Read more about this in the [publishing](../publishing.md) guide.
 
 ### docs/src/user-guide/product-types/native-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/product-types/native-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/native-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/native-app/
 
 ---
@@ -7079,36 +7374,138 @@ You can use the `build` command to compile and link a native executable for your
 There is no extra packaging facilities at the moment, and the `package` command is not supported for these native
 product types.
 
-### docs/src/user-guide/product-types/wasm-app.md
+### docs/src/user-guide/product-types/wasm-js-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/product-types/wasm-app.md
-- HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/wasm-app/
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/wasm-js-app.md
+- HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/wasm-js-app/
 
 ---
-description: Learn how to use the wasmJs/app and wasmWasi/app product types in a module to build WebAssembly applications.
+description: Learn how to use the `wasm-js/app` product type in a module to build WebAssembly applications that run in browser.
 ---
-# :simple-webassembly: Kotlin/Wasm application
+# :simple-webassembly: Kotlin/Wasm web application
 
-Use the `wasm-js/app` or `wasm-wasi/app` product type in a module to build a WebAssembly application using the
+Use the `wasm-js/app` product type in a module to build a WebAssembly application that can run in browsers using the
 [Kotlin/Wasm](https://kotlinlang.org/docs/wasm-overview.html) technology.
-These applications can be run in browsers or Node.js.
+
+## Module layout
+
+Here is an overview of the module layout for a Kotlin/Wasm application:
+
+```shell
+my-module/
+├─ resources # (1)!
+│  ╰─ index.html # (2)!
+├─ src/
+│  ├─ main.kt
+│  ╰─ Util.kt
+├─ test/
+│  ╰─ UtilTest.kt
+╰─ module.yaml
+```
+
+1. Resources placed here are packaged together with the resulting application
+2. `index.html` is the entrypoint for your web application. It is optional to include it—see [index.html configuration](#indexhtml-configuration) for more details
+
+## Entry point
+
+The entry point of a Kotlin/Wasm application is a top-level `main` function in the `src` folder.
+
+Multiple `main` functions are not supported. If you have multiple main functions, the one chosen by the compiler as
+an entry point is unspecified.
+
+### `index.html` configuration
+
+By default, the Kotlin Toolchain provides a minimal `index.html` for the application.
+It is the entry point that the browser should load to open the application.
+If you want to customize it (e.g., to add an analytics script or CSS), you can put your own version of it
+under the `resources` folder of the module.
+There are several template variables that are available for use in the `index.html`:
+
+- `{% raw %}{{kotlin.moduleName}}{% endraw %}` — the name of the module
+- `{% raw %}{{kotlin.moduleFile}}{% endraw %}` — the name of the `mjs` wrapper that loads your Wasm application
+- `{% raw %}{{kotlin.scripts}}{% endraw %}` — the minimal required set of scripts to properly load your application.
+  Includes `{% raw %}{{kotlin.moduleFile}}{% endraw %}` and import map loader for loading third-party dependencies.
+
+The default `index.html` looks like this:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style> /*(1)!*/
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+    <title>{% raw %}{{kotlin.moduleName}}{% endraw %}</title>
+    {% raw %}{{kotlin.scripts}}{% endraw %}
+</head>
+<body>
+
+</body>
+</html>
+```
+
+1. Styles required for the content to fill the entire screen. See [Compose Multiplatform documentation](https://kotlinlang.org/docs/multiplatform/compose-css-styles.html) for explanation.
+
+## Dependencies
+
+Currently, defining direct NPM dependencies for your application is not supported. However, if you use a Kotlin Multiplatform library
+that requires such a dependency (e.g., `@js-joda/core` for `kotlinx-datetime`), the dependency will be downloaded and packed together
+with your application.
+
+## Packaging
+
+Using the `build` command packages your application under the `build/tasks/_<module-name>_buildWasmJsAppWasmJs<Debug|Release>`
+folder, but this is subject to change.
+
+The package includes:
+
+- a `<module-name>.wasm` file with your app module's code
+- a set of `.mjs` files to load it
+- all required JS dependencies
+- the Skiko Wasm runtime
+- the `index.html` page that serves as the entrypoint of the application
+
+There are no extra packaging facilities at the moment, and the `package` command is not supported for this product type.
+
+## Testing
+
+Tests targeting Wasm JS target are not supported yet, but we are [working on it](https://youtrack.jetbrains.com/issue/KTC-5576).
+
+## Running Wasm application in your browser
+
+You can use the `run` command to start the local server and open your application in the browser.
+
+### docs/src/user-guide/product-types/wasm-wasi-app.md
+
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/product-types/wasm-wasi-app.md
+- HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/wasm-wasi-app/
+
+---
+description: Learn how to use the `wasm-wasi/app` product types in a module to build WebAssembly applications that run using WASI.
+---
+# :simple-webassembly: Kotlin/Wasm WASI application
+
+Use the `wasm-wasi/app` product type in a module to build a WebAssembly application that can run using [WASI](https://wasi.dev/) using the
+[Kotlin/Wasm](https://kotlinlang.org/docs/wasm-overview.html) technology.
+These applications can be run using runtimes like [Node.js](https://nodejs.org/en), [Deno](https://deno.com/), [WasmEdge](https://wasmedge.org/), and others.
 
 !!! warning "Incomplete preview"
 
-    The support for this product type is currently in an incomplete preview state.
+    The support for the Wasm-WASI target is currently in an incomplete preview state.
 
-    For example, running a WebAssembly application is not supported out of the box at the moment like other application
-    types, and needs some manual work (see the [Running your application](#running-your-application)).
+    For example, running a WASI application is not supported out of the box at the moment like other application
+    types, and needs some manual work (see the [Running WASI application](#running-wasi-application)).
 
     We're eager to hear more about your use cases and how we can improve this experience!
-    Please let us know in a [:jetbrains-youtrack: YouTrack](https://youtrack.jetbrains.com/issues/AMPER) issue, or in
+    Please let us know in a [:jetbrains-youtrack: YouTrack](https://youtrack.jetbrains.com/issues/KTC) issue, or in
     our [:material-slack: Slack channel](https://kotlinlang.slack.com/archives/C062WG3A7T8).
-
-!!! tip "Using IntelliJ IDEA?"
-
-    Make sure to install the
-    [:jetbrains-kotlin-multiplatform: Kotlin Multiplatform plugin](https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform)
-    to get proper support for Kotlin/Wasm.
 
 ## Module layout
 
@@ -7133,29 +7530,28 @@ an entry point is unspecified.
 
 ## Packaging
 
-Using the `build` command compiles your code to WebAssembly (`.wasm` file) and generate a JavaScript wrapper file
+Using the `build` command compiles your code to WebAssembly (`.wasm` file) and generates a JavaScript wrapper file
 (`.mjs`) to load it.
 
-These files are produced in the `build/tasks/_<module-name>_linkWasmJs` (for `wasm-js/app`) or
-`build/tasks/_<module-name>_linkWasmWasi` (for `wasm-wasi/app`) folder at the moment, but this is subject to change.
+These files are produced in the `build/artifacts/CompiledWebArtifact/<module-name>wasmWasi<debug|release>` folder
+at the moment, but this is subject to change.
 
-There is no extra packaging facilities at the moment, and the `package` command is not supported for this product type.
+There are no extra packaging facilities at the moment, and the `package` command is not supported for this product type.
 
-## Running your application
+## Running WASI application
 
-!!! warning "Kotlin/Wasm applications cannot be run directly by the Kotlin CLI at the moment."
+!!! warning "Kotlin/Wasm application targetting WASI cannot be run directly by the Kotlin CLI at the moment."
 
-To run your application, you need to:
+To run WASI application, you need to:
 
-1. Install a JavaScript runtime that supports WebAssembly (e.g., Node.js, D8, a browser, ...).
+1. Install a runtime that supports WebAssembly (e.g., Node.js, Deno, WasmEdge, ...).
 2. Build your module with `./kotlin build`
-3. Using your JS runtime, run the `.mjs` wrapper file that calls the `.wasm` code produced by your module.
+3. Using your runtime, run the `.mjs` wrapper file that calls the `.wasm` code produced by your module.
    See the [Packaging](#packaging) section above to know where this file is located.
-
 
 ### docs/src/user-guide/publishing.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/publishing.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/publishing.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/publishing/
 
 ---
@@ -7167,23 +7563,36 @@ description: |
 
 !!! info "The publishing feature is in preview, and is likely to change. Don't hesitate to share your feedback!"
 
-!!! warning "Multiplatform library publication is not supported yet"
-
-    At the moment, only JVM libraries can be published.
-    While the `publish` command for KMP libraries will not complain, the KMP publications are for now incomplete and
-    not consumable by other projects.
-
 Library modules inside your project are useful for modularization, but you can take it one step further by publishing
 your libraries so they can be used by other projects.
 
 With a little bit of configuration, you'll be able to publish using the `kotlin publish` command.
+
+## Supported components
+
+All library modules (JVM and multiplatform) can be published to Maven repositories. All Kotlin platforms are supported.
+
+Libraries that bind to native C libraries are covered as well: the `cinterop` bindings are published both in their
+commonized form, for use from common code, and per platform, so your users get the same C API you compiled against
+without setting up interop themselves.
+
+!!! note "Compose Multiplatform resources"
+
+    Resources of Compose Multiplatform libraries are not part of the publication yet (see [KTC-5698](https://youtrack.jetbrains.com/issue/KTC-5698/Support-publication-of-composeResources-as-a-part-of-KMP-library-publication)).
+
+## Interoperability with Maven/Gradle
+
+The Kotlin Toolchain's publication format is compatible with other build tools that consume libraries from Maven
+repositories. This includes Maven and Gradle, but also any build tools that understands the same format.
+
+Your consumers don't need to use the Kotlin Toolchain to depend on your published libraries.
 
 ## Publishing to a regular Maven repository
 
 To publish to a Maven repository, you essentially need 3 things:
 
 * the publication configuration
-* the target repository
+* the target repository's URL
 * the credentials to publish
 
 This is how your `module.yaml` should look like:
@@ -7232,10 +7641,31 @@ configured a repository with ID `someIdOfYourChoosing`):
 kotlin publish someIdOfYourChoosing
 ```
 
+If you only want to publish some specific modules, use the `-m`/`--module` option (which can be repeated to select
+multiple modules). Add the `--transitive` option to also publish the local modules that the selected modules depend on:
+
+```
+kotlin publish -m my-lib --transitive someIdOfYourChoosing
+```
+
 !!! note "Don't forget to publish your dependencies"
 
     If your module depends on other local modules, you must enable publishing for these other modules too.
     We recommend using a template to share the publishing configuration across all your published modules.
+
+## Publishing to the local Maven repository
+
+To install your library into your local Maven repository, declare it with the special
+`mavenLocal` URL:
+
+```yaml title="module.yaml"
+repositories:
+  - url: mavenLocal
+    publish: true
+```
+
+Then publish with `kotlin publish mavenLocal`. No credentials are needed.
+This is the quickest way to try your library out in another project on your machine.
 
 ## Publishing to Maven Central
 
@@ -7257,9 +7687,13 @@ There are a handful of requirements[^1] imposed by Sonatype to publish to Maven 
 [^1]: You can learn more about them [on the official website](https://central.sonatype.org/publish/requirements/)
 
 * javadocs and sources JARs must be published
-* checksums for all artifacts must be published
+* checksums for all artifacts must be published[^2]
 * artifacts need to be signed with a PGP signature
 * some mandatory metadata about the module must be present
+
+[^2]: By default, the Kotlin Toolchain publishes the checksums required by Maven Central (`md5` and `sha1`) for each
+artifact. You can customize this list using `settings.publishing.checksums`, with any combination of `md5`, `sha1`,
+`sha256`, and `sha512`.
 
 You can satisfy all of these requirements with a little bit of configuration:
 
@@ -7338,7 +7772,7 @@ The Kotlin Toolchain provides 2 modes for publishing:
 
 By default, the Kotlin Toolchain uses the `manual` mode, to avoid surprises.
 Once the first deployment is successful, you might want to streamline the publication by switching to `auto` mode.
-This can be done using `settings.mavenCentral.publishingMode: auto`.
+This can be done using `settings.publishing.mavenCentral.publishingMode: auto`.
 
 !!! warning "One does not simply remove artifacts from Maven Central"
 
@@ -7349,7 +7783,7 @@ This can be done using `settings.mavenCentral.publishingMode: auto`.
 
 ### docs/src/user-guide/templates.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/templates.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/templates.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/templates/
 
 ---
@@ -7357,56 +7791,25 @@ description: This page describes how to use templates to share configuration bet
 ---
 # Templates
 
-In modularized projects, there is often a need to have a certain common configuration for all or some modules.
-Typical examples could be a testing framework used in all modules or a Kotlin language version.
+In modularized projects, some parts of the configuration are usually the same for some or all modules.
+The most common are the JDK version, the Kotlin version, compiler arguments, repositories, and publishing configuration.
 
 The Kotlin Toolchain offers a way to extract whole sections or their parts into reusable template files.
-These files are named `<name>.module-template.yaml` and have the same structure as `module.yaml` files.
 
-A template is applied to a `module.yaml` file by listing it in the `apply:` section.
-The [path](basics.md#path-notation) to a template usually starts with `//` and is relative to the project root directory (where `project.yaml` is located).
+## Basics
 
-```yaml title="module.yaml"
-product: jvm/app
-
-apply:
-  - //common.module-template.yaml
-```
-
-```yaml title="//common.module-template.yaml"
-test-dependencies:
-  - org.jetbrains.kotlin:kotlin-test:1.8.10
-
-settings:
-  kotlin:
-    languageVersion: 1.8
-```
-
-Sections in the template can also have `@platform`-qualifiers.
+Template files are named `<name>.module-template.yaml` and have the same structure as `module.yaml` files.
 
 !!! note
 
-    Template files can't have the `product:` section.
+    Template files cannot have a `product:` section, but `@platform`-qualifiers are supported.
 
-Templates are applied one by one, using the same rules as
-[platform-specific dependencies and settings](multiplatform.md#dependencysettings-propagation):
+A template is applied to a `module.yaml` file by listing it in the `apply:` section.
+The [path](basics.md#path-notation) to a template usually starts with `//` and is relative to the project root directory
+(where `project.yaml` is located).
 
-- Scalar values (strings, numbers etc.) are overridden.
-- Mappings and lists are appended.
-
-Settings and dependencies from the `module.yaml` file are applied last. The position of the `apply:` section doesn't
-matter, the `module.yaml` file content always has precedence. E.g.:
-
-```yaml title="common.module-template.yaml"
-dependencies:
-  - //shared
-
-settings:
-  kotlin:
-    languageVersion: 1.8
-  compose: enabled
-```
-
+<div class="grid" markdown>
+<div class="annotate">
 ```yaml title="module.yaml"
 product: jvm/app
 
@@ -7414,30 +7817,44 @@ apply:
   - //common.module-template.yaml
 
 dependencies:
-  - //jvm-util
+  - io.ktor:ktor-client:3.5.1
+```
+</div>
+
+<div class="annotate">
+```yaml title="//common.module-template.yaml"
+repositories:
+  - https://my.company/maven
 
 settings:
   kotlin:
-    languageVersion: 1.9
-  jvm:
-    release: 8
+    version: 2.4.10
+‎
 ```
+</div>
+</div>
 
-After applying the template, the resulting effective module is:
+When doing this, the contents of the template are merged with that of the module file, to give an effective
+configuration that looks like this:
 
-```yaml title="module.yaml"
+```yaml title="Effective module config"
 product: jvm/app
 
-dependencies:  # lists appended
-  - //shared
-  - //jvm-util
+repositories:
+  - https://my.company/maven
 
-settings:  # objects merged
+dependencies:
+  - io.ktor:ktor-client:3.5.1
+
+settings:
   kotlin:
-    languageVersion: 1.9  # module.yaml overwrites value
-  compose: enabled        # from the template
-  jvm:
-    release: 8   # from the module.yaml
+    version: 2.4.10
+```
+
+You can see the effective configuration of a module using the `show settings` command:
+
+```shell
+kotlin show settings --module=my-module
 ```
 
 ## Nested templates
@@ -7467,7 +7884,7 @@ apply:
 
 The resulting effective module is:
 
-```yaml title="module.yaml"
+```yaml title="Effective module.yaml"
 product: jvm/app
 
 settings:
@@ -7476,8 +7893,107 @@ settings:
   springBoot: enabled
 ```
 
-Templates follow the same precedence rules as regular modules, so in the example above values from
-`spring.module-template.yaml` will override values from `java.module-template.yaml`.
+## Resolution rules
+
+### Precedence
+
+The precedence is determined between entire files (`module.yaml` and templates).
+The position of the `apply` section within a file doesn't matter.
+
+The basic rules are simple:
+
+* The `module.yaml` always takes precedence over the templates that it applies.
+* A template takes precedence over the other templates that it applies (and so on, transitively).
+
+Some pairs of templates do not apply each other even transitively, so they don't have any precedence over each other.
+If such templates happen to disagree on the value of a property in the configuration, we may have a _conflict_
+(see [conflict resolution](#conflict-resolution) below).
+
+The `module.yaml` and templates essentially form a graph via `apply:`.
+To respect the rules above, the effective configuration is constructed by starting from the deepest nested template(s),
+and merging the contents by going level by level in that graph (topological order), following the
+[merging rules](#merging-rules) (see below).
+
+For example:
+
+```mermaid
+flowchart TD
+    common["common template"]
+    android["android template<br><sub>apply: common</sub>"]
+    metro["metro template<br><sub>apply: common</sub>"]
+    module["module.yaml<br><sub>apply: [android, metro]</sub>"]
+
+    android --> common
+    metro --> common
+    module --> android
+    module --> metro
+```
+
+1. the contents of the `common` templates are a starting point
+2. the contents of `android` and `metro` are merged on top. They have precedence over `common`, but they don't have
+   precedence over each other, so their order doesn't matter here. If they try to set the same property to different
+   values, we have a conflict (see [conflict resolution](#conflict-resolution) below).
+3. the contents of the `module.yaml` file are added last.
+
+### Merging rules
+
+Templates are applied using the same merging rules as
+[platform-specific dependencies and settings](multiplatform.md#dependencysettings-propagation):
+
+- Scalar values (strings, numbers etc.) are **overridden**.
+- Mappings and lists are **appended**.
+
+To determine who overrides who, we use the precedence rules defined in the previous section.
+Here is an example:
+
+<div class="grid" markdown>
+<div class="annotate">
+```yaml title="module.yaml"
+product: jvm/app
+
+apply:
+  - //common.module-template.yaml
+
+dependencies:
+  - //jvm-util
+
+settings:
+  kotlin:
+    version: 2.3.21
+  jvm:
+    release: 17
+```
+</div>
+
+<div class="annotate">
+```yaml title="common.module-template.yaml"
+dependencies:
+  - //shared
+
+settings:
+  kotlin:
+    version: 2.4.10
+  compose: enabled
+```
+</div>
+</div>
+
+After applying the template, the resulting effective module is:
+
+```yaml title="Effective module.yaml"
+product: jvm/app
+
+dependencies:  # lists appended
+  - //shared
+  - //jvm-util
+
+settings:  # objects merged
+  kotlin:
+    version: 2.3.21  # module.yaml value takes precedence
+  compose: enabled   # from the template
+  jvm:
+    release: 17      # from the module.yaml
+```
 
 Each template is applied to the resulting module only once even if it is applied in multiple templates used in a module. E.g.:
 
@@ -7486,6 +8002,8 @@ dependencies:
   - //core-lib
 ```
 
+<div class="grid" markdown>
+<div class="annotate">
 ```yaml title="client.module-template.yaml"
 apply:
   - //common.module-template.yaml
@@ -7493,7 +8011,9 @@ apply:
 dependencies:
   - //client-lib
 ```
+</div>
 
+<div class="annotate">
 ```yaml title="server.module-template.yaml"
 apply:
   - //common.module-template.yaml
@@ -7501,6 +8021,8 @@ apply:
 dependencies:
   - //server-lib
 ```
+</div>
+</div>
 
 ```yaml title="module.yaml"
 product: jvm/app
@@ -7521,22 +8043,28 @@ dependencies:
   - //server-lib
 ```
 
-## Conflict resolution
+### Conflict resolution
 
-If two templates define different scalar values for the same property and neither template is more specific in
-the `apply` graph, the Kotlin Toolchain reports a conflict.
+If two templates define different scalar values for the same property and neither template has precedence over the other
+in the `apply` graph, the Kotlin Toolchain reports a conflict.
 
+<div class="grid" markdown>
+<div class="annotate">
 ```yaml title="java17-compatible.module-template.yaml"
 settings:
   jvm:
     release: 17
 ```
+</div>
 
+<div class="annotate">
 ```yaml title="java21-compatible.module-template.yaml"
 settings:
   jvm:
     release: 21
 ```
+</div>
+</div>
 
 With only `java17-compatible` and `java21-compatible`, `settings.jvm.release` is conflicting (`17` vs `21`)
 because these templates are siblings.
@@ -7594,7 +8122,7 @@ apply:
 
 ### docs/src/user-guide/testing.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/testing.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/testing.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/testing/
 
 ---
@@ -7609,11 +8137,26 @@ Test code is located in the `test/` folder:
 ├─ test/           # test code
 │  ├─ MainTest.kt
 │  ╰─ ...
+├─ testResources/  # test resources
 ╰─ module.yaml
 ```
 
+Resources that should only be available to test code go into the `testResources/` folder.
+In multiplatform modules, platform-specific test resources can be placed in `testResources@platform/` folders,
+just like `src@platform/` folders for sources.
+
 By default, the [Kotlin test](https://kotlinlang.org/api/latest/kotlin.test/) framework is preconfigured for each
-platform. Additional test-only dependencies should be added to the `test-dependencies:` section of your module
+platform.
+
+!!! note "JUnit version"
+
+    On the JVM and Android platforms, tests run with JUnit, and JUnit 5 is used by default.
+    You can change this with the `settings.junit` setting, which accepts `junit-5`, `junit-4`, or `none`.
+    This setting also selects which flavor of the Kotlin test library is added automatically:
+    `kotlin-test-junit5`, `kotlin-test-junit`, or just `kotlin-test`, respectively.
+    See the [`settings.junit` reference](../reference/module.md#settingsjunit) for more details.
+
+Additional test-only dependencies should be added to the `test-dependencies:` section of your module
 configuration file:
 
 ```yaml title="module.yaml"
@@ -7672,18 +8215,18 @@ test-dependencies:
 # these settings affect the main and test code
 settings:
   kotlin:
-    languageVersion: 1.8
+    languageVersion: 2.1
 
 # these settings affect tests only
 test-settings:
   kotlin:
-    languageVersion: 1.9 # overrides settings.kotlin.languageVersion 1.8
+    languageVersion: 2.2 # overrides settings.kotlin.languageVersion 2.1
 ```
 
 
 ### docs/src/user-guide/yaml-primer.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/a049d011217fc302fcdece9c7d0f48eac184a88d/docs/src/user-guide/yaml-primer.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/2039c5371bf5812f0061b2b11b6581b4e9de3a97/docs/src/user-guide/yaml-primer.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/yaml-primer/
 
 ---

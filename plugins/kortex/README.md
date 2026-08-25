@@ -7,7 +7,8 @@ JShell, and related development workflows.
 
 - Kotlin Toolchain declarative project setup with `module.yaml`, `project.yaml`, templates, dependencies, plugins,
   and the `kotlin` CLI.
-- Version-aware guidance for Kotlin Toolchain `v0.11.x`, with a separate upstream `main` snapshot.
+- Version-aware guidance for Kotlin Toolchain `v0.12.x`, with a retained `v0.11.x` snapshot and a 0.11 -> 0.12
+  migration guide.
 - Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm, Kotlin/Native, server-side apps, testing,
   publishing, migration, and toolchain provisioning.
 - Modern Kotlin language features (2.0–2.4.x, including 2.4.10 and the 2.4.20-Beta1 EAP) with experimental compiler
@@ -18,8 +19,12 @@ JShell, and related development workflows.
 
 ## Files
 
-- `skills/kotlin-toolchain/SKILL.md` - default Kotlin Toolchain skill for `v0.11.x`.
-- `skills/kotlin-toolchain/SKILL-main.md` - current upstream `main` snapshot.
+- `skills/kotlin-toolchain/SKILL.md` - default Kotlin Toolchain skill for `v0.12.x`; operational base plus a map of
+  topic references.
+- `skills/kotlin-toolchain/references/` - per-topic detail: CLI, project model, product types, dependencies, settings,
+  built-in technologies, multiplatform, templates, publishing, plugins, Maven migration, the 0.11 -> 0.12 upgrade,
+  known issues, and Codex cache setup.
+- `skills/kotlin-toolchain/SKILL-0.11.md` - historical skill for projects still pinned to `v0.11.x`.
 - `skills/kotlin-toolchain/generation/` - retained upstream documentation dumps and regeneration notes.
 - `skills/kotlin-toolchain/scripts/aggregate-upstream-docs.sh` - helper for rebuilding upstream documentation dumps.
 - `skills/main-kts/SKILL.md` - executable Kotlin `.main.kts` scripts.

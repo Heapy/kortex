@@ -4,10 +4,24 @@ Codex `workspace-write` normally writes only inside the active workspace and con
 projects or worktrees run Kotlin Toolchain, grant its shared user cache directories instead of relocating downloads
 into every checkout.
 
-## Cache Roots
+## Two Caches
 
-Prefer the narrow Kotlin parent cache root because it can contain the CLI distribution plus download, extraction,
-dependency, and transformed-library caches:
+`0.12` splits them cleanly, and both can be relocated:
+
+| Cache | Holds | Relocate with |
+|---|---|---|
+| Bootstrap | The wrapper's copy of the CLI distribution | `KOTLIN_CLI_BOOTSTRAP_CACHE_DIR` |
+| Shared | Downloaded dependencies, JDKs, tools — shared by all projects | `KOTLIN_SHARED_CACHE_DIR`, or `--shared-cache-dir` which wins over it |
+
+`KOTLIN_SHARED_CACHE_DIR` and `--shared-cache-dir` are new in `0.12`. The `0.11.x` flag `--shared-caches-root` was
+removed — a script still passing it fails.
+
+Pointing both variables at one directory you already grant is usually simpler than enumerating default cache roots.
+
+## Default Cache Roots
+
+If you leave the defaults in place, grant the narrow Kotlin parent cache root. It covers the CLI distribution plus
+download, extraction, dependency, and transformed-library caches:
 
 | Platform | Kotlin Toolchain cache root |
 |---|---|
@@ -15,13 +29,13 @@ dependency, and transformed-library caches:
 | Linux | `$HOME/.cache/JetBrains/Kotlin` |
 | Windows | `%LOCALAPPDATA%\JetBrains\Kotlin` |
 
-Also grant these only when the project needs them:
+Grant these only when the project needs them:
 
 - `$HOME/.konan` for Kotlin/Native caches.
 - `$HOME/.gradle` for adjacent Gradle builds; it is not a substitute for the Kotlin Toolchain cache root.
 
-Keep project outputs such as `build/` local to each worktree. Do not grant the whole home directory or use
-`danger-full-access` only to make caches writable.
+Keep project outputs such as `build/` local to each worktree. Do not grant the whole home directory or switch to
+`danger-full-access` just to make caches writable.
 
 ## Persistent Codex Configuration
 
@@ -55,14 +69,11 @@ codex \
 
 Adjust the Kotlin root for Linux or Windows and omit `.konan` for projects without Kotlin/Native.
 
-## Relocating The Bootstrap Cache
+## Concurrency
 
-`KOTLIN_CLI_BOOTSTRAP_CACHE_DIR` relocates only the wrapper/CLI bootstrap distribution:
+Provisioning is designed to be concurrency-safe. Parallel `kotlin` invocations across worktrees sharing one cache root
+do not corrupt each other, so one shared root is the right answer rather than a cache per worktree.
 
-```shell
-export KOTLIN_CLI_BOOTSTRAP_CACHE_DIR="$HOME/.cache/JetBrains/Kotlin/cli"
-```
+## Quieting CI Output
 
-It does not relocate every regular Kotlin Toolchain cache. On Linux, the regular cache respects XDG conventions, but
-the bootstrap cache requires this explicit variable. Grant the resulting parent cache root to Codex rather than
-assuming that `.gradle` or the project workspace covers it.
+Set `KOTLIN_CLI_NO_WELCOME_BANNER=1` when the distribution is provisioned on every run.
