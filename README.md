@@ -34,6 +34,8 @@ Personal engineering and repository-maintenance workflows:
 - `fix-issues` - triage, reproduce, diagnose, fix, and verify repository issues.
 - `amnesia` - recap a returning user's session and the work completed since their last message.
 - `call-codex` - drive the Codex CLI as an independent reviewer or scoped executor.
+- `message-claude` - send a message from an external process to a chosen Claude Code session.
+- `message-codex` - queue a message from an external process to a chosen Codex session.
 - `clean-claude-memory` - audit and prune Claude Code project memory.
 - `clean-comments-and-guidance` - reduce low-value comments, docstrings, `CLAUDE.md`, and `AGENTS.md` guidance.
 

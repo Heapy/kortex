@@ -1,11 +1,13 @@
 ---
 name: message-claude
-description: Send a message from an external agent or script to a running Claude Code session on the same machine. Use when a manually started Codex session needs to tell any Claude session something, Codex needs to report back to the Claude session that launched it, a hook or long job should notify Claude, or the user asks to "send this to Claude", "tell another Claude session", "notify the Claude session", or "report back to Claude". Not for messaging from inside Claude Code when ListAgents and SendMessage are available.
+description: Send a message from an external agent or script to a running Claude Code session on the same machine. Use when a manually started Codex session needs to tell any Claude session something, Codex needs to report back to the Claude session that launched it, a hook or long job should notify Claude, or the user asks to "send this to Claude", "tell another Claude session", "notify the Claude session", or "report back to Claude". Not for messaging from inside Claude Code when ListAgents and SendMessage are available. For messages to Codex sessions, use message-codex.
 ---
 
 # Message Claude
 
 Find the exact Claude Code session and send it one plain-text message.
+
+For the opposite direction, use [Message Codex](../message-codex/SKILL.md).
 
 If `ListAgents` and `SendMessage` are available, use them. Do not use the raw inbox to bypass a
 permission rule that denied either tool. The workflow below is for external callers such as a
