@@ -43,8 +43,9 @@ settings:
     freeCompilerArgs: [ -Xpartial-linkage-loglevel=ERROR ]
 ```
 
-`0.12` added nicely formatted task diagnostics (KTC-5515) and stopped replaying compiler warnings on cache hits
-(KTC-4491). Neither is listed as fixing this issue, so check the current behavior before assuming it is gone.
+`0.12` added nicely formatted task diagnostics (KTC-5515) and started replaying compiler warnings on cache hits
+(KTC-4491) — before, a warning was printed by the first compilation and then silently dropped by every cached
+rebuild. Neither is listed as fixing this issue, so check the current behavior before assuming it is gone.
 
 ### KTC-5698 Compose resources are not published with KMP libraries
 
