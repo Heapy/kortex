@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "kotlin-quality",
+  "version": "1.12.0",
+  "description": "Kotlin test, architecture, and library ABI review agents — meaningful tests, clean core, effects at the boundary, no broken releases",
+  "author": {
+    "name": "Ruslan Ibrahimau",
+    "email": "ruslan@heapy.io"
+  },
+  "homepage": "https://github.com/Heapy/kortex/tree/main/plugins/kotlin-quality",
+  "repository": "https://github.com/Heapy/kortex",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kotlin",
+    "review",
+    "tests",
+    "architecture",
+    "solid",
+    "quality"
+  ]
+}

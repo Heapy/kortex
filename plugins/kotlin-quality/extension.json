@@ -1,0 +1,4 @@
+{
+  "name": "kotlin-quality",
+  "description": "Kotlin test, architecture, and library ABI review: meaningful tests, clean core, effects at the boundary, no broken releases."
+}

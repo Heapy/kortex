@@ -17,6 +17,20 @@ Kotlin and JVM development skills:
 - `ktor` - Ktor 3.5.x server and client development.
 - `jshell` - Java snippets and scratchpad work with JShell.
 
+### `kotlin-quality`
+
+Kotlin review agents plus the skill that drives them:
+
+- `kotlin-review` - route a test, architecture, or ABI review over the working tree, a commit, a pull request, or the whole repository.
+- `install-codex-agents` - copy the review agents into Codex, which cannot load them from a plugin.
+
+It ships three agents. Claude Code and Junie pick them up with the plugin/extension; Codex needs
+`install-codex-agents` first.
+
+- `kotlin-test-review` - do the tests prove the code works? Over-mocking, edge cases, slices, integration coverage, and the test mix.
+- `kotlin-architecture-review` - module split, dependency graph, SOLID, a framework-free core, and effects at the boundary.
+- `kotlin-abi-review` - on published libraries: does the next release break binary compatibility, and which version bump does it need?
+
 ### `kotgent`
 
 Repository-aware backlog workflows through the `kotgent` CLI:
@@ -46,6 +60,7 @@ Personal engineering and repository-maintenance workflows:
 ```
 codex plugin marketplace add Heapy/kortex
 codex plugin add kortex@kortex
+codex plugin add kotlin-quality@kortex
 codex plugin add heapy@kortex
 codex plugin add kotgent@kortex
 ```
@@ -55,6 +70,7 @@ codex plugin add kotgent@kortex
 ```
 /plugin marketplace add Heapy/kortex
 /plugin install kortex@kortex
+/plugin install kotlin-quality@kortex
 /plugin install heapy@kortex
 /plugin install kotgent@kortex
 ```
@@ -64,6 +80,7 @@ codex plugin add kotgent@kortex
 ```
 /extensions marketplace add Heapy/kortex
 /extensions install kortex
+/extensions install kotlin-quality
 /extensions install heapy
 /extensions install kotgent
 ```
@@ -80,6 +97,7 @@ For example:
 
 ```text
 $kortex:jshell evaluate this Java snippet and return the result
+$kotlin-quality:kotlin-review review the tests and architecture of this branch
 $kotgent:review-tasks audit the todo backlog against the current repository
 $heapy:fix-issues fix issue #123 and verify the change
 ```

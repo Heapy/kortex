@@ -1,7 +1,7 @@
 {
-  "name": "kortex",
+  "name": "kotlin-quality",
   "version": "1.12.0",
-  "description": "Kotlin Agent Skills — Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
+  "description": "Kotlin test, architecture, and library ABI review agents — meaningful tests, clean core, effects at the boundary, no broken releases",
   "author": {
     "name": "Ruslan Ibrahimau",
     "email": "ruslan@heapy.io"
@@ -10,11 +10,11 @@
   "license": "Apache-2.0",
   "keywords": [
     "kotlin",
-    "amper",
-    "toolchain",
-    "jvm",
-    "multiplatform",
-    "gradle"
+    "review",
+    "tests",
+    "architecture",
+    "solid",
+    "quality"
   ],
   "components": {
     "skills": [

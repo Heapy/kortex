@@ -1,0 +1,36 @@
+{
+  "name": "kotlin-quality",
+  "version": "1.12.0",
+  "description": "Kotlin test, architecture, and library ABI review agents — meaningful tests, clean core, effects at the boundary, no broken releases",
+  "author": {
+    "name": "Ruslan Ibrahimau",
+    "email": "ruslan@heapy.io"
+  },
+  "repository": "https://github.com/Heapy/kortex",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kotlin",
+    "review",
+    "tests",
+    "architecture",
+    "solid",
+    "quality"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "kotlin-quality - Kotlin Review",
+    "shortDescription": "Test, architecture, and ABI review for Kotlin projects",
+    "longDescription": "Reviews whether Kotlin tests prove the code works, whether the architecture can absorb change, and whether a published library keeps its ABI. Ships three review agents plus an installer that places them into Codex.",
+    "developerName": "Heapy",
+    "category": "Productivity",
+    "capabilities": [
+      "Code Review",
+      "Testing",
+      "Architecture"
+    ],
+    "defaultPrompt": [
+      "$kotlin-quality:install-codex-agents install the Kotlin review agents into Codex",
+      "$kotlin-quality:kotlin-review review the tests and architecture of this change"
+    ]
+  }
+}
