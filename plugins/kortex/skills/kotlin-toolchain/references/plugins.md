@@ -1,6 +1,6 @@
 # Build Plugins
 
-Kotlin Toolchain `v0.12.0`. Plugins are local to a project — they cannot be published or consumed as a published
+Kotlin Toolchain `v0.12.1`. Plugins are local to a project — they cannot be published or consumed as a published
 dependency (KTC-4871).
 
 ## Structure

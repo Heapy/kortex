@@ -1,6 +1,6 @@
 ---
 name: kotlin-toolchain
-description: Use when working with JetBrains Kotlin Toolchain v0.12.x, formerly Amper, including module.yaml, project.yaml, module templates, nested templates, libs.versions.toml, the kotlin CLI wrapper, `//` project paths, Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm (wasm-js, wasm-wasi), Kotlin/Native, server-side apps, dependencies, testing, KMP library publishing, Maven Central, build plugins, built-in technologies (Compose, Ktor, Spring Boot, serialization, kotlinx.rpc, DataFrame, Power Assert, KSP, Lombok), Maven migration, JDK provisioning, and toolchain caches.
+description: Use when working with JetBrains Kotlin Toolchain v0.12.x, formerly Amper, including module.yaml, project.yaml, module templates, nested templates, libs.versions.toml, the kotlin CLI wrapper, `//` project paths, Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm (wasm-js, wasm-wasi), Kotlin/Native, server-side apps, dependencies, testing, KMP library publishing, Maven Central, build plugins, built-in technologies (Compose, Ktor, Spring Boot, serialization, kotlinx.rpc, DataFrame, Power Assert, KSP, Lombok), Maven and Gradle migration, JDK provisioning, and toolchain caches.
 ---
 
 # Kotlin Toolchain
@@ -8,25 +8,26 @@ description: Use when working with JetBrains Kotlin Toolchain v0.12.x, formerly 
 Use this skill for JetBrains Kotlin Toolchain work: declarative YAML build configuration, the `kotlin` CLI, product
 types, dependency wiring, multiplatform layout, publishing, and local build plugins.
 
-Do not apply this skill to Gradle or Maven build editing unless the task is explicitly about converting a Maven project
-to Kotlin Toolchain. Kotlin Toolchain is not Gradle, not Maven, and not the old Amper `*.amper` syntax.
+Do not apply this skill to Gradle or Maven build editing unless the task is explicitly about converting a Gradle or
+Maven project to Kotlin Toolchain. Kotlin Toolchain is not Gradle, not Maven, and not the old Amper `*.amper` syntax.
 
 ## Source Snapshot
 
-This skill is generated from the official upstream docs for `v0.12.0`, the default supported version:
+This skill is generated from the official upstream docs for `v0.12.1`, the default supported version:
 
 - Repository: `https://github.com/JetBrains/kotlin-toolchain`
-- Ref: `v0.12.0`
-- SHA: `2039c5371bf5812f0061b2b11b6581b4e9de3a97`
-- Full aggregate: `generation/upstream-docs-v0.12.0.md`
+- Ref: `v0.12.1`
+- SHA: `3f227ed2625bd3e91f53079c97433e1dbd639a30`
+- Full aggregate: `generation/upstream-docs-v0.12.1.md`
 - Generation notes: `generation/generation-steps.md`
 
-Statements here come from those docs, from the `v0.12.0` release notes, and from spot-checks against the tagged source
+Statements here come from those docs, from the `v0.12.1` release notes, and from spot-checks against the tagged source
 tree. Where the docs lag the code, this skill follows the code and says so.
 
-At `v0.12.0` release time the upstream `main` docs matched this tag except for one line, so there is no separate
-main/dev snapshot. Older guidance for `v0.11.x` is kept in [`SKILL-0.11.md`](SKILL-0.11.md) for projects still pinned
-there. Do not mix the two: the `//` path notation, nested templates, and KMP publishing all changed in `0.12`.
+This skill tracks tagged releases only. At `v0.12.1` release time upstream `main` had already moved on toward the next
+release (9 docs, +209/-69), so there is still no separate main/dev snapshot. Older guidance for `v0.11.x` is kept in
+[`SKILL-0.11.md`](SKILL-0.11.md) for projects still pinned there. Do not mix the two: the `//` path notation, nested
+templates, and KMP publishing all changed in `0.12`.
 
 The project is Alpha and the docs move quickly. Treat defaults and edge-case syntax as version-sensitive. When precision
 matters, inspect the local project, run `./kotlin show ...`, and grep the pinned aggregate (~300 KB — search it, do not
@@ -52,6 +53,7 @@ distribution paths. Do not rename those to `kotlin`. The YouTrack project, howev
 | [`references/publishing.md`](references/publishing.md) | JVM and KMP publishing, Maven Central, `mavenLocal`, signing |
 | [`references/plugins.md`](references/plugins.md) | Authoring `jvm/amper-plugin` modules, `plugin.yaml`, task actions |
 | [`references/maven-migration.md`](references/maven-migration.md) | `convert-project`, `mavenPlugins`, migration gaps |
+| [`references/gradle-migration.md`](references/gradle-migration.md) | Translating `build.gradle(.kts)`, convention plugins, and source sets by hand |
 | [`references/migrating-0.11-to-0.12.md`](references/migrating-0.11-to-0.12.md) | What breaks when a project moves from `0.11.x` to `0.12.0` |
 | [`references/known-issues.md`](references/known-issues.md) | Tracked defects and workarounds — check before diagnosing odd behavior |
 | [`references/codex-sandbox-caches.md`](references/codex-sandbox-caches.md) | Running the toolchain in a Codex `workspace-write` sandbox |
@@ -69,7 +71,7 @@ Run this once per session, the first time this skill is used in a Kotlin Toolcha
    `kotlin.bat` carries the same value as `set kotlin_cli_version=`. A repo without a wrapper has nothing to check —
    skip to `First Moves`.
 
-2. Compare it to `0.12.0`, the version this skill is generated from.
+2. Compare it to `0.12.1`, the version this skill is generated from.
 
 3. If the project pins something older, tell the user both versions and ask whether to update. Wait for an answer —
    never update on your own initiative. For a `0.11.x` project either work from
@@ -82,7 +84,7 @@ Run this once per session, the first time this skill is used in a Kotlin Toolcha
 
 5. If the user declines, keep working against the pinned version and flag guidance here that may not hold for it.
 
-`./kotlin update` targets the latest release, not `0.12.0`. If it lands beyond `0.12.x`, this snapshot is behind the
+`./kotlin update` targets the latest release, not `0.12.1`. If it lands beyond `0.12.x`, this snapshot is behind the
 project: prefer what the project actually reports (`./kotlin show ...`, `--help`) over this file.
 
 A globally installed `kotlin` is not a shortcut past this. Since `0.12`, it walks up from the current directory looking
@@ -228,7 +230,7 @@ and it needs the object form with `publish: true` to also be a publish target. D
 
 ## Settings Defaults
 
-Defaults from the pinned `v0.12.0` docs:
+Defaults from the pinned `v0.12.1` docs:
 
 | Setting | Default |
 |---|---|

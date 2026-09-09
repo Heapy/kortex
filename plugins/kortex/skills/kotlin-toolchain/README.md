@@ -5,8 +5,8 @@ This directory contains the version-aware Agent Skill for
 YAML project model, the `kotlin` CLI, supported product types, dependencies, multiplatform projects, publishing, and
 local build plugins.
 
-The default skill is based on Kotlin Toolchain `v0.12.0` at
-`2039c5371bf5812f0061b2b11b6581b4e9de3a97`. Projects using Kotlin Toolchain `v0.11.x` should use
+The default skill is based on Kotlin Toolchain `v0.12.1` at
+`3f227ed2625bd3e91f53079c97433e1dbd639a30`. Projects using Kotlin Toolchain `v0.11.x` should use
 [`SKILL-0.11.md`](SKILL-0.11.md).
 
 ## Installation

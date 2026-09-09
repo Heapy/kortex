@@ -1,9 +1,8 @@
 # Kotlin Toolchain skill generation steps
 
-This is a running log. The **current** snapshot is `v0.12.0` — see
-[2026-08-25: regeneration for v0.12.0](#2026-08-25-regeneration-for-v0120) at the end of this file. The section below
-records the original `v0.11.1` run and is kept for reference; its artifact list and regeneration procedure are
-superseded.
+This is a running log. The **current** snapshot is `v0.12.1` — see
+[2026-09-09: regeneration for v0.12.1](#2026-09-09-regeneration-for-v0121) at the end of this file. The two sections
+before it record the `v0.11.1` and `v0.12.0` runs and are kept for reference; their artifact lists are superseded.
 
 ## 2026-06-30: initial generation for v0.11.1
 
@@ -293,3 +292,95 @@ Every one of these inverts a claim the old skill made, so none of its sentences 
    delete it along with its aggregate.
 9. Update the root `README.md`, `plugins/kortex/README.md`, and this log.
 10. Bump the tree version with `./scripts/release.main.kts <version>`.
+
+## 2026-09-09: regeneration for v0.12.1
+
+Upstream released `v0.12.1` on 2026-09-08, a patch with two bug fixes and one new documentation page. The skill was
+updated in place — no restructuring, no new SKILL variant.
+
+### Upstream discovery
+
+```shell
+git ls-remote --tags https://github.com/JetBrains/kotlin-toolchain.git
+git ls-remote --heads https://github.com/JetBrains/kotlin-toolchain.git main
+curl -sL https://api.github.com/repos/JetBrains/kotlin-toolchain/releases/tags/v0.12.1
+```
+
+- Latest release tag: `v0.12.1` at `3f227ed2625bd3e91f53079c97433e1dbd639a30`, published 2026-09-08.
+- Upstream `main` at the time: `2eb1dbaa05a53162120958c96c0bd9b969f2d165`.
+- Release notes: 7 lines. No breaking changes, no new features. Fixed: KTC-5769 (a dependency-resolution error hidden
+  behind `dependency was resolved but it's missing on disk`) and KTC-5799 (`publish mavenCentral` rejected with
+  `not marked as publishable`).
+
+### Aggregate generation
+
+```shell
+bash plugins/kortex/skills/kotlin-toolchain/scripts/aggregate-upstream-docs.sh \
+  <scratch>/kt-v0.12.1 v0.12.1 3f227ed2625bd3e91f53079c97433e1dbd639a30 \
+  plugins/kortex/skills/kotlin-toolchain/generation/upstream-docs-v0.12.1.md
+```
+
+`upstream-docs-v0.12.1.md` is 8,883 lines over 50 upstream Markdown documents. `upstream-docs-v0.12.0.md` (8,279
+lines, 49 documents) was deleted: nothing consumes it, since no `SKILL-0.12.0.md` was created.
+
+### Version diff checks
+
+```shell
+git diff --no-index --stat kt-v0.12.0/docs/src kt-v0.12.1/docs/src
+git diff --no-index --stat kt-v0.12.1/docs/src kt-main/docs/src
+git diff --no-index --stat kt-v0.12.0/examples kt-v0.12.1/examples
+```
+
+Observed:
+
+- `v0.12.0` → `v0.12.1` docs: 2 files, +602. One new page, `getting-started/migrating-from-gradle.md` (596 lines),
+  plus a cosmetic `stylesheets/extra.css` change. Every other doc is byte-identical, so existing references only
+  needed their version line bumped.
+- `v0.12.0` → `v0.12.1` examples: Amper → Kotlin Toolchain wording, and the IDEA plugin link moved to
+  `31850-kotlin-toolchain`. Both already reflected in the skill since `0.12.0`.
+- `v0.12.1` → `main`: 9 files, +209 −69 — real drift toward the next release, unlike the single line seen at the
+  `v0.12.0` tag. Still no main snapshot: the skill tracks tagged releases, and `SKILL.md` now says so instead of
+  claiming main and the tag agree.
+
+### Changes made
+
+- `references/gradle-migration.md` — new, written from the upstream page. It is the one substantive addition in this
+  release, so the `SKILL.md` frontmatter `description` (the trigger text) gained "Gradle migration", the body's
+  "do not apply to Gradle or Maven build editing" carve-out now names Gradle too, and the reference map gained a row.
+- `references/known-issues.md` — new `Fixed In 0.12.1` section for KTC-5769 and KTC-5799; the open-issue heading moved
+  from `0.12.0` to `0.12.1` (all four remain open).
+- `references/publishing.md` — Maven Central configuration now states it requires `0.12.1`, since KTC-5799 has no
+  configuration workaround on `0.12.0`.
+- `references/maven-migration.md` — its "no Gradle converter" paragraph now points at `gradle-migration.md`.
+- Version lines in eleven references, `SKILL.md`, `SKILL-0.11.md`, and `README.md` bumped to `v0.12.1`. Historical
+  text — `migrating-0.11-to-0.12.md`, the `Fixed In 0.12.0` section, the `v0.12.0` log section — left at `0.12.0`.
+- `builtin-tech.md` still flags the stale Compose hot-reload warning: it is unchanged in the `v0.12.1` docs.
+
+### Deliberate non-changes
+
+- **No `migrating-0.12.0-to-0.12.1.md`.** The release has no breaking changes; the upgrade is `./kotlin update` and
+  nothing else. Do not add one on the next patch either unless the release notes list a breaking change.
+- **No `SKILL-0.12.0.md`.** `0.12.0` and `0.12.1` share one skill; `SKILL.md` covers `v0.12.x`.
+- The upstream page's link to the third-party `singleton11/kotlin-toolchain-skills` was not carried over.
+
+### Retained artifacts
+
+- `SKILL.md` — default `v0.12.1` skill, base plus reference map.
+- `SKILL-0.11.md` — historical `v0.11.1` skill.
+- `references/` — fifteen topic references; `codex-sandbox-caches.md` is local guidance, preserve it across
+  regenerations, and `gradle-migration.md` is new in this run.
+- `generation/upstream-docs-v0.12.1.md` — full `v0.12.1` docs aggregate.
+- `generation/upstream-docs-v0.11.1.md` — full `v0.11.1` docs aggregate, kept alongside `SKILL-0.11.md`.
+- `generation/generation-steps.md` — this log.
+- `scripts/aggregate-upstream-docs.sh` — reusable aggregate generator.
+
+### Upstream text not reproduced verbatim
+
+`migrating-from-gradle.md` at `v0.12.1` maps `./gradlew tasks` to `./kotlin show tasks`. Checked against a real
+`0.12.1` wrapper: the command exists and works, but it prints internal build tasks and their dependency edges, which
+is not the analogue of `gradle tasks`. Upstream `main` reworded the row to `kotlin --help` / `kotlin show commands`
+for that reason. `references/gradle-migration.md` gives the user-facing commands and explains what `show tasks`
+actually prints. The same page's `maint.kt` and `setting.gradle(.kts)` typos were silently fixed.
+
+`main` also adds a "Step 1: install the wrappers" section using `kotlin update --create`. That flag does not exist at
+`v0.12.1`, so it was not ported.

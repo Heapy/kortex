@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Agent Skills for Kotlin development, task workflows, personal workflows, and Heapy packages",
-    "version": "1.12.0",
+    "version": "1.13.0",
     "homepage": "https://github.com/Heapy/kortex"
   },
   "extensions": [
@@ -14,7 +14,7 @@
       "name": "kortex",
       "source": "./plugins/kortex",
       "description": "Kotlin Agent Skills - Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
-      "version": "1.12.0",
+      "version": "1.13.0",
       "author": {
         "name": "Ruslan Ibrahimau",
         "email": "ruslan@heapy.io"
@@ -33,8 +33,8 @@
     {
       "name": "kotlin-quality",
       "source": "./plugins/kotlin-quality",
-      "description": "Kotlin test, architecture, and library ABI review: meaningful tests, clean core, effects at the boundary, no broken releases.",
-      "version": "1.12.0",
+      "description": "Risk-based Kotlin review for READMEs, correctness, concurrency, compatibility, security, builds, performance, resilience, and platform runtimes.",
+      "version": "1.13.0",
       "author": {
         "name": "Ruslan Ibrahimau",
         "email": "ruslan@heapy.io"
@@ -46,6 +46,12 @@
         "review",
         "tests",
         "architecture",
+        "domain",
+        "invariants",
+        "concurrency",
+        "compatibility",
+        "security",
+        "performance",
         "solid",
         "quality"
       ]
@@ -54,7 +60,7 @@
       "name": "heapy",
       "source": "./plugins/heapy",
       "description": "Personal skills and Heapy package skills for komok, kinetica, and related workflows",
-      "version": "1.12.0",
+      "version": "1.13.0",
       "author": {
         "name": "Ruslan Ibrahimau",
         "email": "ruslan@heapy.io"
@@ -74,7 +80,7 @@
       "name": "kotgent",
       "source": "./plugins/kotgent",
       "description": "Repository-aware task workflows using the kotgent CLI and git",
-      "version": "1.12.0",
+      "version": "1.13.0",
       "author": {
         "name": "Ruslan Ibrahimau",
         "email": "ruslan@heapy.io"

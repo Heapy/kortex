@@ -5,13 +5,21 @@ Get issue status: https://youtrack.jetbrains.com/issue/KTC-XXXX
 The tracker moved from the `AMPER` project to `KTC` in `0.12`. Always re-check status before relying on a workaround
 here — this file is a snapshot, not a live feed.
 
-## 0.12.0
+## 0.12.1
 
 - KTC-4871 — plugins cannot be published
 - KTC-5603 — compiler diagnostics of every severity use an `ERROR` prefix (re-verify: `0.12` reworked task
   diagnostics via KTC-5515)
 - KTC-5698 — Compose resources are not part of a KMP library publication
 - KTC-5576 — Wasm-JS tests are not supported
+
+## Fixed In 0.12.1
+
+- KTC-5769 — a dependency-resolution error was hidden behind a misleading `dependency was resolved but it's missing on
+  disk` message. On `0.12.0` the real cause is not in the output; upgrade rather than chase the disk path.
+- KTC-5799 — `publish mavenCentral` failed with `Cannot publish to repository 'mavenCentral' because it's not marked as
+  publishable` even with `settings.publishing.mavenCentral: enabled`. There is no configuration workaround on
+  `0.12.0`: upgrade to `0.12.1`.
 
 ## Fixed In 0.12.0
 

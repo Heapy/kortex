@@ -1,13 +1,13 @@
 # Settings Reference
 
-Kotlin Toolchain `v0.12.0`. Always confirm against a real project with `./kotlin show settings -m <module>`.
+Kotlin Toolchain `v0.12.1`. Always confirm against a real project with `./kotlin show settings -m <module>`.
 
 `settings` configures the toolchains used to build the module. `test-settings` does the same for building and running
 its tests, and overrides `settings` where they overlap. Both accept `@platform` qualifiers.
 
 ## Defaults At A Glance
 
-| Setting | `0.12.0` | `0.11.1` |
+| Setting | `0.12.1` | `0.11.1` |
 |---|---|---|
 | Default JDK major version | 25 | 21 |
 | Minimum JDK to run the toolchain | 17 | — |

@@ -1,7 +1,7 @@
 {
   "name": "kotlin-quality",
-  "version": "1.12.0",
-  "description": "Kotlin test, architecture, and library ABI review agents — meaningful tests, clean core, effects at the boundary, no broken releases",
+  "version": "1.13.0",
+  "description": "Risk-based Kotlin review agents for READMEs, tests, architecture, domain behavior, concurrency, API and data compatibility, security, builds, performance, resilience, and platform runtimes",
   "author": {
     "name": "Ruslan Ibrahimau",
     "email": "ruslan@heapy.io"
@@ -13,24 +13,32 @@
     "review",
     "tests",
     "architecture",
+    "domain",
+    "invariants",
+    "concurrency",
+    "compatibility",
+    "security",
+    "performance",
     "solid",
     "quality"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "kotlin-quality - Kotlin Review",
-    "shortDescription": "Test, architecture, and ABI review for Kotlin projects",
-    "longDescription": "Reviews whether Kotlin tests prove the code works, whether the architecture can absorb change, and whether a published library keeps its ABI. Ships three review agents plus an installer that places them into Codex.",
+    "shortDescription": "Risk-based Kotlin review across code, docs, and runtimes",
+    "longDescription": "Classifies a change, runs only relevant Kotlin specialists, verifies their findings, and reports evidence-backed risks across README quality, correctness, concurrency, compatibility, security, builds, performance, resilience, KMP, Android, and web. Ships sixteen agents plus a Codex installer.",
     "developerName": "Heapy",
     "category": "Productivity",
     "capabilities": [
       "Code Review",
       "Testing",
-      "Architecture"
+      "Architecture",
+      "Security",
+      "Performance"
     ],
     "defaultPrompt": [
       "$kotlin-quality:install-codex-agents install the Kotlin review agents into Codex",
-      "$kotlin-quality:kotlin-review review the tests and architecture of this change"
+      "$kotlin-quality:kotlin-review perform a risk-based review of this change"
     ]
   }
 }

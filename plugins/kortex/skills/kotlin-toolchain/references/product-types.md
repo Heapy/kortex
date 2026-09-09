@@ -1,6 +1,6 @@
 # Product Types
 
-Kotlin Toolchain `v0.12.0`. One module produces exactly one product.
+Kotlin Toolchain `v0.12.1`. One module produces exactly one product.
 
 ## Declaring
 

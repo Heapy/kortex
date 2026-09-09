@@ -1,6 +1,6 @@
 # Built-In Technologies
 
-Kotlin Toolchain `v0.12.0`. Prefer the short settings forms unless you need customization.
+Kotlin Toolchain `v0.12.1`. Prefer the short settings forms unless you need customization.
 
 ## Compose Multiplatform
 
@@ -50,7 +50,7 @@ Compose Multiplatform resources are **not** included in a published KMP library 
 `./kotlin run --compose-hot-reload-mode`, or from the IDE, which needs the Kotlin Toolchain plugin and a module with a
 `jvm` target.
 
-`0.12` added a filesystem watcher to the standalone CLI and an MCP server for the reload loop. **The `v0.12.0` docs
+`0.12` added a filesystem watcher to the standalone CLI and an MCP server for the reload loop. **The `v0.12.1` docs
 still carry the old warning that the CLI does not watch the filesystem — that text is stale.** The shipped code
 watches both source and build-model paths, and a change to `module.yaml` triggers a full rebuild-and-reload.
 

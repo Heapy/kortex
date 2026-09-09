@@ -6,7 +6,7 @@ description: Historical snapshot of the JetBrains Kotlin Toolchain skill for v0.
 # Kotlin Toolchain (v0.11.x, historical)
 
 **Historical.** This file is kept for projects still pinned to `0.11.x`. The current skill is
-[`SKILL.md`](SKILL.md), generated from `v0.12.0`. Confirm the project's pinned version with
+[`SKILL.md`](SKILL.md), generated from `v0.12.1`. Confirm the project's pinned version with
 `sed -n 's/^kotlin_cli_version=//p' ./kotlin` before using anything here. Upgrade guidance is in
 [`references/migrating-0.11-to-0.12.md`](references/migrating-0.11-to-0.12.md).
 
@@ -36,7 +36,7 @@ YouTrack, and some distribution paths. Do not rename those to `kotlin`.
 
 ## Other Snapshots
 
-This file is the `v0.11.x` guide. The default skill is [`SKILL.md`](SKILL.md), generated from `v0.12.0`. Prefer it
+This file is the `v0.11.x` guide. The default skill is [`SKILL.md`](SKILL.md), generated from `v0.12.1`. Prefer it
 whenever the project is on `0.12` or later — the two disagree on `//` path notation, nested templates, product-type
 names, JDK and Kotlin defaults, and publishing.
 

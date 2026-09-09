@@ -22,8 +22,8 @@ JShell, and related development workflows.
 - `skills/kotlin-toolchain/SKILL.md` - default Kotlin Toolchain skill for `v0.12.x`; operational base plus a map of
   topic references.
 - `skills/kotlin-toolchain/references/` - per-topic detail: CLI, project model, product types, dependencies, settings,
-  built-in technologies, multiplatform, templates, publishing, plugins, Maven migration, the 0.11 -> 0.12 upgrade,
-  known issues, and Codex cache setup.
+  built-in technologies, multiplatform, templates, publishing, plugins, Maven and Gradle migration, the 0.11 -> 0.12
+  upgrade, known issues, and Codex cache setup.
 - `skills/kotlin-toolchain/SKILL-0.11.md` - historical skill for projects still pinned to `v0.11.x`.
 - `skills/kotlin-toolchain/generation/` - retained upstream documentation dumps and regeneration notes.
 - `skills/kotlin-toolchain/scripts/aggregate-upstream-docs.sh` - helper for rebuilding upstream documentation dumps.

@@ -1,6 +1,6 @@
 # Multiplatform Modules
 
-Kotlin Toolchain `v0.12.0`.
+Kotlin Toolchain `v0.12.1`.
 
 ## Platform Hierarchy
 

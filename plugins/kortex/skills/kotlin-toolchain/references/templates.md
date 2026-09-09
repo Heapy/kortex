@@ -1,6 +1,6 @@
 # Module Templates
 
-Kotlin Toolchain `v0.12.0`.
+Kotlin Toolchain `v0.12.1`.
 
 Two things here are new in `0.12`: **nested templates** (a template applying another) and the **sibling-conflict**
 rule. The merge rules themselves — scalars overridden, mappings and lists appended, `module.yaml` winning — already
