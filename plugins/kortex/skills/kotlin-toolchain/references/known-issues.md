@@ -5,13 +5,20 @@ Get issue status: https://youtrack.jetbrains.com/issue/KTC-XXXX
 The tracker moved from the `AMPER` project to `KTC` in `0.12`. Always re-check status before relying on a workaround
 here — this file is a snapshot, not a live feed.
 
-## 0.12.1
+## 0.12.2
 
 - KTC-4871 — plugins cannot be published
 - KTC-5603 — compiler diagnostics of every severity use an `ERROR` prefix (re-verify: `0.12` reworked task
   diagnostics via KTC-5515)
 - KTC-5698 — Compose resources are not part of a KMP library publication
 - KTC-5576 — Wasm-JS tests are not supported
+
+## Fixed In 0.12.2
+
+- KTC-5888 — the published `kotlin-cli-0.12.1-dist.tgz` was overwritten with a main-branch build, so a `0.12.1`
+  wrapper's SHA-256 check rejects the download. A machine that cached the original artifact is unaffected; a fresh
+  checkout or CI runner is not. There is no configuration workaround — run `./kotlin update` to move to `0.12.2`.
+  `0.12.2` is a redeployment only: the toolchain behavior and the upstream docs are identical to `0.12.1`.
 
 ## Fixed In 0.12.1
 

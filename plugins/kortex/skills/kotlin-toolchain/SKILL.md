@@ -13,19 +13,22 @@ Maven project to Kotlin Toolchain. Kotlin Toolchain is not Gradle, not Maven, an
 
 ## Source Snapshot
 
-This skill is generated from the official upstream docs for `v0.12.1`, the default supported version:
+This skill is generated from the official upstream docs for `v0.12.2`, the default supported version:
 
 - Repository: `https://github.com/JetBrains/kotlin-toolchain`
-- Ref: `v0.12.1`
-- SHA: `3f227ed2625bd3e91f53079c97433e1dbd639a30`
-- Full aggregate: `generation/upstream-docs-v0.12.1.md`
+- Ref: `v0.12.2`
+- SHA: `82a15324c05a4f1dc55b4e994863c665817f4729`
+- Full aggregate: `generation/upstream-docs-v0.12.2.md`
 - Generation notes: `generation/generation-steps.md`
 
-Statements here come from those docs, from the `v0.12.1` release notes, and from spot-checks against the tagged source
+Statements here come from those docs, from the `v0.12.2` release notes, and from spot-checks against the tagged source
 tree. Where the docs lag the code, this skill follows the code and says so.
 
-This skill tracks tagged releases only. At `v0.12.1` release time upstream `main` had already moved on toward the next
-release (9 docs, +209/-69), so there is still no separate main/dev snapshot. Older guidance for `v0.11.x` is kept in
+`v0.12.2` is a redeployment of `v0.12.1`: the docs, examples, and README are byte-identical between the two tags, and
+only the distribution artifact changed.
+
+This skill tracks tagged releases only. At `v0.12.2` release time upstream `main` had already moved on toward the next
+release (11 docs, +222/-70), so there is still no separate main/dev snapshot. Older guidance for `v0.11.x` is kept in
 [`SKILL-0.11.md`](SKILL-0.11.md) for projects still pinned there. Do not mix the two: the `//` path notation, nested
 templates, and KMP publishing all changed in `0.12`.
 
@@ -71,10 +74,13 @@ Run this once per session, the first time this skill is used in a Kotlin Toolcha
    `kotlin.bat` carries the same value as `set kotlin_cli_version=`. A repo without a wrapper has nothing to check —
    skip to `First Moves`.
 
-2. Compare it to `0.12.1`, the version this skill is generated from.
+2. Compare it to `0.12.2`, the version this skill is generated from.
 
 3. If the project pins something older, tell the user both versions and ask whether to update. Wait for an answer —
-   never update on your own initiative. For a `0.11.x` project either work from
+   never update on your own initiative. A pin of `0.12.1` is a special case: that distribution was overwritten
+   upstream, so a wrapper that still has to download it fails its checksum check (KTC-5888). A machine that already
+   cached it keeps working, but any fresh checkout or CI runner is broken, and `./kotlin update` is the only fix.
+   For a `0.11.x` project either work from
    [`SKILL-0.11.md`](SKILL-0.11.md) or offer the upgrade described in
    [`references/migrating-0.11-to-0.12.md`](references/migrating-0.11-to-0.12.md).
 
@@ -84,7 +90,7 @@ Run this once per session, the first time this skill is used in a Kotlin Toolcha
 
 5. If the user declines, keep working against the pinned version and flag guidance here that may not hold for it.
 
-`./kotlin update` targets the latest release, not `0.12.1`. If it lands beyond `0.12.x`, this snapshot is behind the
+`./kotlin update` targets the latest release, not `0.12.2`. If it lands beyond `0.12.x`, this snapshot is behind the
 project: prefer what the project actually reports (`./kotlin show ...`, `--help`) over this file.
 
 A globally installed `kotlin` is not a shortcut past this. Since `0.12`, it walks up from the current directory looking
@@ -230,7 +236,7 @@ and it needs the object form with `publish: true` to also be a publish target. D
 
 ## Settings Defaults
 
-Defaults from the pinned `v0.12.1` docs:
+Defaults from the pinned `v0.12.2` docs:
 
 | Setting | Default |
 |---|---|

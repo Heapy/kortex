@@ -1,6 +1,6 @@
 # CLI, Wrapper, And Provisioning
 
-Kotlin Toolchain `v0.12.1`.
+Kotlin Toolchain `v0.12.2`.
 
 ## Getting The CLI
 

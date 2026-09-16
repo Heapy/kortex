@@ -1,8 +1,8 @@
-# Kotlin Toolchain upstream docs aggregate (v0.12.1)
+# Kotlin Toolchain upstream docs aggregate (v0.12.2)
 
 - Source repository: https://github.com/JetBrains/kotlin-toolchain
-- Ref: v0.12.1
-- SHA: 3f227ed2625bd3e91f53079c97433e1dbd639a30
+- Ref: v0.12.2
+- SHA: 82a15324c05a4f1dc55b4e994863c665817f4729
 - Scope: all Markdown files under docs/src at this ref, sorted by path
 
 ## Source file list
@@ -62,7 +62,7 @@
 
 ### docs/src/cli/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/cli/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/cli/index.md
 - HTML: https://kotlin-toolchain.org/dev/cli/index/
 
 ---
@@ -179,7 +179,7 @@ See `kotlin update -h` for more information about the available options.
 
 ### docs/src/cli/provisioning.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/cli/provisioning.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/cli/provisioning.md
 - HTML: https://kotlin-toolchain.org/dev/cli/provisioning/
 
 ---
@@ -291,7 +291,7 @@ This is, again, not recommended — please use with care.
 
 ### docs/src/faq.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/faq.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/faq.md
 - HTML: https://kotlin-toolchain.org/dev/faq/
 
 ---
@@ -439,7 +439,7 @@ Yes! The Kotlin Toolchain now includes a preview of a plugin system. See the ded
 
 ### docs/src/getting-started/ide-setup.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/getting-started/ide-setup.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/getting-started/ide-setup.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/ide-setup/
 
 ---
@@ -471,7 +471,7 @@ description: This page describes how to set up your IDE to work with the Kotlin 
 
 ### docs/src/getting-started/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/getting-started/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/getting-started/index.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/index/
 
 ---
@@ -516,7 +516,7 @@ Ready to try the Kotlin Toolchain? Choose the right approach for you:
 
 ### docs/src/getting-started/migrating-from-gradle.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/getting-started/migrating-from-gradle.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/getting-started/migrating-from-gradle.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/migrating-from-gradle/
 
 ---
@@ -1119,7 +1119,7 @@ setup entirely. Read more on the [Testing](../user-guide/testing.md) page.
 
 ### docs/src/getting-started/migrating-from-maven.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/getting-started/migrating-from-maven.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/getting-started/migrating-from-maven.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/migrating-from-maven/
 
 ---
@@ -1336,7 +1336,7 @@ The following Maven features are not handled by the converter and require manual
 
 ### docs/src/getting-started/tutorial.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/getting-started/tutorial.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/getting-started/tutorial.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/tutorial/
 
 ---
@@ -1964,7 +1964,7 @@ Check the [user guide](../user-guide/index.md) and explore [example projects]({{
 
 ### docs/src/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/index.md
 - HTML: https://kotlin-toolchain.org/dev/
 
 ---
@@ -2144,7 +2144,7 @@ The Kotlin Toolchain is [Alpha](https://kotlinlang.org/docs/components-stability
 
 ### docs/src/reference/module.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/reference/module.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/reference/module.md
 - HTML: https://kotlin-toolchain.org/dev/reference/module/
 
 ---
@@ -3040,7 +3040,7 @@ settings:
 
 ### docs/src/reference/project.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/reference/project.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/reference/project.md
 - HTML: https://kotlin-toolchain.org/dev/reference/project/
 
 ---
@@ -3127,7 +3127,7 @@ Learn more about the [plugin structure](../user-guide/plugins/topics/structure.m
 
 ### docs/src/user-guide/advanced/java-annotation-processing.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/advanced/java-annotation-processing.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/advanced/java-annotation-processing.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/java-annotation-processing/
 
 ---
@@ -3167,7 +3167,7 @@ settings:
 
 ### docs/src/user-guide/advanced/jdk-provisioning.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/advanced/jdk-provisioning.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/advanced/jdk-provisioning.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/jdk-provisioning/
 
 ---
@@ -3379,7 +3379,7 @@ settings:
 
 ### docs/src/user-guide/advanced/kotlin-compiler-plugins.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/advanced/kotlin-compiler-plugins.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/advanced/kotlin-compiler-plugins.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/kotlin-compiler-plugins/
 
 ---
@@ -3639,7 +3639,7 @@ You can learn how to configure this plugin in the
 
 ### docs/src/user-guide/advanced/ksp.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/advanced/ksp.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/advanced/ksp.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/ksp/
 
 ---
@@ -3782,7 +3782,7 @@ For more information about how to write your own processor, check out
 
 ### docs/src/user-guide/advanced/maven-like-layout.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/advanced/maven-like-layout.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/advanced/maven-like-layout.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/maven-like-layout/
 
 ---
@@ -3839,7 +3839,7 @@ layout: maven-like
 
 ### docs/src/user-guide/advanced/maven-plugins.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/advanced/maven-plugins.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/advanced/maven-plugins.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/maven-plugins/
 
 ---
@@ -4040,7 +4040,7 @@ but some plugins may rely on Maven APIs or capabilities that the Kotlin Toolchai
 
 ### docs/src/user-guide/advanced/native-interop.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/advanced/native-interop.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/advanced/native-interop.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/native-interop/
 
 ---
@@ -4093,7 +4093,7 @@ See the [relevant docs](../plugins/topics/tasks.md#contributing-back-to-the-buil
 
 ### docs/src/user-guide/basics.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/basics.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/basics.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/basics/
 
 ---
@@ -4402,7 +4402,7 @@ Such paths are resolved against **the directory containing the `.yaml` file wher
 
 ### docs/src/user-guide/builtin-tech/compose-multiplatform.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/builtin-tech/compose-multiplatform.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/builtin-tech/compose-multiplatform.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/compose-multiplatform/
 
 ---
@@ -4651,7 +4651,7 @@ settings:
 
 ### docs/src/user-guide/builtin-tech/kotlinx-rpc.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/builtin-tech/kotlinx-rpc.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/builtin-tech/kotlinx-rpc.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/kotlinx-rpc/
 
 ---
@@ -4684,7 +4684,7 @@ This will automatically:
 
 ### docs/src/user-guide/builtin-tech/kotlinx-serialization.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/builtin-tech/kotlinx-serialization.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/builtin-tech/kotlinx-serialization.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/kotlinx-serialization/
 
 ---
@@ -4772,7 +4772,7 @@ your `dependencies` section. This is useful in multiple cases:
 
 ### docs/src/user-guide/builtin-tech/ktor.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/builtin-tech/ktor.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/builtin-tech/ktor.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/ktor/
 
 ---
@@ -4818,7 +4818,7 @@ settings:
 
 ### docs/src/user-guide/builtin-tech/lombok.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/builtin-tech/lombok.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/builtin-tech/lombok.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/lombok/
 
 ---
@@ -4850,7 +4850,7 @@ settings:
 
 ### docs/src/user-guide/builtin-tech/spring.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/builtin-tech/spring.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/builtin-tech/spring.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/spring/
 
 ---
@@ -4909,7 +4909,7 @@ settings:
 
 ### docs/src/user-guide/dependencies.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/dependencies.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/dependencies.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/dependencies/
 
 ---
@@ -5370,7 +5370,7 @@ The effects are the following:
 
 ### docs/src/user-guide/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/index.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/index/
 
 ---
@@ -5393,7 +5393,7 @@ For a more hands-on experience, check out the [Getting started](../getting-start
 
 ### docs/src/user-guide/multiplatform.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/multiplatform.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/multiplatform.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/multiplatform/
 
 ---
@@ -5785,7 +5785,7 @@ See more in the dedicated [Swift support](product-types/ios-app.md#swift-support
 
 ### docs/src/user-guide/plugins/overview.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/plugins/overview.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/plugins/overview.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/overview/
 
 ---
@@ -5865,7 +5865,7 @@ For more information on these features, see the KDocs on these built‑in config
 
 ### docs/src/user-guide/plugins/quick-start.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/plugins/quick-start.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/plugins/quick-start.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/quick-start/
 
 ---
@@ -6330,7 +6330,7 @@ If you haven't already, check the more detailed reference on the specific topics
 
 ### docs/src/user-guide/plugins/topics/checks.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/plugins/topics/checks.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/plugins/topics/checks.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/checks/
 
 ---
@@ -6394,7 +6394,7 @@ checks:
 
 ### docs/src/user-guide/plugins/topics/configuration.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/plugins/topics/configuration.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/plugins/topics/configuration.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/configuration/
 
 ---
@@ -6619,7 +6619,7 @@ And in this case an **explicit YAML type tag** is required to communicate the ex
 
 ### docs/src/user-guide/plugins/topics/custom-commands.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/plugins/topics/custom-commands.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/plugins/topics/custom-commands.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/custom-commands/
 
 ---
@@ -6673,7 +6673,7 @@ commands:
 
 ### docs/src/user-guide/plugins/topics/references.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/plugins/topics/references.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/plugins/topics/references.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/references/
 
 ---
@@ -6848,7 +6848,7 @@ tasks:
 
 ### docs/src/user-guide/plugins/topics/structure.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/plugins/topics/structure.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/plugins/topics/structure.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/structure/
 
 ---
@@ -6941,7 +6941,7 @@ Plugins can be enabled and [configured](configuration.md#plugin-settings) like t
 
 ### docs/src/user-guide/plugins/topics/tasks.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/plugins/topics/tasks.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/plugins/topics/tasks.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/tasks/
 
 ---
@@ -7309,7 +7309,7 @@ plugin samples in the `build-sources` directory of the Kotlin project.
 
 ### docs/src/user-guide/product-types/android-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/android-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/android-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/android-app/
 
 ---
@@ -7531,7 +7531,7 @@ This file will be found and consumed automatically.
 
 ### docs/src/user-guide/product-types/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/index.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/index/
 
 ---
@@ -7565,7 +7565,7 @@ Here is the list of supported product types:
 
 ### docs/src/user-guide/product-types/ios-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/ios-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/ios-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/ios-app/
 
 ---
@@ -7677,7 +7677,7 @@ This framework is built from:
 
 ### docs/src/user-guide/product-types/js-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/js-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/js-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/js-app/
 
 ---
@@ -7753,7 +7753,7 @@ To run your application, you need to:
 
 ### docs/src/user-guide/product-types/jvm-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/jvm-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/jvm-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/jvm-app/
 
 ---
@@ -7824,7 +7824,7 @@ It provides a convenient, runnable self-contained deployment unit that includes 
 
 ### docs/src/user-guide/product-types/jvm-lib.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/jvm-lib.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/jvm-lib.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/jvm-lib/
 
 ---
@@ -7879,7 +7879,7 @@ Read more about this in the [publishing](../publishing.md) guide.
 
 ### docs/src/user-guide/product-types/kmp-lib.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/kmp-lib.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/kmp-lib.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/kmp-lib/
 
 ---
@@ -7911,7 +7911,7 @@ Read more about this in the [publishing](../publishing.md) guide.
 
 ### docs/src/user-guide/product-types/native-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/native-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/native-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/native-app/
 
 ---
@@ -7980,7 +7980,7 @@ product types.
 
 ### docs/src/user-guide/product-types/wasm-js-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/wasm-js-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/wasm-js-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/wasm-js-app/
 
 ---
@@ -8088,7 +8088,7 @@ You can use the `run` command to start the local server and open your applicatio
 
 ### docs/src/user-guide/product-types/wasm-wasi-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/product-types/wasm-wasi-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/product-types/wasm-wasi-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/wasm-wasi-app/
 
 ---
@@ -8155,7 +8155,7 @@ To run WASI application, you need to:
 
 ### docs/src/user-guide/publishing.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/publishing.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/publishing.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/publishing/
 
 ---
@@ -8387,7 +8387,7 @@ This can be done using `settings.publishing.mavenCentral.publishingMode: auto`.
 
 ### docs/src/user-guide/templates.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/templates.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/templates.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/templates/
 
 ---
@@ -8726,7 +8726,7 @@ apply:
 
 ### docs/src/user-guide/testing.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/testing.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/testing.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/testing/
 
 ---
@@ -8830,7 +8830,7 @@ test-settings:
 
 ### docs/src/user-guide/yaml-primer.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/3f227ed2625bd3e91f53079c97433e1dbd639a30/docs/src/user-guide/yaml-primer.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/82a15324c05a4f1dc55b4e994863c665817f4729/docs/src/user-guide/yaml-primer.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/yaml-primer/
 
 ---

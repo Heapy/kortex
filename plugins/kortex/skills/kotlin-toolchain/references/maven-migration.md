@@ -1,6 +1,6 @@
 # Maven Migration And Maven Plugins
 
-Kotlin Toolchain `v0.12.1`.
+Kotlin Toolchain `v0.12.2`.
 
 There is no conversion tool for Gradle projects at the moment: Gradle build scripts contain arbitrary code, which
 makes a deterministic conversion hard to define — see [`gradle-migration.md`](gradle-migration.md) for the manual

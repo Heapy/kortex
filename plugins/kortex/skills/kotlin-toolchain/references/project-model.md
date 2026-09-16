@@ -1,6 +1,6 @@
 # Project Model
 
-Kotlin Toolchain `v0.12.1`.
+Kotlin Toolchain `v0.12.2`.
 
 ## Project And Modules
 

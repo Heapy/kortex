@@ -1,6 +1,6 @@
 # Dependencies And Repositories
 
-Kotlin Toolchain `v0.12.1`.
+Kotlin Toolchain `v0.12.2`.
 
 ## Notation
 

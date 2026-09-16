@@ -1,6 +1,6 @@
 # Gradle Migration
 
-Kotlin Toolchain `v0.12.1`.
+Kotlin Toolchain `v0.12.2`.
 
 There is no `convert-project` equivalent for Gradle: build scripts are arbitrary code, so a faithful automatic
 translation is not definable. Migration is by hand, module by module. For Maven projects use the converter described in
@@ -173,7 +173,7 @@ Test-task configuration maps to `settings.jvm.test`:
 | `./gradlew clean` | `./kotlin clean` |
 | `./gradlew --stop` | Nothing — there is no daemon |
 
-The `v0.12.1` Gradle migration page maps `./gradlew tasks` to `./kotlin show tasks`. That command does run, but it
+The `v0.12.2` Gradle migration page maps `./gradlew tasks` to `./kotlin show tasks`. That command does run, but it
 lists the toolchain's internal build tasks and their dependency edges — not something to drive a build with. The
 user-facing lists are `./kotlin --help` for built-in commands and `./kotlin show commands` for the ones plugins
 contribute. Upstream reworded the row this way after the tag.

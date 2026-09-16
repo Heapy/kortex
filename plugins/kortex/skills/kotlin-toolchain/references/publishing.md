@@ -1,6 +1,6 @@
 # Publishing Libraries
 
-Kotlin Toolchain `v0.12.1`. Publishing is still in preview and likely to change.
+Kotlin Toolchain `v0.12.2`. Publishing is still in preview and likely to change.
 
 ## What Can Be Published
 
@@ -117,7 +117,7 @@ settings:
           url: https://opensource.org/license/mit
 ```
 
-Requires `0.12.1`. On `0.12.0` this configuration still fails with `Cannot publish to repository 'mavenCentral'
+Requires `0.12.1` or later. On `0.12.0` this configuration still fails with `Cannot publish to repository 'mavenCentral'
 because it's not marked as publishable` (KTC-5799), and no configuration works around it.
 
 `pom.scm` as a bare string is shorthand for `pom.scm.url`; `connection` and `developerConnection` are derived as

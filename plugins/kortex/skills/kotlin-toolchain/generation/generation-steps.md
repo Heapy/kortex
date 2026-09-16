@@ -1,8 +1,9 @@
 # Kotlin Toolchain skill generation steps
 
-This is a running log. The **current** snapshot is `v0.12.1` — see
-[2026-09-09: regeneration for v0.12.1](#2026-09-09-regeneration-for-v0121) at the end of this file. The two sections
-before it record the `v0.11.1` and `v0.12.0` runs and are kept for reference; their artifact lists are superseded.
+This is a running log. The **current** snapshot is `v0.12.2` — see
+[2026-09-16: regeneration for v0.12.2](#2026-09-16-regeneration-for-v0122) at the end of this file. The three sections
+before it record the `v0.11.1`, `v0.12.0`, and `v0.12.1` runs and are kept for reference; their artifact lists are
+superseded.
 
 ## 2026-06-30: initial generation for v0.11.1
 
@@ -384,3 +385,88 @@ actually prints. The same page's `maint.kt` and `setting.gradle(.kts)` typos wer
 
 `main` also adds a "Step 1: install the wrappers" section using `kotlin update --create`. That flag does not exist at
 `v0.12.1`, so it was not ported.
+
+## 2026-09-16: regeneration for v0.12.2
+
+Upstream released `v0.12.2` on 2026-09-15. It is a redeployment of `v0.12.1`, not a code or documentation release:
+the `0.12.1` distribution artifact had been overwritten upstream, breaking the wrapper's checksum check. The skill was
+updated in place — version lines, one new known issue, and a fresh aggregate.
+
+### Upstream discovery
+
+```shell
+git ls-remote --tags --refs https://github.com/JetBrains/kotlin-toolchain.git
+git ls-remote --heads https://github.com/JetBrains/kotlin-toolchain.git main
+curl -sL https://api.github.com/repos/JetBrains/kotlin-toolchain/releases/tags/v0.12.2
+```
+
+- Latest release tag: `v0.12.2` at `82a15324c05a4f1dc55b4e994863c665817f4729`, published 2026-09-15.
+- Upstream `main` at the time: `474ae665c49289b01d9dffa4f1e8fae991ad8bfc`.
+- Release notes: 3 lines. No breaking changes, no new features, no fixed-bug list beyond KTC-5888 —
+  `kotlin-cli-0.12.1-dist.tgz` was overwritten with a main-branch build, so the wrapper's SHA-256 check fails.
+- Cross-checked against a real wrapper: `./kotlin update` reports
+  `Kotlin Toolchain version 0.12.2 (82a1532, 2026-09-15)`, and `82a1532` is the tag SHA.
+
+### Aggregate generation
+
+```shell
+bash plugins/kortex/skills/kotlin-toolchain/scripts/aggregate-upstream-docs.sh \
+  <scratch>/kt-v0.12.2 v0.12.2 82a15324c05a4f1dc55b4e994863c665817f4729 \
+  plugins/kortex/skills/kotlin-toolchain/generation/upstream-docs-v0.12.2.md
+```
+
+`upstream-docs-v0.12.2.md` is 8,883 lines over 50 upstream Markdown documents — the same counts as
+`upstream-docs-v0.12.1.md`, which was deleted: `diff` between the two shows only the header `Ref`/`SHA` lines and the
+per-document `Raw:` permalinks.
+
+### Version diff checks
+
+```shell
+git diff --no-index --stat kt-v0.12.1/docs/src kt-v0.12.2/docs/src
+git diff --no-index --stat kt-v0.12.1/examples kt-v0.12.2/examples
+git diff --no-index --stat kt-v0.12.1/README.md kt-v0.12.2/README.md
+git diff --no-index --stat kt-v0.12.2/docs/src kt-main/docs/src
+```
+
+Observed:
+
+- `v0.12.1` → `v0.12.2`: **empty** for docs, examples, and README. The tags are byte-identical in everything this
+  skill reads. No reference needed a content change.
+- `v0.12.2` → `main`: 11 files, +222 −70 — continued drift toward the next release, up from 9 files at the `v0.12.1`
+  tag. Still no main snapshot; the skill tracks tagged releases.
+
+### Changes made
+
+- `references/known-issues.md` — new `Fixed In 0.12.2` section for KTC-5888. This is the only substantive addition in
+  the run. The open-issue heading moved from `0.12.1` to `0.12.2`; all four remain open.
+- `SKILL.md` — the `Project Version Check` step 3 now calls out a `0.12.1` pin as broken for any fresh checkout or CI
+  runner, working only where the original artifact is already cached. `Source Snapshot` states that `v0.12.2` is a
+  redeployment of `v0.12.1`, and the main-drift figure moved to 11 docs, +222/-70.
+- `references/publishing.md` — the Maven Central requirement changed from `Requires 0.12.1` to
+  `Requires 0.12.1 or later`, since `0.12.1` can no longer be provisioned.
+- Version lines and the snapshot SHA in twelve references, `SKILL.md`, `SKILL-0.11.md`, and the skill `README.md`
+  bumped to `v0.12.2` / `82a15324c05a4f1dc55b4e994863c665817f4729`. Historical text —
+  `migrating-0.11-to-0.12.md`, the `Fixed In 0.12.1` and `Fixed In 0.12.0` sections, earlier log sections — left
+  as-is.
+
+### Deliberate non-changes
+
+- **No `migrating-0.12.1-to-0.12.2.md`.** There are no breaking changes; the upgrade is `./kotlin update`.
+- **No `SKILL-0.12.1.md`.** `SKILL.md` covers `v0.12.x`, and nobody should stay on `0.12.1` — it cannot be
+  provisioned.
+- **Frontmatter `description` untouched.** It names `v0.12.x`, which still holds.
+- **Root `README.md`, `plugins/kortex/README.md`, and the root skill list untouched.** They name `v0.12.x`, not a
+  patch version.
+- **No defaults table change.** The docs are byte-identical, so every default in `SKILL.md` and
+  `references/settings.md` still matches the pinned snapshot.
+
+### Retained artifacts
+
+- `SKILL.md` — default `v0.12.2` skill, base plus reference map.
+- `SKILL-0.11.md` — historical `v0.11.1` skill.
+- `references/` — fifteen topic references; `codex-sandbox-caches.md` is local guidance, preserve it across
+  regenerations.
+- `generation/upstream-docs-v0.12.2.md` — full `v0.12.2` docs aggregate.
+- `generation/upstream-docs-v0.11.1.md` — full `v0.11.1` docs aggregate, kept alongside `SKILL-0.11.md`.
+- `generation/generation-steps.md` — this log.
+- `scripts/aggregate-upstream-docs.sh` — reusable aggregate generator.
