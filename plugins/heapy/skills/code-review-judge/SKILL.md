@@ -17,11 +17,19 @@ original context of every finding, including its source — the finder, agent, o
 reported it — when the review names one. A long walk can outlive the context window; the log is
 what survives. Write each decision as soon as it is made.
 
+**Use plain words.** Write for an average developer who has not seen this codebase. Do not use
+jargon that only a narrow field or one language community knows. If the findings need a few key
+terms, define them in a short glossary before the first finding, copy it into the decision log, and
+use only those terms.
+
 For each finding:
 
 - Describe the conditions under which it happens, and rate their **likelihood**.
 - Describe its impact, and rate the **impact**.
+- Give one concrete example of the bad case: the input, state, or sequence of events, and what the
+  user, the data, or the system ends up with.
 - Describe what the fix would look like.
+- Replay the same example with the fix in place, and show what happens instead.
 - Rate the **fix cost**.
 - Rate the **architecture friction** of the fix.
 - Summarize.
@@ -56,5 +64,6 @@ Safety Policy:
 - On the default branch, only use new commits.
 - If approval is withheld, use new commits and do not push.
 
-Store the plan in the scratchpad. It must contain the full context of the findings and the decisions
-the user made. Print the absolute path to the plan, and suggest clearing the context and running it.
+Store the plan in the scratchpad. It must contain the glossary, the full context of the findings,
+and the decisions the user made. Print the absolute path to the plan, and suggest clearing the
+context and running it.
