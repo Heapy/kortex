@@ -1,6 +1,6 @@
 {
   "name": "kotlin-quality",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "description": "Risk-based Kotlin review agents for READMEs, tests, architecture, domain behavior, concurrency, API and data compatibility, security, builds, performance, resilience, and platform runtimes",
   "author": {
     "name": "Ruslan Ibrahimau",
