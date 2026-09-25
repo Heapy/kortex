@@ -1,6 +1,7 @@
 ---
 name: code-review-judge
 description: Decide with the user which review findings to fix
+disable-model-invocation: true
 ---
 
 # Code Review Judge

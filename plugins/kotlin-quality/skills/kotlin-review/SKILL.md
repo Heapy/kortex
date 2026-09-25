@@ -1,6 +1,7 @@
 ---
 name: kotlin-review
 description: Review Kotlin tests, architecture, or ABI compatibility, over the working tree, a commit, a pull request, or the whole repository.
+disable-model-invocation: true
 ---
 
 # Kotlin Review

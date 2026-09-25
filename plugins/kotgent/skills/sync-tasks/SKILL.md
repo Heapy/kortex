@@ -1,6 +1,7 @@
 ---
 name: sync-tasks
 description: Compare active kotgent tasks with repository guidance, plans, code, tests, TODOs, and Git history, and report task/repository drift with evidence and proposed CLI commands. Use when the user asks to sync, reconcile, map, or compare the kotgent backlog with the current repository. This workflow is always read-only.
+disable-model-invocation: true
 ---
 
 # Sync Tasks

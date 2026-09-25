@@ -1,6 +1,7 @@
 ---
 name: review-tasks
 description: Audit todo kotgent tasks against the current repository and recommend whether to keep, rewrite, merge, drop, or escalate them. Use when the user asks to review, groom, clean up, triage, or validate the todo backlog for completed, obsolete, conflicting, duplicate, absorbed, or incorrectly blocked tasks. This workflow is always read-only.
+disable-model-invocation: true
 ---
 
 # Review Tasks

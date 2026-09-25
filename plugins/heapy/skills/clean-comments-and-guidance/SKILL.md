@@ -1,6 +1,7 @@
 ---
 name: clean-comments-and-guidance
 description: Audit and reduce low-value code comments, KDoc, docstrings, CLAUDE.md, and AGENTS.md while preserving behavior and durable intent. Use for repository-wide comment cleanup, comment-density reduction, or shortening agent guidance.
+disable-model-invocation: true
 ---
 
 # Clean Comments and Agent Guidance

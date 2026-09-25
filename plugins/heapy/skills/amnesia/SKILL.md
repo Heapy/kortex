@@ -1,6 +1,7 @@
 ---
 name: amnesia
 description: Use when the user returns to a session and needs to be reoriented, including requests such as "amnesia", "what did I miss", "recap the session", "where were we", "catch me up", "what happened while I was away", or "what was I doing". Reports when the session started, the last user message verbatim, what happened since it, and any earlier changes still worth knowing.
+disable-model-invocation: true
 ---
 
 # Amnesia

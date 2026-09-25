@@ -1,0 +1,6 @@
+interface:
+  display_name: "Install Codex Agents"
+  short_description: "Copy the Kotlin review agents into Codex"
+  default_prompt: "$kotlin-quality:install-codex-agents install the Kotlin review agents into Codex"
+policy:
+  allow_implicit_invocation: false

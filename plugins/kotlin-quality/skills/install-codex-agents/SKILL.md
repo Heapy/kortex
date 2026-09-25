@@ -1,6 +1,7 @@
 ---
 name: install-codex-agents
 description: Install this plugin's Kotlin review agents into Codex, which cannot load agents from a plugin.
+disable-model-invocation: true
 ---
 
 # Install Codex Agents

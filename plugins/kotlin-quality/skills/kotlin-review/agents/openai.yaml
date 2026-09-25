@@ -1,0 +1,6 @@
+interface:
+  display_name: "Kotlin Review"
+  short_description: "Review Kotlin code with specialist agents"
+  default_prompt: "$kotlin-quality:kotlin-review review this branch"
+policy:
+  allow_implicit_invocation: false

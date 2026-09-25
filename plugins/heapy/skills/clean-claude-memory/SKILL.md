@@ -1,6 +1,7 @@
 ---
 name: clean-claude-memory
 description: Audit, prune, rewrite, or relocate Claude Code project memory. Use when the user asks to review, clean, update, or remove Claude memory files, eliminate stale project memories, or rebuild MEMORY.md.
+disable-model-invocation: true
 ---
 
 # Clean Claude Memory

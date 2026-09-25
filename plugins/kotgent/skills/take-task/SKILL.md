@@ -1,6 +1,7 @@
 ---
 name: take-task
 description: Safely claim a specific or next eligible kotgent task from a free session, detect blocked or concurrent work, and immediately continue through the work-task workflow. Use when the user asks to take, claim, pick up, start, or work the next kotgent task, optionally naming a task ref.
+disable-model-invocation: true
 ---
 
 # Take Task
