@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "kotlin-quality",
-  "version": "1.14.1",
+  "version": "1.14.2",
   "description": "Risk-based Kotlin review agents for READMEs, tests, architecture, domain behavior, concurrency, API and data compatibility, security, builds, performance, resilience, and platform runtimes",
   "author": {
     "name": "Ruslan Ibrahimau",

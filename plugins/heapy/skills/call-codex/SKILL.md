@@ -51,16 +51,16 @@ Codex analyzes; the calling agent implements. Never let this mode write.
 
 ## Invocation
 
-Write the prompt to a file, then run in the background — a `max` effort review takes
-10-15 minutes.
+Write the prompt into the run's own directory, then launch in the background and wait for the
+exit — a `max` review usually takes 20–30 minutes (see *Launching and waiting*).
 
 ```sh
 codex exec -m gpt-6-sol \
   --sandbox read-only \
   -c approvals_reviewer="user" \
   -c model_reasoning_effort="max" \
-  -o /abs/path/codex-answer.md \
-  "$(cat /abs/path/prompt.md)" < /dev/null
+  -o "$RUN/answer.md" \
+  "$(cat "$RUN/prompt.md")" < /dev/null > "$RUN/stdout.log" 2>&1
 ```
 
 `read-only` holds only while nobody approves escalations. With `approvals_reviewer =
@@ -72,6 +72,14 @@ the run actually got.
 Pinned that way, codex can run terminating read-only commands (`git show`, `rg`, `strings`), but
 it cannot start a server, a tmux socket, or a daemon. State that limit in the prompt and ask for
 an exact manual reproduction plan instead — it produces good ones.
+
+## Freeze the target
+
+Name what is under review in the prompt — a commit SHA, a `base..head` range — rather than "the
+current working tree". Then leave the reviewed files alone until the answer lands. A review runs
+for half an hour; edits made meanwhile turn the verdict into one about a tree that no longer
+exists, and codex will say the described state is stale. If the code must move on, commit first
+and review the commit.
 
 ## Prompt shape
 
@@ -122,8 +130,8 @@ codex exec -m gpt-6-sol \
   -c model_reasoning_effort="high" \
   -C /abs/path/to/repo \
   --add-dir /abs/path/to/second/checkout \
-  -o /abs/path/codex-answer.md \
-  "$(cat /abs/path/task.md)" < /dev/null
+  -o "$RUN/answer.md" \
+  "$(cat "$RUN/task.md")" < /dev/null > "$RUN/stdout.log" 2>&1
 ```
 
 What each grant buys:
@@ -181,6 +189,75 @@ are two different facts, and only the second one is reportable to the user.
 
 ---
 
+# Launching and waiting (both modes)
+
+## One directory per run
+
+Every run gets its own directory, `$RUN`, holding its prompt, its `-o` file, and its stdout log.
+Fixed paths collide as soon as two runs overlap: a parallel launch overwrites the prompt
+mid-flight, and codex carries out another agent's task. Keep the directory until the answer has
+been read and acted on — scratch space under `/tmp` is cleaned within days, and a rerun then has
+no prompt to reuse. When the host refuses the launch line as too complex to verify (a
+worktree-isolated Claude Code subagent does), write the command into `$RUN/run.sh` and run that.
+
+## Launch in the background, wait for the exit
+
+Launch the codex command itself as the host's background task, with stdout and stderr in
+`$RUN/stdout.log`, and keep that task's handle — the background task id, or `$!`. Use the handle
+to check on the run and to stop it. Never match by name: `pgrep -f "codex exec"` also matches the
+caller's own wrapper shell and every sibling run, and `pkill -f "codex exec"` has killed other
+agents' runs mid-flight.
+
+Stdout is not a progress signal. It holds hook lines and tool output, not how far the run is, and
+reading it mid-run has cost 38k–132k tokens per look. Wait for the exit, then read `-o`.
+
+Give each run a deadline and decide in advance what happens when it passes. macOS has no
+`timeout`; enforce the deadline from the host.
+
+In Claude Code:
+
+- The completion notification of the background task is the wait. Nothing else is needed.
+- Never wait in the foreground: a foreground command dies at 10 minutes with `exit 143`, and
+  `sleep` polling is blocked.
+- If something must watch, use Monitor on the `-o` file with a timeout above the expected run
+  time; a Monitor that expires first reports nothing.
+- A subagent keeps its turn while its run is live. Ending the turn to wait for the notification
+  hands back no report.
+
+Tell the user the realistic range when launching — "20–30 minutes, possibly an hour" — not the
+best case.
+
+## A run that produced nothing
+
+Exit 0 is not success. The `-o` file must exist and answer the question. An executor that exits
+after a single planning message, or leaves an empty `git diff`, failed. A run stopped from
+outside — network loss, the host exiting, a kill — leaves no `-o` and possibly half-done edits:
+read `git diff` before relaunching or salvaging.
+
+---
+
+# When the caller is Codex
+
+This skill also runs inside Codex. There a nested `codex exec`, or `codex debug`, dies at startup
+because the caller's sandbox blocks it — under `workspace-write` with network access too:
+
+```
+WARNING: proceeding, even though we could not create PATH aliases: Operation not permitted (os error 1)
+Error: failed to initialize in-process app-server client: Operation not permitted (os error 1)
+```
+
+The launch needs the host's escalation (`sandbox_permissions: "require_escalated"`). That
+escalation sends the repository to the model provider, and an automatic reviewer has refused it
+as data exfiltration when the user had not agreed to it. What worked in practice: ask the user
+before the first launch, say what will be sent and why, and cite that consent in the
+escalation's justification. A caller that is itself a `codex exec` run with `approval: never`
+cannot escalate — report that and stop, and say so in the final answer rather than reviewing
+alone.
+
+The PATH-aliases warning on its own is harmless.
+
+---
+
 # Integration rules (both modes)
 
 These cost time to rediscover. Respect them.
@@ -188,7 +265,8 @@ These cost time to rediscover. Respect them.
 1. **Always redirect stdin: `< /dev/null`.** `codex exec` reads stdin to append a
    `<stdin>` block even when the prompt is a positional argument. Under a background
    launch the inherited pipe never closes and codex blocks forever on "Reading additional
-   input from stdin…".
+   input from stdin…". That line prints on every run, `< /dev/null` included; it means a hang
+   only when nothing follows it.
 
 2. **A literal NUL byte in the prompt truncates it at exec time.** `"$(cat prompt.md)"`
    carries the byte through the substitution in zsh, but `execve` ends every argument at the
@@ -220,9 +298,11 @@ These cost time to rediscover. Respect them.
    marker, `tokens used` with a count, and the final answer **printed twice**. The `-o`
    file holds exactly the final message (no trailing newline).
 
-5. **Budget the run.** Fourteen findings at `max` cost ≈240k tokens and ~14 minutes. A
-   trivial question at `low` costs seconds. Match the effort to the question — and for an
-   executor, to the size of the diff, not to the difficulty of the phrasing.
+5. **Budget the run.** A single `max` review: median ≈22 minutes, most runs over 15, some near
+   an hour, and 110k–410k tokens; longer when codex fans out to installed review skills. An
+   `xhigh` executor: 30–50 minutes. A trivial question at `low` answers in seconds but still
+   costs 10k–20k tokens of context. Match the effort to the question — and for an executor, to
+   the size of the diff, not to the difficulty of the phrasing.
 
 6. **Verify what it claims.** Codex is a second opinion, not an oracle. When it refutes a
    finding, confirm the refutation in the code before acting on it — and when it confirms
@@ -254,10 +334,10 @@ These cost time to rediscover. Respect them.
 | `-c web_search=` | `live`, `cached` (default), `indexed`, `disabled`; `exec` has no `--search` flag |
 | `--strict-config` | fail on config fields this build does not recognize — **including `-c` overrides**. Without it an unknown key is accepted and ignored |
 | `--approve-for-me` | route escalation requests through automatic review in the `workspace-write` sandbox instead of failing them; conflicts with `-s` |
-| `-s, --sandbox <MODE>` | `read-only`, `workspace-write`, `danger-full-access`. `exec resume` and `exec fork` reject it, use `-c sandbox_mode=` |
+| `-s, --sandbox <MODE>` | `read-only`, `workspace-write`, `danger-full-access`. `exec resume`, `exec fork` and `exec review` reject it, use `-c sandbox_mode=` |
 | `--dangerously-bypass-approvals-and-sandbox` | no sandbox, no prompts; externally isolated environments only |
 | `-o, --output-last-message <FILE>` | writes ONLY the final answer to a file — the one reliable way to read the result |
-| `-C, --cd <DIR>` | working root; `--add-dir` adds another writable dir, `--skip-git-repo-check` allows running outside git. `exec resume` and `exec fork` accept neither `-C` nor `--add-dir` |
+| `-C, --cd <DIR>` | working root; `--add-dir` adds another writable dir, `--skip-git-repo-check` allows running outside git. `exec resume`, `exec fork` and `exec review` accept neither `-C` nor `--add-dir` |
 | `--json` | events as JSONL, for machine consumption |
 | `--output-schema <FILE>` | JSON Schema the final response must satisfy |
 | `-i, --image <FILE>` | attach screenshots to the prompt |
@@ -282,13 +362,20 @@ These cost time to rediscover. Respect them.
   the source stays unchanged. Use it to put a second question to a finished review without
   appending to it. Same restricted flag set as `resume`, same overrides.
 - `codex exec review [--uncommitted | --base <BRANCH> | --commit <SHA>] [--title <T>]` —
-  the built-in review, when a plain diff review is wanted and no custom stance is needed.
+  the built-in review, when a plain diff review is wanted and no custom stance is needed. A
+  scope flag cannot be combined with a prompt (`error: the argument '--uncommitted' cannot be
+  used with '[PROMPT]'`); a prompt alone works. With no `-s` and no `-C`, it takes sandbox,
+  approvals, and effort from `config.toml` — which can mean `workspace-write` with
+  `on-request`. Pin them and run it from the repository:
+  `-c sandbox_mode="read-only" -c approvals_reviewer="user" -c model_reasoning_effort="high"`.
+  The answer goes to `-o` as with `codex exec`. For a custom stance, use reviewer mode instead.
 
 ## When this file is wrong
 
-Everything above was checked against `codex-cli 0.157.0`. Flags, config keys, and sandbox
-behavior move between releases; `codex --version` is the first thing to compare when
-something does not line up.
+Flags, config keys, and sandbox behavior above were checked against `codex-cli 0.157.0`. Run
+times and token counts were observed in real sessions from August to September 2026, on
+0.146–0.157. Flags, config keys, and sandbox behavior move between releases; `codex --version`
+is the first thing to compare when something does not line up.
 
 A mismatch is a finding, not an obstacle. Do not quietly route around it.
 
