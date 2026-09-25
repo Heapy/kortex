@@ -1,0 +1,6 @@
+interface:
+  display_name: "Code Review Judge"
+  short_description: "Decide with the user which review findings to fix"
+  default_prompt: "$heapy:code-review-judge discuss these findings with user"
+policy:
+  allow_implicit_invocation: false

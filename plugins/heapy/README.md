@@ -9,6 +9,7 @@ Agent skills for personal workflows and Heapy package work, including projects s
 - Issue fixing workflows: capture the source, reproduce or localize, diagnose, implement, verify, and hand off.
 - Session recaps after stepping away from a long-running session.
 - Driving the codex CLI, both as an adversarial reviewer of findings and as an executor of scoped tasks.
+- Walking through code-review findings with the user: each one rated, discussed, and resolved by the user's decision.
 - Sending a message from a standalone Codex session or another external process to a chosen running Claude Code session.
 - Queueing a message from Claude Code or another external process to a chosen Codex session.
 - Auditing Claude Code project memory: verifying what is still true, and pruning or relocating what is not.
@@ -19,6 +20,7 @@ Agent skills for personal workflows and Heapy package work, including projects s
 - `skills/fix-issues/SKILL.md` - repository issue triage, implementation, and verification workflow.
 - `skills/amnesia/SKILL.md` - session recap: start time, last user message, and what changed since.
 - `skills/call-codex/SKILL.md` - invoking the codex CLI as reviewer or executor: sandbox grants, flags, prompt shape, and integration traps.
+- `skills/code-review-judge/SKILL.md` - recording every finding up front, then discussing one finding per turn with ratings, options, and a recommendation before the user decides.
 - `skills/message-claude/SKILL.md` - listing Claude sessions, selecting an exact target, and sending it one safe plain-text message.
 - `skills/message-codex/SKILL.md` - browsing Codex sessions, selecting an exact target, and queueing it one plain-text message.
 - `skills/clean-claude-memory/SKILL.md` - reviewing project memory file by file: keep, rewrite, delete, or move, then rebuild `MEMORY.md`.
@@ -32,6 +34,7 @@ Ask the agent to use a skill explicitly when needed:
 Use the fix-issues skill to resolve the failing CI check
 Use the amnesia skill to recap this session and tell me what I missed
 Use the call-codex skill to challenge these review findings
+Use the code-review-judge skill to go through these findings with me and decide which to fix
 Use the message-claude skill to send this finding to the Claude session named api-worker
 Use the message-codex skill to send this finding to the Codex session named api-worker
 Use the clean-claude-memory skill to review this project's memory and drop what is stale
