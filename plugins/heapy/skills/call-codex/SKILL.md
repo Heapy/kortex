@@ -10,7 +10,7 @@ description: Use when the codex CLI should be driven from the agent — as a rev
 |                     | Reviewer                      | Executor                                 |
 |---------------------|-------------------------------|------------------------------------------|
 | Job                 | break a claim                 | do a scoped task                         |
-| Sandbox             | `read-only`, always           | `workspace-write` plus what the task needs |
+| Sandbox             | `read-only`, or a throwaway worktree for experiments | `--approve-for-me` plus what the task needs |
 | The output that matters | the disagreement          | the diff                                 |
 | Verified by         | reading the code              | reading the diff and running the tests   |
 
@@ -26,6 +26,20 @@ Check `which codex`. Report and stop if it is absent.
 `sandbox_workspace_write.*`, `approvals_reviewer`, `web_search`). Pass everything the run depends
 on explicitly anyway: behavior should not change because a default moved.
 
+## The user's words map to flags
+
+When the user names a setting, pass that setting — never a nearby one without saying so.
+
+- **"ultra"** → `-c model_reasoning_effort="ultra"`. The model catalog describes it as "Maximum
+  reasoning with automatic task delegation": codex spawns its own agents, and the run takes
+  longer than `max`. `codex debug models` lists which models offer it. If the chosen one does
+  not, say so before launching and offer one that does — the run header still prints `ultra`,
+  and PR #41206 says the request then falls back to `max`.
+- **"fast"** → `-c service_tier="priority"`, the catalog's Fast tier (1.5–2× speed, more usage).
+  The legacy value `fast` is accepted too. Neither the run header nor the session file records
+  the tier, so a run cannot confirm it was applied.
+- **"max", "xhigh", …** → that `model_reasoning_effort`, if the model lists it.
+
 ---
 
 # Mode 1 — Reviewer
@@ -34,7 +48,8 @@ A second reader for code that is already understood. Not a search tool, not a re
 reading the code. It earns its cost in one situation: a claim exists — a review finding, a
 diagnosis, a design decision — and an independent model should try to break it.
 
-Codex analyzes; the calling agent implements. Never let this mode write.
+Codex analyzes; the calling agent implements. Never let this mode write to the tree under
+review.
 
 ## When to use
 
@@ -70,8 +85,33 @@ makes it `approval: never`. The `approval:` and `sandbox:` lines at the top of s
 the run actually got.
 
 Pinned that way, codex can run terminating read-only commands (`git show`, `rg`, `strings`), but
-it cannot start a server, a tmux socket, or a daemon. State that limit in the prompt and ask for
-an exact manual reproduction plan instead — it produces good ones.
+it cannot start a server, a tmux socket, or a daemon, and builds or tests that write caches fail.
+State that limit in the prompt and ask for an exact manual reproduction plan instead — it
+produces good ones — or let it run the experiment itself, as below.
+
+## Reviewer that runs experiments
+
+When reading cannot settle a claim — a test that should fail, a build that should break, a
+behavior to reproduce — give the reviewer the executor's grant in a checkout nobody else uses:
+
+```sh
+git worktree add --detach "$RUN/wt" <SHA>
+codex exec -m gpt-6-sol \
+  --approve-for-me \
+  -c sandbox_workspace_write.network_access=true \
+  -c model_reasoning_effort="max" \
+  -C "$RUN/wt" \
+  -o "$RUN/answer.md" \
+  "$(cat "$RUN/prompt.md")" < /dev/null > "$RUN/stdout.log" 2>&1
+```
+
+Codex can build, run tests, and write probe files there, and escalations go through the
+automatic reviewer. The caller's tree stays untouched, and a fix made along the way cannot land.
+The worktree at `<SHA>` also freezes the target. Keep the reviewer's prompt and add three lines:
+experiments are allowed, fixes are not; every verdict that rests on a run quotes the command
+and its output; list every file created or changed. Afterwards `git -C "$RUN/wt" status --short`
+shows what it touched. Remove the checkout with `git worktree remove --force "$RUN/wt"` once the
+answer has been read.
 
 ## Freeze the target
 
@@ -123,8 +163,7 @@ cannot have one.
 
 ```sh
 codex exec -m gpt-6-sol \
-  --sandbox workspace-write \
-  -c approvals_reviewer="user" \
+  --approve-for-me \
   -c sandbox_workspace_write.network_access=true \
   -c web_search="live" \
   -c model_reasoning_effort="high" \
@@ -136,11 +175,14 @@ codex exec -m gpt-6-sol \
 
 What each grant buys:
 
-- `--sandbox workspace-write` — writes under the working root only; the rest of the disk stays
+- `--approve-for-me` — `workspace-write` plus an automatic reviewer for every escalation; it
+  sets `sandbox_mode="workspace-write"`, `approvals_reviewer="auto_review"` and
+  `approval_policy="on-request"`. Writes land under the working root; the rest of the disk stays
   readable. `--add-dir` adds another writable root for this run;
   `sandbox_workspace_write.writable_roots` in `config.toml` is where build caches belong
-  (`~/.gradle`, `~/.konan`, Kotlin caches) — a build fails without them and the error names a
-  path, not a permission.
+  (`~/.gradle`, `~/.konan`, Kotlin caches; in past sessions also `~/.docker` and the Go and pnpm
+  caches). Each root saves an escalation per command; without a reviewer the build fails with
+  an error that names a path, not a permission.
 - `-c sandbox_workspace_write.network_access=true` — dependency resolution, `git fetch`, curl.
   Without it the failure looks like a broken repository, not a blocked socket.
 - `-c web_search="live"` — live results from the native web-search tool; the default is
@@ -150,19 +192,30 @@ What each grant buys:
   already isolated (container, throwaway VM). Never on a working machine.
 
 **exec mode cannot ask.** Nobody answers an approval in `codex exec`, and it has no
-`-a/--ask-for-approval`. With `approvals_reviewer="user"` the run is `approval: never` and the
-model is told escalation is prohibited; it works around the wall or reports failure. With
-`auto_review` in `config.toml` an automatic reviewer decides instead, and can grant more than
-the command line did — hence the pin. Every permission the task needs must be on the command
-line. When the needed access cannot be predicted, run the interactive `codex -a on-request` and
-let the user answer. `--approve-for-me` is the explicit opt-in to the automatic review: it runs
-`workspace-write`, cannot be combined with `-s/--sandbox`, and still nobody asks the user.
+`-a/--ask-for-approval`. Two settings decide what happens at the sandbox wall:
+
+- `approvals_reviewer="user"` — the run is `approval: never`; the model is told escalation is
+  prohibited and works around the wall or reports failure. The reading reviewer uses this.
+- `--approve-for-me` — an automatic reviewer decides each escalation. The executor and the
+  experimenting reviewer use this,
+  because `workspace-write` on macOS blocks `ps`, `pgrep`, `pkill`, and `kill` of any process
+  the run did not start, and past sessions show Chromium, Playwright and Docker failing there
+  too; the automatic reviewer lets those steps through. It can still refuse — sending the
+  repository to an outside service was refused in past sessions — and the run then reports.
+
+Leaving the choice to `config.toml` is the one wrong option: the same command then behaves
+differently on another machine. `--approve-for-me` cannot be combined with `-s/--sandbox`. When
+a person should decide each escalation, run the interactive `codex -a on-request` instead.
 
 ## Containment
 
 Give the executor its own branch or `git worktree` — it costs nothing and makes `git diff` and
 `git checkout .` the entire rollback story. Never point one at a tree with uncommitted work
 that matters: once its edits mix with yours, they cannot be told apart.
+
+An approved escalation runs outside the sandbox, so its effects are not in the diff — a past
+executor stopped and restarted host Docker services. Name in the prompt what it may touch
+outside the tree.
 
 ## Prompt shape
 
@@ -286,7 +339,12 @@ These cost time to rediscover. Respect them.
    a smaller question than the one that was asked.
 
 3. **Codex reads `AGENTS.md`, and nothing else is yours to hand it.** It auto-loads
-   `AGENTS.md` from the repository. Do not paste `CLAUDE.md` into the prompt and do not
+   `AGENTS.md` from the repository — unless `config.toml` marks the project
+   `trust_level = "untrusted"`; then it drops the project's `AGENTS.md` without a warning. A
+   `-c projects…` override does not change trust. `codex debug prompt-input` shows, with no
+   model run, whether `AGENTS.md` is in the context; it fails inside a Codex sandbox.
+
+   Do not paste `CLAUDE.md` into the prompt and do not
    point codex at it by path — neither the project one nor the global
    `~/.claude/CLAUDE.md`. Whether a repository carries guidance for codex is the user's
    decision, expressed by the presence of `AGENTS.md`; a repository without one is meant to
@@ -328,12 +386,13 @@ These cost time to rediscover. Respect them.
 |---|---|
 | `-m, --model <MODEL>` | model id, e.g. `gpt-6-sol` |
 | `-c <key=value>` | any config override; value parsed as TOML, falls back to a literal string |
-| `-c model_reasoning_effort=` | `low` … `xhigh`, `max`, `ultra` — per model, `codex debug models` lists each one's levels. `low` answers in seconds, `max` reasons for minutes |
+| `-c model_reasoning_effort=` | `low` … `xhigh`, `max`, `ultra` — per model, `codex debug models` lists each one's levels. `low` answers in seconds, `max` reasons for minutes, `ultra` adds automatic delegation to its own agents |
+| `-c service_tier=` | `priority` is the Fast tier; legacy `fast` is accepted. Not shown in the header or the session file |
 | `-c approvals_reviewer=` | `user`: exec runs `approval: never`. `auto_review`: escalations go to an automatic reviewer, even under `read-only` |
 | `-c sandbox_workspace_write.network_access=` | network inside `workspace-write`; also `writable_roots`, `exclude_slash_tmp` |
 | `-c web_search=` | `live`, `cached` (default), `indexed`, `disabled`; `exec` has no `--search` flag |
 | `--strict-config` | fail on config fields this build does not recognize — **including `-c` overrides**. Without it an unknown key is accepted and ignored |
-| `--approve-for-me` | route escalation requests through automatic review in the `workspace-write` sandbox instead of failing them; conflicts with `-s` |
+| `--approve-for-me` | `workspace-write` with an automatic reviewer for escalations: sets `sandbox_mode`, `approvals_reviewer="auto_review"`, `approval_policy="on-request"`. Conflicts with `-s`; `exec resume`, `exec fork` and `exec review` do not accept it |
 | `-s, --sandbox <MODE>` | `read-only`, `workspace-write`, `danger-full-access`. `exec resume`, `exec fork` and `exec review` reject it, use `-c sandbox_mode=` |
 | `--dangerously-bypass-approvals-and-sandbox` | no sandbox, no prompts; externally isolated environments only |
 | `-o, --output-last-message <FILE>` | writes ONLY the final answer to a file — the one reliable way to read the result |
@@ -354,10 +413,12 @@ These cost time to rediscover. Respect them.
   **`resume` accepts a smaller flag set than `codex exec` itself.** `-m`, `-o`, `-c`, `-i`,
   `--json`, `--output-schema` and `--ephemeral` are there; `-s/--sandbox`, `-C/--cd`,
   `--add-dir` and `-p/--profile` are **not** — passing the first one fails the run outright
-  with `error: unexpected argument '--sandbox' found`. Set the sandbox as a config override
-  instead, `-c sandbox_mode="read-only"`, together with `-c approvals_reviewer="user"`. Without
-  the override a resumed run does not keep the session's sandbox: a `read-only` review session
-  resumes with the `sandbox_mode` from `config.toml`.
+  with `error: unexpected argument '--sandbox' found`. `--approve-for-me` is not there either.
+  Pass the grant as config overrides instead: for a reviewer `-c sandbox_mode="read-only"
+  -c approvals_reviewer="user"`, for an executor what `--approve-for-me` sets —
+  `-c sandbox_mode="workspace-write" -c approvals_reviewer="auto_review"
+  -c approval_policy="on-request"`. Without them a resumed run does not keep the session's
+  sandbox: a `read-only` review session resumes with the `sandbox_mode` from `config.toml`.
 - `codex exec fork <SESSION_ID> [PROMPT]` — a new session with the history of an existing one;
   the source stays unchanged. Use it to put a second question to a finished review without
   appending to it. Same restricted flag set as `resume`, same overrides.
