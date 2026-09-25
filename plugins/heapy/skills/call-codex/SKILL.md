@@ -23,8 +23,8 @@ judging, and an executor without network dies on the first dependency fetch.
 Check `which codex`. Report and stop if it is absent.
 
 `~/.codex/config.toml` supplies defaults (`model`, `model_reasoning_effort`, `sandbox_mode`,
-`sandbox_workspace_write.*`). Pass everything the run depends on explicitly anyway: behavior
-should not change because a default moved.
+`sandbox_workspace_write.*`, `approvals_reviewer`, `web_search`). Pass everything the run depends
+on explicitly anyway: behavior should not change because a default moved.
 
 ---
 
@@ -55,16 +55,23 @@ Write the prompt to a file, then run in the background — a `max` effort review
 10-15 minutes.
 
 ```sh
-codex exec -m gpt-5.6-sol \
+codex exec -m gpt-6-sol \
   --sandbox read-only \
+  -c approvals_reviewer="user" \
   -c model_reasoning_effort="max" \
   -o /abs/path/codex-answer.md \
   "$(cat /abs/path/prompt.md)" < /dev/null
 ```
 
-`read-only` really is read-only. Codex can run terminating read-only commands (`git show`,
-`rg`, `strings`), but it cannot start a server, a tmux socket, or a daemon. State that limit
-in the prompt and ask for an exact manual reproduction plan instead — it produces good ones.
+`read-only` holds only while nobody approves escalations. With `approvals_reviewer =
+"auto_review"` in `config.toml`, exec runs `approval: on-request`, and the automatic reviewer can
+grant a sandbox escalation — the `read-only` reviewer then writes. `-c approvals_reviewer="user"`
+makes it `approval: never`. The `approval:` and `sandbox:` lines at the top of stdout show what
+the run actually got.
+
+Pinned that way, codex can run terminating read-only commands (`git show`, `rg`, `strings`), but
+it cannot start a server, a tmux socket, or a daemon. State that limit in the prompt and ask for
+an exact manual reproduction plan instead — it produces good ones.
 
 ## Prompt shape
 
@@ -107,10 +114,11 @@ cannot have one.
 ## Invocation
 
 ```sh
-codex exec -m gpt-5.6-sol \
+codex exec -m gpt-6-sol \
   --sandbox workspace-write \
+  -c approvals_reviewer="user" \
   -c sandbox_workspace_write.network_access=true \
-  -c tools.web_search=true \
+  -c web_search="live" \
   -c model_reasoning_effort="high" \
   -C /abs/path/to/repo \
   --add-dir /abs/path/to/second/checkout \
@@ -127,18 +135,20 @@ What each grant buys:
   path, not a permission.
 - `-c sandbox_workspace_write.network_access=true` — dependency resolution, `git fetch`, curl.
   Without it the failure looks like a broken repository, not a blocked socket.
-- `-c tools.web_search=true` — the native web-search tool. `codex exec` has no `--search`
-  flag; only the interactive CLI does.
+- `-c web_search="live"` — live results from the native web-search tool; the default is
+  `cached`. `codex exec` has no `--search` flag; only the interactive CLI does. The older
+  `tools.web_search = true` is still accepted and discarded (rule 7).
 - `--dangerously-bypass-approvals-and-sandbox` — no sandbox at all. Only when the whole run is
   already isolated (container, throwaway VM). Never on a working machine.
 
-**exec mode cannot ask.** There are no approvals in `codex exec` — no `-a/--ask-for-approval`,
-and an escalation request fails with *"permissions approval is not supported in exec mode"*.
-The model does not stop to ask; it works around the wall or reports failure. Every permission
-the task needs must be on the command line. When the needed access cannot be predicted, run
-the interactive `codex -a on-request` and let the user answer. `--approve-for-me` is the one
-middle ground: escalations go to an automatic review under `workspace-write` rather than
-failing outright — still nobody asks the user.
+**exec mode cannot ask.** Nobody answers an approval in `codex exec`, and it has no
+`-a/--ask-for-approval`. With `approvals_reviewer="user"` the run is `approval: never` and the
+model is told escalation is prohibited; it works around the wall or reports failure. With
+`auto_review` in `config.toml` an automatic reviewer decides instead, and can grant more than
+the command line did — hence the pin. Every permission the task needs must be on the command
+line. When the needed access cannot be predicted, run the interactive `codex -a on-request` and
+let the user answer. `--approve-for-me` is the explicit opt-in to the automatic review: it runs
+`workspace-write`, cannot be combined with `-s/--sandbox`, and still nobody asks the user.
 
 ## Containment
 
@@ -228,21 +238,26 @@ These cost time to rediscover. Respect them.
    into `unknown configuration field ... in -c/--config override`. Note that it also validates
    `config.toml`, so a stale key there will surface first.
 
+   `--strict-config` checks names, not meaning. `tools.web_search = true` passes it and still does
+   nothing: the key exists for domain and location settings, a boolean there is discarded, and
+   the mode lives in top-level `web_search`.
+
 ## Flags that matter
 
 | Flag | Meaning |
 |---|---|
-| `-m, --model <MODEL>` | model id, e.g. `gpt-5.6-sol` |
+| `-m, --model <MODEL>` | model id, e.g. `gpt-6-sol` |
 | `-c <key=value>` | any config override; value parsed as TOML, falls back to a literal string |
-| `-c model_reasoning_effort=` | `low` … `xhigh`, `max`. `low` answers in seconds, `max` reasons for minutes |
+| `-c model_reasoning_effort=` | `low` … `xhigh`, `max`, `ultra` — per model, `codex debug models` lists each one's levels. `low` answers in seconds, `max` reasons for minutes |
+| `-c approvals_reviewer=` | `user`: exec runs `approval: never`. `auto_review`: escalations go to an automatic reviewer, even under `read-only` |
 | `-c sandbox_workspace_write.network_access=` | network inside `workspace-write`; also `writable_roots`, `exclude_slash_tmp` |
-| `-c tools.web_search=` | live web search in `exec` (no `--search` flag there) |
+| `-c web_search=` | `live`, `cached` (default), `indexed`, `disabled`; `exec` has no `--search` flag |
 | `--strict-config` | fail on config fields this build does not recognize — **including `-c` overrides**. Without it an unknown key is accepted and ignored |
-| `--approve-for-me` | route escalation requests through automatic review in the `workspace-write` sandbox instead of failing them |
-| `-s, --sandbox <MODE>` | `read-only`, `workspace-write`, `danger-full-access`. `codex exec` only — `exec resume` rejects it, use `-c sandbox_mode=` |
+| `--approve-for-me` | route escalation requests through automatic review in the `workspace-write` sandbox instead of failing them; conflicts with `-s` |
+| `-s, --sandbox <MODE>` | `read-only`, `workspace-write`, `danger-full-access`. `exec resume` and `exec fork` reject it, use `-c sandbox_mode=` |
 | `--dangerously-bypass-approvals-and-sandbox` | no sandbox, no prompts; externally isolated environments only |
 | `-o, --output-last-message <FILE>` | writes ONLY the final answer to a file — the one reliable way to read the result |
-| `-C, --cd <DIR>` | working root; `--add-dir` adds another writable dir, `--skip-git-repo-check` allows running outside git. `-C`/`--add-dir` are `codex exec` only |
+| `-C, --cd <DIR>` | working root; `--add-dir` adds another writable dir, `--skip-git-repo-check` allows running outside git. `exec resume` and `exec fork` accept neither `-C` nor `--add-dir` |
 | `--json` | events as JSONL, for machine consumption |
 | `--output-schema <FILE>` | JSON Schema the final response must satisfy |
 | `-i, --image <FILE>` | attach screenshots to the prompt |
@@ -260,14 +275,18 @@ These cost time to rediscover. Respect them.
   `--json`, `--output-schema` and `--ephemeral` are there; `-s/--sandbox`, `-C/--cd`,
   `--add-dir` and `-p/--profile` are **not** — passing the first one fails the run outright
   with `error: unexpected argument '--sandbox' found`. Set the sandbox as a config override
-  instead, `-c sandbox_mode="read-only"`, and keep passing it explicitly: a resumed run should
-  not silently inherit its grant from the session it continues or from `config.toml`.
+  instead, `-c sandbox_mode="read-only"`, together with `-c approvals_reviewer="user"`. Without
+  the override a resumed run does not keep the session's sandbox: a `read-only` review session
+  resumes with the `sandbox_mode` from `config.toml`.
+- `codex exec fork <SESSION_ID> [PROMPT]` — a new session with the history of an existing one;
+  the source stays unchanged. Use it to put a second question to a finished review without
+  appending to it. Same restricted flag set as `resume`, same overrides.
 - `codex exec review [--uncommitted | --base <BRANCH> | --commit <SHA>] [--title <T>]` —
   the built-in review, when a plain diff review is wanted and no custom stance is needed.
 
 ## When this file is wrong
 
-Everything above was checked against `codex-cli 0.147.0`. Flags, config keys, and sandbox
+Everything above was checked against `codex-cli 0.157.0`. Flags, config keys, and sandbox
 behavior move between releases; `codex --version` is the first thing to compare when
 something does not line up.
 
@@ -275,7 +294,8 @@ A mismatch is a finding, not an obstacle. Do not quietly route around it.
 
 - Confirm it first: `codex exec --help`, or a probe that costs no model run —
   `codex sandbox -c sandbox_mode=<mode> -- /bin/sh -c '<command>'` settles sandbox and
-  network questions in seconds.
+  network questions in seconds. Run it from the directory in question: with `-C` it demands
+  `--permission-profile`. It reads `config.toml` too, so pin `network_access` when testing it.
 - If the correction is local and certain, edit this file in the same session and say what
   changed.
 - Otherwise open an issue on `Heapy/kortex` with the version, the exact command, what was
