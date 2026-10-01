@@ -40,6 +40,7 @@ Repository-aware backlog workflows through the `kotgent` CLI:
 - `review-tasks` - audit todo tasks for stale, duplicate, absorbed, contradictory, or completed work.
 - `take-task` - safely claim a specific or next eligible task and continue into its work workflow.
 - `work-task` - implement, verify, and submit the task linked to the current session for human review.
+- `make-plan` - create a structured task plan and incorporate browser review until it is approved.
 
 ### `heapy`
 
