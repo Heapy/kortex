@@ -1,4 +1,4 @@
 {
   "name": "kotgent",
-  "description": "Repository-aware tasks, structured plan review, and execution workflows using the kotgent CLI and git"
+  "description": "Kotgent task and structured-plan workflows with browser review, coordinated worker sessions and verified serial merges"
 }

@@ -1,7 +1,7 @@
 {
   "name": "kotgent",
   "version": "1.14.3",
-  "description": "Repository-aware tasks, structured plan review, and execution workflows using the kotgent CLI and git",
+  "description": "Kotgent task and structured-plan workflows with browser review, coordinated worker sessions and verified serial merges",
   "author": {
     "name": "Ruslan Ibrahimau",
     "email": "ruslan@heapy.io"
@@ -32,6 +32,7 @@
     "defaultPrompt": [
       "$kotgent:create-tasks create focused backlog tasks from this implementation plan",
       "$kotgent:make-plan create a structured plan for this task and wait for my review",
+      "$kotgent:exec-plan execute this approved plan through final human review",
       "$kotgent:sync-tasks compare the active backlog with this repository",
       "$kotgent:take-task take the next eligible task and work it through review"
     ]

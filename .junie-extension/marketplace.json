@@ -79,7 +79,7 @@
     {
       "name": "kotgent",
       "source": "./plugins/kotgent",
-      "description": "Repository-aware task workflows using the kotgent CLI and git",
+      "description": "Kotgent task and structured-plan workflows with browser review, coordinated worker sessions and verified serial merges",
       "version": "1.14.3",
       "author": {
         "name": "Ruslan Ibrahimau",
