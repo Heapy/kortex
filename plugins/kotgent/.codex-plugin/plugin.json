@@ -1,6 +1,6 @@
 {
   "name": "kotgent",
-  "version": "1.14.3",
+  "version": "1.15.0",
   "description": "Kotgent task and structured-plan workflows with browser review, coordinated worker sessions and verified serial merges",
   "author": {
     "name": "Ruslan Ibrahimau",
@@ -17,7 +17,7 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "kotgent \u2013 Task Workflows",
+    "displayName": "kotgent – Task Workflows",
     "shortDescription": "Kotgent tasks, plans and execution workflows",
     "longDescription": "Create and execute repository tasks and structured plans through the kotgent CLI and git, with browser review, pane-resolved identity and coordinated worker sessions.",
     "developerName": "Heapy",
