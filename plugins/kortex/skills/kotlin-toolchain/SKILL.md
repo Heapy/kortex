@@ -22,7 +22,8 @@ This skill is generated from the official upstream docs for `v0.12.2`, the defau
 - Generation notes: `generation/generation-steps.md`
 
 Statements here come from those docs, from the `v0.12.2` release notes, and from spot-checks against the tagged source
-tree. Where the docs lag the code, this skill follows the code and says so.
+tree. Where the docs lag the code, this skill follows the code and says so. The GitHub Actions section below is
+separately maintained Heapy integration guidance, not part of that upstream snapshot.
 
 `v0.12.2` is a redeployment of `v0.12.1`: the docs, examples, and README are byte-identical between the two tags, and
 only the distribution artifact changed.
@@ -54,6 +55,7 @@ distribution paths. Do not rename those to `kotlin`. The YouTrack project, howev
 | [`references/multiplatform.md`](references/multiplatform.md) | Platform hierarchy, aliases, propagation, cinterop |
 | [`references/templates.md`](references/templates.md) | Nested templates, precedence, merging, conflict resolution |
 | [`references/publishing.md`](references/publishing.md) | JVM and KMP publishing, Maven Central, `mavenLocal`, signing |
+| [`references/github-actions.md`](references/github-actions.md) | Heapy actions for CI, caching, wrapper upgrades, and library publication |
 | [`references/plugins.md`](references/plugins.md) | Authoring `jvm/amper-plugin` modules, `plugin.yaml`, task actions |
 | [`references/maven-migration.md`](references/maven-migration.md) | `convert-project`, `mavenPlugins`, migration gaps |
 | [`references/gradle-migration.md`](references/gradle-migration.md) | Translating `build.gradle(.kts)`, convention plugins, and source sets by hand |
@@ -373,6 +375,12 @@ A regular Maven repository needs a `repositories` entry with `publish: true` plu
 `publishingMode` is `manual` by default; `auto` releases without inspection, and released Maven Central artifacts are
 permanent. `kotlin publish mavenLocal` installs into the local Maven repository. Details in
 [`references/publishing.md`](references/publishing.md).
+
+## GitHub Actions
+
+For GitHub CI, wrapper upgrade PRs, and library publication, use Heapy's `setup-ktc`, `update-ktc`, `ktc-check`,
+and `ktc-publish` actions. Read [GitHub Actions](references/github-actions.md) for setup examples, feature-branch
+and fork caching, token permissions, and publishing host requirements.
 
 ## Plugin Authoring
 
