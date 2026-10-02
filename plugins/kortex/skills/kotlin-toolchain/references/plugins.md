@@ -1,6 +1,6 @@
 # Build Plugins
 
-Kotlin Toolchain `v0.12.2`. Plugins are local to a project — they cannot be published or consumed as a published
+Kotlin Toolchain `v0.13.0`. Plugins are local to a project — they cannot be published or consumed as a published
 dependency (KTC-4871).
 
 ## Structure
@@ -150,15 +150,11 @@ References are for `plugin.yaml`, not `module.yaml`.
 | `module.kotlinJavaSources` | `ModuleSources` | Kotlin and Java sources (JVM, main) |
 | `module.resources` | `ModuleSources` | Resources (JVM, main) |
 | `module.jar` | `CompilationArtifact` | Compiled JAR (JVM, main) |
-| `module.classes` | `CompilationArtifact` | Directory of compiled classes. New in `0.12`. |
+| `module.classes` | `CompilationArtifact` | Directory of compiled classes. |
 | `module.self` | `Dependency.Local` | A dependency pointing at the module itself |
 | `module.settings.**` | matches the setting | e.g. `module.settings.publishing.version` |
 | `project.rootDir` | `path` | Absolute project root |
 | `taskOutputDir` | `path` | The task's own output directory |
-
-`0.12` documents `module.kotlinJavaSources` consistently. The `0.11.x` docs were inconsistent — the reference table
-already listed `module.kotlinJavaSources` while the overview and task examples still used `module.sources`. Update any
-`plugin.yaml` still on `module.sources`.
 
 Shorthand notation does not currently work with references.
 
@@ -174,10 +170,8 @@ Two steps: mark the path `@Output` in the action, then declare its kind in a top
 
 Entries accept an optional `fragment` to scope them to a platform fragment.
 
-The `0.11.x` docs were inconsistent here too: the overview described a `markOutputAs` mechanism while the tasks page
-already documented all three `generated.*` sections. `0.12` documents only the `generated:` block. The declaration
-lives at the registration site rather than in Kotlin because a generic action — `unzip`, say — does not know whether
-what it produced is sources.
+The `generated:` declaration lives at the registration site rather than in Kotlin because a generic action —
+`unzip`, say — does not know whether what it produced is sources.
 
 ## Task Dependencies
 

@@ -1,6 +1,6 @@
 # Gradle Migration
 
-Kotlin Toolchain `v0.12.2`.
+Kotlin Toolchain `v0.13.0`.
 
 There is no `convert-project` equivalent for Gradle: build scripts are arbitrary code, so a faithful automatic
 translation is not definable. Migration is by hand, module by module. For Maven projects use the converter described in
@@ -26,20 +26,22 @@ root. Only `[versions]` and `[libraries]` are read — `[plugins]` does not appl
 
 ## Order Of Work
 
-1. Write `project.yaml`. Each `include(":libs:lib1")` becomes a directory path entry, `libs/lib1`. A single-module
+1. Install the global Kotlin CLI if needed, then generate the wrappers with
+   `kotlin update --create --target-version 0.13.0`. Commit both `kotlin` and `kotlin.bat`.
+2. Write `project.yaml`. Each `include(":libs:lib1")` becomes a directory path entry, `libs/lib1`. A single-module
    project can skip the file, but still wants it for local plugin declarations.
-2. Turn every convention plugin into a `<name>.module-template.yaml`. Unconditional `subprojects { ... }`
+3. Turn every convention plugin into a `<name>.module-template.yaml`. Unconditional `subprojects { ... }`
    configuration becomes one `common.module-template.yaml`; conditional blocks each become their own template. Keeping
    all templates in one `templates/` directory keeps the `//` references short.
-3. Convert remaining custom plugin logic — check for a built-in equivalent first, then decide between dropping it and
+4. Convert remaining custom plugin logic — check for a built-in equivalent first, then decide between dropping it and
    writing a local plugin.
-4. Write a `module.yaml` per subproject: product type, `apply:` for each template that replaces a convention plugin,
+5. Write a `module.yaml` per subproject: product type, `apply:` for each template that replaces a convention plugin,
    then the settings and dependencies below.
-5. Move sources to the toolchain layout, or set `layout: maven-like` on JVM modules to leave them where they are.
-6. Verify with `./kotlin build` and `./kotlin test`.
-7. Delete the Gradle wrapper and scripts.
+6. Move sources to the toolchain layout, or set `layout: maven-like` on JVM modules to leave them where they are.
+7. Verify with `./kotlin build` and `./kotlin test`.
+8. Delete the Gradle wrapper and scripts.
 
-At step 1 the IDE reports errors on every module listed in `project.yaml`; they clear as each `module.yaml` appears.
+At step 2 the IDE reports errors on every module listed in `project.yaml`; they clear as each `module.yaml` appears.
 
 ## Product Type
 
@@ -173,10 +175,8 @@ Test-task configuration maps to `settings.jvm.test`:
 | `./gradlew clean` | `./kotlin clean` |
 | `./gradlew --stop` | Nothing — there is no daemon |
 
-The `v0.12.2` Gradle migration page maps `./gradlew tasks` to `./kotlin show tasks`. That command does run, but it
-lists the toolchain's internal build tasks and their dependency edges — not something to drive a build with. The
-user-facing lists are `./kotlin --help` for built-in commands and `./kotlin show commands` for the ones plugins
-contribute. Upstream reworded the row this way after the tag.
+`./kotlin show tasks` lists internal build tasks and their dependency edges. Use `./kotlin --help` for built-in
+commands and `./kotlin show commands` for plugin commands, as the `0.13` migration guide now recommends.
 
 Like `gradlew`, the `kotlin` and `kotlin.bat` wrappers are committed to the repository and provision everything on
 first use.

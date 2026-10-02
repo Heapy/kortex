@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Agent Skills for Kotlin development, task workflows, personal workflows, and Heapy packages",
-    "version": "1.16.0"
+    "version": "0.17.0"
   },
   "plugins": [
     {
       "name": "kortex",
       "source": "./plugins/kortex",
       "description": "Kotlin Agent Skills — Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
-      "version": "1.16.0",
+      "version": "0.17.0",
       "keywords": [
         "kotlin",
         "amper",
@@ -28,7 +28,7 @@
       "name": "kotlin-quality",
       "source": "./plugins/kotlin-quality",
       "description": "Risk-based Kotlin review agents for READMEs, tests, architecture, domain behavior, concurrency, API and data compatibility, security, builds, performance, resilience, and platform runtimes",
-      "version": "1.16.0",
+      "version": "0.17.0",
       "keywords": [
         "kotlin",
         "review",
@@ -49,7 +49,7 @@
       "name": "heapy",
       "source": "./plugins/heapy",
       "description": "Personal skills and Heapy package skills for komok, kinetica, and related workflows",
-      "version": "1.16.0",
+      "version": "0.17.0",
       "keywords": [
         "heapy",
         "heapy-packages",
@@ -64,7 +64,7 @@
       "name": "kotgent",
       "source": "./plugins/kotgent",
       "description": "Kotgent task and structured-plan workflows with browser review, coordinated worker sessions and verified serial merges",
-      "version": "1.16.0",
+      "version": "0.17.0",
       "keywords": [
         "kotgent",
         "tasks",

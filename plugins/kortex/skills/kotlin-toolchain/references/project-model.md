@@ -1,6 +1,6 @@
 # Project Model
 
-Kotlin Toolchain `v0.12.2`.
+Kotlin Toolchain `v0.13.0`.
 
 ## Project And Modules
 
@@ -73,10 +73,7 @@ that relative module dependencies may be deprecated and removed later.
 Module dependencies must stay inside the project: the target has to be listed in `project.yaml` and cannot live
 outside the project root.
 
-Two exceptions to the `//` preference:
-
-- `project.yaml`'s `modules:` list, which is already root-relative and rejects `//`.
-- Projects pinned to `0.11.x`, where `//` does not exist yet.
+`project.yaml`'s `modules:` list is already root-relative and rejects `//`.
 
 ## `module.yaml` Keys
 
@@ -90,7 +87,7 @@ Two exceptions to the `//` preference:
 | `repositories` | Maven repositories for resolution and publishing |
 | `apply` | Module templates to merge in |
 | `aliases` | Custom platform groups |
-| `layout` | `amper` (default) or `maven-like` |
+| `layout` | `default` or `maven-like`; `amper` was renamed in `0.13` |
 | `description` | Human-readable module description; feeds the published POM |
 | `plugins` | Enable and configure project plugins for this module |
 | `mavenPlugins` | Enable and configure Maven plugin mojos (prototype) |
@@ -98,7 +95,7 @@ Two exceptions to the `//` preference:
 
 ## Module Layout
 
-Default `amper` layout:
+The `default` layout (also used when `layout` is omitted):
 
 ```
 my-module/
@@ -113,6 +110,8 @@ my-module/
 
 `maven-like` layout preserves Maven and Gradle trees — `src/main/kotlin`, `src/main/java`, `src/main/resources`,
 `src/test/kotlin`, and so on. It is only supported for `jvm/app` and `jvm/lib`, and exists for Maven migration.
+
+On migration, replace explicit `layout: amper` with `layout: default` or omit the setting.
 
 Platform qualification works for `src`, `resources`, `test`, `testResources`, and `cinterop`.
 

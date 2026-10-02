@@ -1,6 +1,6 @@
 # Product Types
 
-Kotlin Toolchain `v0.12.2`. One module produces exactly one product.
+Kotlin Toolchain `v0.13.0`. One module produces exactly one product.
 
 ## Declaring
 
@@ -36,10 +36,6 @@ Apple Intel is being phased out. `iosX64` is no longer accepted for `ios/app` �
 though Compose libraries already do not support it. `macosX64` is deprecated since Kotlin 2.3.20 and is no longer in
 the `macos/app` defaults.
 
-`0.12` uses only `wasm-js/app` and `wasm-wasi/app`. The `0.11.x` docs were split: the reference table said
-`wasmJs/app`/`wasmWasi/app`, the product-type page already said the hyphenated names. Verify against a pinned `0.11.x`
-CLI rather than assuming a clean rename.
-
 ## `jvm/app`
 
 Entry point: a top-level `main` in a `main.kt` file (case-insensitive) in `src`. The function takes no parameters or
@@ -73,14 +69,14 @@ since it is the only one, `kotlin package` then produces the ZIP bundle ready fo
 
 A reusable Kotlin Multiplatform library. `product.platforms` must list concrete leaf platforms.
 
-Publishable since `0.12` — see `publishing.md`. KMP metadata compilation and cinterop commonization are supported;
-Compose Multiplatform resources are not part of the publication yet.
+Publishable — see `publishing.md`. KMP metadata compilation and cinterop commonization are supported;
+since `0.13`, Compose resources and SwiftPM dependency metadata are also published.
 
 ## `android/app`
 
 Entry point is declared in `src/AndroidManifest.xml`, per the standard Android manifest rules.
 
-`build` creates an APK. `package` creates an AAB, minified and obfuscated with R8 and signed. `proguard-rules.pro` and
+`build` creates an APK. `package` creates a release AAB, minified and obfuscated with R8 and signed when signing is enabled. `proguard-rules.pro` and
 `google-services.json` are auto-detected beside `module.yaml`.
 
 `./kotlin run` installs and starts it.
@@ -92,7 +88,13 @@ Duplicate Java resources from dependencies fail packaging in `MergeJavaResWorkAc
 - `pickFirsts` — package only the first match
 - `merges` — concatenate all matches into one entry
 
-Identity, SDK levels, and signing are covered in `settings.md`.
+Set `settings.android.namespace` explicitly for apps; `applicationId` defaults from it. Use `abiFilters` to
+package only ABIs supported by every required native library. Identity, SDK levels, and signing are covered in
+`settings.md`.
+
+For Google Play, enable signing, run `kotlin package -m <app>`, and use the AAB path printed by the CLI. The IDE's
+"Generate Signed App Bundle or APK" action does not support Kotlin Toolchain projects. Increment `versionCode`
+for each upload; store upload credentials and keystores outside version control.
 
 ## `ios/app`
 
@@ -114,16 +116,19 @@ To retrofit an existing Xcode project, ensure the target has:
    "${KOTLIN_CLI_WRAPPER_PATH}" tool xcode-integration
    ```
 
-In `0.11.x` the phase was called `Build Kotlin with Amper`, the marker was `!AMPER KMP INTEGRATION STEP!`, and a
-`FRAMEWORK_SEARCH_PATHS` entry pointing at `$(TARGET_BUILD_DIR)/AmperFrameworks` was required. `0.12` renamed the phase
-and dropped the search-path requirement. A specific Xcode scheme is now enforced for the project.
+A specific Xcode scheme is enforced for the project.
 
 Kotlin code reaches Swift through the generated `KotlinModules` framework, built from the `ios/app` module itself, the
 modules it depends on, and all transitive external dependencies. Only declarations from your own Kotlin source are
-visible to Swift — external dependencies are bundled but not exposed. Swift cannot be called from Kotlin.
+visible to Swift — external dependencies are bundled but not exposed.
 
-Swift package dependencies are declared with `swiftPackage:` (remote) and `localSwiftPackage:` (local), only in
-`ios/app` modules.
+Pure Swift APIs are not directly callable from Kotlin. Since `0.13`, SwiftPM can expose Objective-C-visible APIs
+to Kotlin on Apple targets, including `kmp/lib`; see [dependencies](dependencies.md#swiftpm-dependencies).
+
+Xcode must already be installed, its license accepted, and first-launch setup completed. The toolchain checks this
+environment and can provision required Xcode components; it does not install Xcode itself. For App Store/TestFlight
+distribution, configure signing, bundle ID, deployment target, and version/build in `module.xcodeproj`, then archive
+and export through Xcode or `xcodebuild`. This is separate from `kotlin publish`, which publishes libraries.
 
 ## `js/app`
 
@@ -138,7 +143,7 @@ the chosen one is unspecified.
 `build` packages the app under `build/tasks/_<module>_buildWasmJsAppWasmJs<Debug|Release>`, containing the `.wasm`
 module, `.mjs` loaders, JS dependencies, the Skiko Wasm runtime, and an `index.html`.
 
-`run` starts a local server and opens the app in a browser — new in `0.12`.
+`run` starts a local server and opens the app in a browser.
 
 A custom `index.html` can be placed in the module's `resources` folder. Available template variables:
 
@@ -150,7 +155,9 @@ A custom `index.html` can be placed in the module's `resources` folder. Availabl
 Direct NPM dependencies cannot be declared. NPM dependencies required by a KMP library you depend on (for example
 `@js-joda/core` for `kotlinx-datetime`) are downloaded and packed automatically.
 
-Tests targeting Wasm-JS are not supported yet (KTC-5576). `package` is not supported.
+`kotlin test -m <module> --platform wasmJs` runs tests in provisioned Chromium via Playwright in `0.13`
+(KTC-5576). The tagged Markdown still says unsupported; the tagged task implementation and integration tests confirm
+the runner. `package` remains unsupported.
 
 ## `wasm-wasi/app`
 
@@ -160,7 +167,7 @@ Incomplete preview. Entry point is a top-level `main` in `src`.
 `build/artifacts/CompiledWebArtifact/<module-name>wasmWasi<debug|release>`.
 
 The CLI cannot run it. Use Node.js, Deno, WasmEdge, or another WASI runtime on the `.mjs` wrapper. `package` is not
-supported.
+supported. There is no Wasm-WASI test runner in `0.13`.
 
 ## `linux/app`, `macos/app`, `windows/app`
 
@@ -175,9 +182,10 @@ settings:
 
 `build` links an executable: `.exe` on Windows, `.kexe` elsewhere. `package` is not supported.
 
-`settings.kotlin.debug` and `settings.kotlin.optimization` default per build variant in `0.12` (debug info in debug
-builds, optimization in release builds) rather than being fixed. `settings.kotlin.linkerOptions` passes extra linker
-arguments.
+`settings.kotlin.debug` and `settings.kotlin.optimization` default per build variant (debug info in debug
+builds, optimization in release builds). `settings.kotlin.linkerOptions` passes extra linker
+arguments. `settings.kotlin.compileIncrementally` also enables Native dependency caches for non-optimized
+debug linking on supported targets in `0.13`; see [settings](settings.md).
 
 ## `jvm/amper-plugin`
 

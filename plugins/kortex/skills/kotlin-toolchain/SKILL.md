@@ -1,6 +1,6 @@
 ---
 name: kotlin-toolchain
-description: Use when working with JetBrains Kotlin Toolchain v0.12.x, formerly Amper, including module.yaml, project.yaml, module templates, nested templates, libs.versions.toml, the kotlin CLI wrapper, `//` project paths, Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm (wasm-js, wasm-wasi), Kotlin/Native, server-side apps, dependencies, testing, KMP library publishing, Maven Central, build plugins, built-in technologies (Compose, Ktor, Spring Boot, serialization, kotlinx.rpc, DataFrame, Power Assert, KSP, Lombok), Maven and Gradle migration, JDK provisioning, and toolchain caches.
+description: Use when working with JetBrains Kotlin Toolchain v0.13.x, formerly Amper, including module.yaml, project.yaml, module templates, nested templates, libs.versions.toml, the kotlin CLI wrapper, `//` project paths, Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm (wasm-js, wasm-wasi), Kotlin/Native, server-side apps, dependencies, testing, SwiftPM dependencies, KMP library publishing, Maven Central, build plugins, built-in technologies (Compose, Ktor, Spring Boot, serialization, kotlinx.rpc, DataFrame, Power Assert, KSP, Lombok), Maven and Gradle migration, JDK provisioning, and toolchain caches.
 ---
 
 # Kotlin Toolchain
@@ -13,25 +13,23 @@ Maven project to Kotlin Toolchain. Kotlin Toolchain is not Gradle, not Maven, an
 
 ## Source Snapshot
 
-This skill is generated from the official upstream docs for `v0.12.2`, the default supported version:
+This skill is generated from the official upstream docs for `v0.13.0`, the default supported version:
 
 - Repository: `https://github.com/JetBrains/kotlin-toolchain`
-- Ref: `v0.12.2`
-- SHA: `82a15324c05a4f1dc55b4e994863c665817f4729`
-- Full aggregate: `generation/upstream-docs-v0.12.2.md`
+- Ref: `v0.13.0`
+- SHA: `abc7a5f7579e9ef267107782048c76777f0bf932`
+- Full aggregate: `generation/upstream-docs-v0.13.0.md`
 - Generation notes: `generation/generation-steps.md`
 
-Statements here come from those docs, from the `v0.12.2` release notes, and from spot-checks against the tagged source
+Statements here come from those docs, from the `v0.13.0` release notes, and from spot-checks against the tagged source
 tree. Where the docs lag the code, this skill follows the code and says so. The GitHub Actions section below is
 separately maintained Heapy integration guidance, not part of that upstream snapshot.
 
-`v0.12.2` is a redeployment of `v0.12.1`: the docs, examples, and README are byte-identical between the two tags, and
-only the distribution artifact changed.
+The tagged docs still contain stale Kotlin defaults, Android namespace defaults, and Wasm-test limitations. This
+skill follows the tagged source for those points; see [migration and source notes](references/migrating-0.12-to-0.13.md).
 
-This skill tracks tagged releases only. At `v0.12.2` release time upstream `main` had already moved on toward the next
-release (11 docs, +222/-70), so there is still no separate main/dev snapshot. Older guidance for `v0.11.x` is kept in
-[`SKILL-0.11.md`](SKILL-0.11.md) for projects still pinned there. Do not mix the two: the `//` path notation, nested
-templates, and KMP publishing all changed in `0.12`.
+This skill and its topic references target the tagged `0.13.0` release. Check the project wrapper before applying
+version-sensitive defaults or syntax.
 
 The project is Alpha and the docs move quickly. Treat defaults and edge-case syntax as version-sensitive. When precision
 matters, inspect the local project, run `./kotlin show ...`, and grep the pinned aggregate (~300 KB — search it, do not
@@ -59,7 +57,7 @@ distribution paths. Do not rename those to `kotlin`. The YouTrack project, howev
 | [`references/plugins.md`](references/plugins.md) | Authoring `jvm/amper-plugin` modules, `plugin.yaml`, task actions |
 | [`references/maven-migration.md`](references/maven-migration.md) | `convert-project`, `mavenPlugins`, migration gaps |
 | [`references/gradle-migration.md`](references/gradle-migration.md) | Translating `build.gradle(.kts)`, convention plugins, and source sets by hand |
-| [`references/migrating-0.11-to-0.12.md`](references/migrating-0.11-to-0.12.md) | What breaks when a project moves from `0.11.x` to `0.12.0` |
+| [`references/migrating-0.12-to-0.13.md`](references/migrating-0.12-to-0.13.md) | Upgrading to `0.13` and tagged-doc corrections |
 | [`references/known-issues.md`](references/known-issues.md) | Tracked defects and workarounds — check before diagnosing odd behavior |
 | [`references/codex-sandbox-caches.md`](references/codex-sandbox-caches.md) | Running the toolchain in a Codex `workspace-write` sandbox |
 
@@ -76,26 +74,22 @@ Run this once per session, the first time this skill is used in a Kotlin Toolcha
    `kotlin.bat` carries the same value as `set kotlin_cli_version=`. A repo without a wrapper has nothing to check —
    skip to `First Moves`.
 
-2. Compare it to `0.12.2`, the version this skill is generated from.
+2. Compare it to `0.13.0`, the version this skill is generated from.
 
-3. If the project pins something older, tell the user both versions and ask whether to update. Wait for an answer —
-   never update on your own initiative. A pin of `0.12.1` is a special case: that distribution was overwritten
-   upstream, so a wrapper that still has to download it fails its checksum check (KTC-5888). A machine that already
-   cached it keeps working, but any fresh checkout or CI runner is broken, and `./kotlin update` is the only fix.
-   For a `0.11.x` project either work from
-   [`SKILL-0.11.md`](SKILL-0.11.md) or offer the upgrade described in
-   [`references/migrating-0.11-to-0.12.md`](references/migrating-0.11-to-0.12.md).
+3. If the pin differs, consult that release's tagged docs and the project CLI for version-sensitive behavior.
+   Explain an upgrade when relevant; obtain approval unless the user already requested it. Continue compatible
+   work while an optional upgrade is undecided.
 
-4. On approval, run `./kotlin update`. It rewrites `kotlin` and `kotlin.bat` and fetches the latest released
-   distribution. Re-read `kotlin_cli_version` afterwards and report the version actually installed. Leave the modified
-   wrapper scripts uncommitted unless the user asks for a commit.
+4. For an authorized upgrade to this snapshot, run `./kotlin update --target-version 0.13.0`. It rewrites `kotlin`
+   and `kotlin.bat` and verifies the new distribution. Apply the migration guide, then re-read the wrapper pin.
+   Leave the wrapper changes uncommitted unless a commit is part of the user's request.
 
-5. If the user declines, keep working against the pinned version and flag guidance here that may not hold for it.
+5. If the user keeps the older version, do not apply the new syntax or defaults to it.
 
-`./kotlin update` targets the latest release, not `0.12.2`. If it lands beyond `0.12.x`, this snapshot is behind the
-project: prefer what the project actually reports (`./kotlin show ...`, `--help`) over this file.
+`./kotlin update` without `--target-version` selects the latest release. If the project's version is newer than
+`0.13.0`, prefer its tagged docs and what its CLI reports (`./kotlin show ...`, `--help`) over this snapshot.
 
-A globally installed `kotlin` is not a shortcut past this. Since `0.12`, it walks up from the current directory looking
+A globally installed `kotlin` is not a shortcut past this. It walks up from the current directory looking
 for a project with its own wrapper, and runs that wrapper's version instead of its own.
 
 ## First Moves
@@ -108,8 +102,7 @@ When working in a repo:
 3. Use `./kotlin show modules|settings|dependencies|tasks|checks|commands` to understand the effective model.
    `show settings -m <module>` is the way to read effective template-merged config.
 4. Keep YAML declarative. Do not invent loops, conditionals, Gradle task wiring, or Maven lifecycle behavior.
-5. Write new paths with the `//` project-root notation. Preserve an existing project's style only when it is
-   consistent and the CLI version predates `//`.
+5. Write new paths with the `//` project-root notation, except in `project.yaml`'s `modules:` list.
 
 Useful CLI commands:
 
@@ -124,14 +117,15 @@ Useful CLI commands:
 - `./kotlin task :<module>:<task>@<pluginId>` for debugging plugin tasks
 - `./kotlin show settings -m <module>`
 - `./kotlin clean`
-- `./kotlin update [--dev]`
+- `./kotlin update [--target-version <version> | --dev]` (`--create` installs missing wrappers)
 - `./kotlin generate-completion <bash|zsh|fish>`
 - `./kotlin tool convert-project`, `./kotlin tool generate-keystore`, `./kotlin tool xcode-integration`
 
 Environment variables: `KOTLIN_CLI_BOOTSTRAP_CACHE_DIR` (wrapper/CLI distribution), `KOTLIN_SHARED_CACHE_DIR`
 (dependencies, JDKs, tools — also `--shared-cache-dir`), `KOTLIN_CLI_NO_WELCOME_BANNER`, `KOTLIN_CLI_JAVA_OPTIONS`,
-`KOTLIN_CLI_JAVA_HOME`, `KOTLIN_CLI_DOWNLOAD_ROOT`. The CLI is currently JVM-based, but this is an implementation
-detail. Details in [`references/cli.md`](references/cli.md).
+`KOTLIN_CLI_JAVA_HOME`, `KOTLIN_CLI_DOWNLOAD_ROOT`, and `KOTLIN_TOOLCHAIN_BUILD_DIR` (or `--build-dir`; renamed
+from `AMPER_BUILD_DIR` in `0.13`). The CLI is currently JVM-based, but this is an implementation detail. See
+[`references/cli.md`](references/cli.md).
 
 ## Project Model
 
@@ -169,8 +163,8 @@ Common `module.yaml` keys: `product`, `dependencies`/`test-dependencies`, `setti
 `apply`, `aliases`, `layout`, `description`, `plugins`, `mavenPlugins`, and `pluginInfo` for `jvm/amper-plugin`
 modules.
 
-Layouts: `amper` is the default (`src`, `test`, `resources`, `testResources`). `maven-like` preserves
-`src/main/kotlin`-style trees and is only supported for `jvm/app` and `jvm/lib`.
+The `default` layout uses `src`, `test`, `resources`, and `testResources`; its name changed from `amper` in `0.13`.
+`maven-like` preserves `src/main/kotlin`-style trees and is only supported for `jvm/app` and `jvm/lib`.
 
 ## Product Types
 
@@ -192,7 +186,7 @@ product:
 |---|---|---|
 | `jvm/app` | `jvm` | `package` builds an executable JAR |
 | `jvm/lib` | `jvm` | publishable |
-| `kmp/lib` | explicit leaf list | publishable since `0.12` |
+| `kmp/lib` | explicit leaf list | publishable |
 | `android/app` | `android` | `build` → APK, `package` → AAB with R8 and signing |
 | `ios/app` | `iosArm64`, `iosSimulatorArm64` | needs `module.xcodeproj`; `iosX64` no longer accepted |
 | `js/app` | `js` | incomplete preview, CLI cannot run it |
@@ -238,25 +232,25 @@ and it needs the object form with `publish: true` to also be a publish target. D
 
 ## Settings Defaults
 
-Defaults from the pinned `v0.12.2` docs:
+Defaults checked against `DefaultVersions.kt` at the pinned `v0.13.0` tag:
 
 | Setting | Default |
 |---|---|
 | JDK major version | 25 |
-| `settings.kotlin.version` | 2.4.10 |
+| `settings.kotlin.version` | 2.4.20 |
 | `settings.android.compileSdk` | 37 |
 | `settings.android.minSdk` | 24 |
 | `settings.android.buildToolsVersion` | 37.0.0 |
-| `settings.compose.version` | 1.11.1 |
+| `settings.compose.version` | 1.12.1 |
 | `settings.compose.experimental.hotReload.version` | 1.2.0 |
 | `settings.kotlin.serialization.version` | 1.11.0 |
-| `settings.kotlin.ksp.version` | 2.3.11 |
-| `settings.kotlin.rpc.version` | 0.10.3 |
+| `settings.kotlin.ksp.version` | 2.3.12 |
+| `settings.kotlin.rpc.version` | 0.10.4 |
 | `settings.kotlin.dataframe.version` | 1.0.0-rc01 |
 | `settings.jvm.test.junitPlatformVersion` | 6.1.3 |
-| `settings.ktor.version` | 3.5.2 |
-| `settings.lombok.version` | 1.18.46 |
-| `settings.springBoot.version` | 4.1.0 |
+| `settings.ktor.version` | 3.6.0 |
+| `settings.lombok.version` | 1.18.48 |
+| `settings.springBoot.version` | 4.1.1 |
 
 Running the toolchain itself needs JDK 17 or newer, and `settings.kotlin.version` must be at least 2.2.20.
 
@@ -274,7 +268,7 @@ settings:
 ```
 
 Selection modes are `auto`, `alwaysProvision`, and `javaHome`. `oracleGraalVM` requires an explicit
-`acknowledgedLicenses` entry. The distribution list changed in `0.12` — see
+`acknowledgedLicenses` entry. For the supported distributions, see
 [`references/cli.md`](references/cli.md).
 
 `settings.jvm.release` is the minimum JVM release the code must be compatible with — bytecode target plus Java API and
@@ -308,7 +302,7 @@ apply:
   - //common.module-template.yaml
 ```
 
-Since `0.12`, templates may apply other templates. Precedence runs between whole files: `module.yaml` beats every
+Templates may apply other templates. Precedence runs between whole files: `module.yaml` beats every
 template it applies, and a template beats the templates it applies, transitively. Two templates that do not apply each
 other are siblings — if they set the same scalar to different values, the build fails with a conflict. Resolve it by
 setting the value in `module.yaml`, or in a template that applies both. Each template contributes once no matter how
@@ -323,7 +317,12 @@ Tests live in `test` and `test@platform`; test-only resources in `testResources`
 library that is added (`kotlin-test-junit5`, `kotlin-test-junit`, or plain `kotlin-test`). JVM test process settings
 live under `settings.jvm.test` or `test-settings.jvm`.
 
-Wasm-JS tests are not supported yet.
+`0.13` runs Wasm-JS tests in provisioned Chromium via Playwright. This does not add a Wasm-WASI test runner.
+JUnit tag filters use `--include-tag` / `--exclude-tag`, for example `./kotlin test -m core --include-tag 'fast & !flaky'`.
+Non-JVM tests count as untagged, so positive tag filters can skip them. See [CLI](references/cli.md).
+
+`settings.kotlin.explicitApi: strict` enforces library API declarations while ignoring test sources. Native debug
+linking can reuse compiler caches through `settings.kotlin.compileIncrementally`; see [settings](references/settings.md).
 
 ## Built-In Technologies
 
@@ -334,7 +333,7 @@ Prefer the short settings forms unless customization is needed:
 - `settings.kotlin.serialization: json` — compiler plugin, runtime, and the JSON format. Known formats: `json`,
   `json-io`, `json-okio`, `hocon`, `protobuf`, `cbor`, `properties`.
 - `settings.kotlin.rpc: enabled` — kotlinx.rpc plugin, runtime, BOM, and `$kotlin.rpc.*`.
-- `settings.kotlin.dataframe: enabled` — DataFrame compiler plugin (new in `0.12`).
+- `settings.kotlin.dataframe: enabled` — DataFrame compiler plugin.
 - `settings.kotlin.powerAssert: enabled` — richer assertion messages; `functions:` extends beyond `kotlin.assert`.
 - `settings.ktor: enabled` — Ktor BOM, a built-in Ktor library catalog, and the `io.ktor.development=true` system
   property on `kotlin run`.
@@ -349,9 +348,12 @@ More in [`references/builtin-tech.md`](references/builtin-tech.md).
 
 ## Android Identity And Signing
 
-Identity keys under `settings.android`: `namespace`, `applicationId` (defaults from `namespace`), `versionCode`,
-`versionName`, `compileSdk`, `minSdk`, `targetSdk` (defaults from `compileSdk`), `buildToolsVersion`. `maxSdk` is
-deprecated in `0.12`.
+An `android/app` must explicitly set `settings.android.namespace`; `applicationId` defaults from it. For Android
+libraries, an omitted namespace is derived from publication coordinates or a generated module-specific fallback;
+set it explicitly when source code imports generated `R` / `BuildConfig` classes.
+
+Other keys: `versionCode`, `versionName`, `compileSdk`, `minSdk`, `targetSdk` (defaults from `compileSdk`),
+`buildToolsVersion`, and `abiFilters` (packaged native ABIs; empty means all). `maxSdk` is rejected as deprecated.
 
 `compileSdk` also takes an object form with `apiLevel`, `minorApiLevel`, and `sdkExtension`.
 
@@ -364,8 +366,11 @@ a keystore with `./kotlin tool generate-keystore`. Never commit the keystore or 
 
 ## Publishing
 
-Publishing is preview, but in `0.12` it covers both JVM and multiplatform libraries, on every Kotlin platform, and
+Publishing is preview. It covers both JVM and multiplatform libraries, on every Kotlin platform, and
 emits Gradle module metadata alongside `pom.xml`. Consumers do not need the Kotlin Toolchain.
+
+Since `0.13`, KMP publications include Compose resources and SwiftPM metadata. Libraries with local Swift packages
+can publish only to `mavenLocal`; shared publications must use remote packages.
 
 A regular Maven repository needs a `repositories` entry with `publish: true` plus credentials, and
 `settings.publishing` with `enabled`, `group`, and `version`. Maven Central additionally needs `mavenCentral: enabled`,
@@ -375,6 +380,13 @@ A regular Maven repository needs a `repositories` entry with `publish: true` plu
 `publishingMode` is `manual` by default; `auto` releases without inspection, and released Maven Central artifacts are
 permanent. `kotlin publish mavenLocal` installs into the local Maven repository. Details in
 [`references/publishing.md`](references/publishing.md).
+
+## SwiftPM
+
+Apple targets can use `swiftPackage: { repository, version, products }` and
+`localSwiftPackage: { path, products }`. Qualify dependencies with `@ios` or another Apple family when needed.
+Kotlin imports Objective-C-visible APIs through `swiftPMImport.<module>`; pure Swift APIs need an Objective-C wrapper.
+See [dependencies](references/dependencies.md) for exact version syntax and publication restrictions.
 
 ## GitHub Actions
 
@@ -395,7 +407,7 @@ outputs, checks, and commands. Plugins cannot be published — see
 - Alpha means defaults and syntax drift; verify exact behavior against a tag, SHA, or the installed toolchain.
 - Do not remove expected `Amper` names from plugin/product/package references. YouTrack is `KTC`, not `AMPER`.
 - Write `//` paths for module deps, templates, and plugin refs — but never in `project.yaml`'s `modules:` list.
-- A `0.11.x` project is not a `0.12` project. Check the wrapper before applying anything here.
+- Check the wrapper before using version-sensitive features or defaults.
 - `product.platforms` requires leaf platform names, not family shortcuts.
 - `settings.android` and `settings@android` are different.
 - `layout: maven-like` is only for JVM-only modules.
@@ -405,6 +417,6 @@ outputs, checks, and commands. Plugins cannot be published — see
 - `js/app` and `wasm-wasi/app` cannot be run by the CLI; `wasm-js/app` can, via `run`.
 - Native, JS, and Wasm product types do not support `package`.
 - iOS requires Xcode integration and `module.xcodeproj`; the build phase is now `Build Kotlin`.
-- Compose Multiplatform resources are not published as part of a KMP library yet.
+- Compose resources publish in `0.13`; expose generated accessors only when they belong in the public API.
 - Use `exported` sparingly to avoid leaking implementation dependencies into consumer compile classpaths.
 - Maven Central `auto` publishing and released artifacts are permanent decisions.

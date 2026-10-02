@@ -1,31 +1,35 @@
 # Settings Reference
 
-Kotlin Toolchain `v0.12.2`. Always confirm against a real project with `./kotlin show settings -m <module>`.
+Kotlin Toolchain `v0.13.0`. Always confirm against a real project with `./kotlin show settings -m <module>`.
 
 `settings` configures the toolchains used to build the module. `test-settings` does the same for building and running
 its tests, and overrides `settings` where they overlap. Both accept `@platform` qualifiers.
 
 ## Defaults At A Glance
 
-| Setting | `0.12.2` | `0.11.1` |
-|---|---|---|
-| Default JDK major version | 25 | 21 |
-| Minimum JDK to run the toolchain | 17 | — |
-| `settings.kotlin.version` | 2.4.10 | 2.3.20 |
-| Minimum `settings.kotlin.version` | 2.2.20 | — |
-| `settings.android.compileSdk` | 37 | 36 |
-| `settings.android.minSdk` | 24 | 21 |
-| `settings.android.buildToolsVersion` | 37.0.0 | — |
-| `settings.compose.version` | 1.11.1 | 1.10.3 |
-| `settings.compose.experimental.hotReload.version` | 1.2.0 | 1.0.0 |
-| `settings.kotlin.serialization.version` | 1.11.0 | 1.10.0 |
-| `settings.kotlin.ksp.version` | 2.3.11 | 2.3.6 |
-| `settings.kotlin.rpc.version` | 0.10.3 | present, version not documented |
-| `settings.kotlin.dataframe.version` | 1.0.0-rc01 | — |
-| `settings.jvm.test.junitPlatformVersion` | 6.1.3 | 6.0.1 |
-| `settings.ktor.version` | 3.5.2 | 3.4.1 |
-| `settings.lombok.version` | 1.18.46 | 1.18.38 |
-| `settings.springBoot.version` | 4.1.0 | 4.0.5 |
+| Setting | `0.13.0` |
+| --- | --- |
+| Default JDK major version | 25 |
+| Minimum JDK to run the toolchain | 17 |
+| `settings.kotlin.version` | 2.4.20 |
+| Minimum `settings.kotlin.version` | 2.2.20 |
+| `settings.android.compileSdk` | 37 |
+| `settings.android.minSdk` | 24 |
+| `settings.android.buildToolsVersion` | 37.0.0 |
+| `settings.compose.version` | 1.12.1 |
+| `settings.compose.experimental.hotReload.version` | 1.2.0 |
+| `settings.kotlin.serialization.version` | 1.11.0 |
+| `settings.kotlin.ksp.version` | 2.3.12 |
+| `settings.kotlin.rpc.version` | 0.10.4 |
+| `settings.kotlin.dataframe.version` | 1.0.0-rc01 |
+| `settings.jvm.test.junitPlatformVersion` | 6.1.3 |
+| `settings.ktor.version` | 3.6.0 |
+| `settings.lombok.version` | 1.18.48 |
+| `settings.springBoot.version` | 4.1.1 |
+
+The `0.13.0` defaults above were checked against the tagged
+[`DefaultVersions.kt`](https://github.com/JetBrains/kotlin-toolchain/blob/abc7a5f7579e9ef267107782048c76777f0bf932/sources/frontend-api/src/org/jetbrains/amper/frontend/schema/DefaultVersions.kt).
+The tagged Markdown still says Kotlin `2.4.10`; the shipped default is `2.4.20`.
 
 ## `settings.jvm`
 
@@ -64,20 +68,21 @@ The same block exists under `test-settings.jvm`.
 
 | Attribute | Default | Meaning |
 |---|---|---|
-| `version` | 2.4.10 | Kotlin compiler and stdlib version |
-| `languageVersion` | major.minor of `version` | Source compatibility level |
-| `apiVersion` | from `languageVersion` | Restrict to declarations from that version of bundled libraries |
+| `version` | 2.4.20 | Kotlin compiler and stdlib version |
+| `languageVersion` | major.minor of `version` | Source compatibility string, e.g. `"2.4"` |
+| `apiVersion` | from `languageVersion` | String; restrict bundled-library APIs to that language version |
 | `allWarningsAsErrors` | `false` | |
 | `suppressWarnings` | `false` | |
 | `progressiveMode` | `false` | |
 | `verbose` | `false` | |
 | `freeCompilerArgs` | `[]` | Raw compiler options, e.g. `-Xexpect-actual-classes` |
-| `optIns` | `[]` | Fully-qualified opt-in annotation names. **String list in `0.12`**, was an enum list in `0.11`. |
-| `compileIncrementally` | enabled for Kotlin ≥ 2.4.0 | Incremental JVM compilation. New in `0.12`. |
+| `optIns` | `[]` | String list of fully-qualified opt-in annotation names. |
+| `compileIncrementally` | enabled for Kotlin ≥ 2.4.0 | Incremental JVM compilation; since `0.13`, also Native debug dependency caches |
+| `explicitApi` | `disable` | `strict`, `warning`, or `disable`; ignored for test sources |
 | `compilerPlugins` | `[]` | Third-party compiler plugins |
-| `debug` | enabled in debug variants | Native only. Was a flat `true` in `0.11`. |
-| `optimization` | enabled in release variants | Native only. New in `0.12`. |
-| `linkerOptions` | `[]` | Native only, extra linker arguments. New in `0.12`. |
+| `debug` | enabled in debug variants | Native only. |
+| `optimization` | enabled in release variants | Native only. |
+| `linkerOptions` | `[]` | Native only, extra linker arguments. |
 | `allOpen`, `noArg`, `jsPlainObjects` | | Compiler plugin shortcuts |
 | `serialization`, `rpc`, `dataframe`, `powerAssert`, `ksp` | | See `builtin-tech.md` |
 
@@ -89,6 +94,10 @@ settings:
     freeCompilerArgs: [ -Xexpect-actual-classes ]
 ```
 
+Native caches reuse compiled external dependencies during non-optimized binary linking on compiler-supported targets.
+They do not incrementally compile a module into klibs or accelerate optimized release linking. Set
+`settings@native.kotlin.compileIncrementally: false` to opt out; the default Kotlin `2.4.20` supports the feature.
+
 ## `settings.native`
 
 | Attribute | Default | Meaning |
@@ -99,19 +108,28 @@ settings:
 
 | Attribute | Default | Meaning |
 |---|---|---|
-| `namespace` | `org.example.namespace` | Package for generated `R` and `BuildConfig` |
+| `namespace` | required for apps; derived for libraries | Package for generated `R` and `BuildConfig` |
 | `applicationId` | from `namespace` | ID on device and in Play Store |
 | `compileSdk` | 37 | API level to compile against; int or object |
 | `targetSdk` | from `compileSdk` | |
 | `minSdk` | 24 | |
-| `buildToolsVersion` | 37.0.0 | SDK Build Tools version. New in `0.12`. |
+| `buildToolsVersion` | 37.0.0 | SDK Build Tools version. |
 | `versionCode` | 1 | |
 | `versionName` | `unspecified` | |
 | `signing` | | Release signing settings |
-| `resourcePackaging` | empty | Duplicate Java resource handling. New in `0.12`. |
+| `resourcePackaging` | empty | Duplicate Java resource handling. |
+| `abiFilters` | `[]` (all) | ABIs whose native libraries enter the APK/AAB |
 | `parcelize` | disabled | |
 
-`maxSdk` is deprecated in `0.12`.
+An `android/app` must set `namespace`; setting only `applicationId` is insufficient. `applicationId` defaults to
+`namespace`. A library can omit `namespace`: it is derived from `publishing.group` plus the sanitized effective
+artifact ID, or otherwise from a module-specific generated name. Pin it when code refers to generated classes.
+The tagged Markdown's `org.example.namespace` default is stale; the schema and diagnostics enforce these rules.
+
+`abiFilters: [arm64-v8a, x86_64]` restricts packaged `.so` files from both `jniLibs` and dependencies. It does not
+build missing native binaries. The toolchain still warns if selected ABIs carry inconsistent library sets.
+
+`maxSdk` is deprecated with an error diagnostic.
 
 ### `compileSdk` object form
 
@@ -160,12 +178,12 @@ keyPassword=...
 ```
 
 Override the path with `signing.propertiesFile`. Generate a keystore with `./kotlin tool generate-keystore`. Never
-commit the keystore or `keystore.properties`.
+commit the keystore or `keystore.properties`. A relative `storeFile` resolves from the module directory; run
+`kotlin tool generate-keystore --properties-file keystore.properties` from that directory.
 
 ## `settings.publishing`
 
-The block itself already existed in `0.11.x`. What moved in `0.12` is `publishingMode`: it was
-`settings.mavenCentral.publishingMode` and is now `settings.publishing.mavenCentral.publishingMode`.
+Configure Maven Central publication mode at `settings.publishing.mavenCentral.publishingMode`.
 
 | Attribute | Default | Meaning |
 |---|---|---|
@@ -186,7 +204,7 @@ Details and the `pom` sub-tree are in `publishing.md`.
 | Attribute | Default |
 |---|---|
 | `enabled` | `false` |
-| `version` | 1.11.1 |
+| `version` | 1.12.1 |
 | `resources.packageName` | `""` |
 | `resources.exposedAccessors` | `false` |
 | `resources.nameOfResClass` | `"Res"` |
@@ -196,9 +214,9 @@ Details and the `pom` sub-tree are in `publishing.md`.
 
 | Block | Notable keys |
 |---|---|
-| `settings.ktor` | `enabled`, `version` (3.5.2), `applyBom` (`true`) |
-| `settings.springBoot` | `enabled`, `version` (4.1.0), `applyBom` (`true`) |
-| `settings.lombok` | `enabled`, `version` (1.18.46) |
+| `settings.ktor` | `enabled`, `version` (3.6.0), `applyBom` (`true`) |
+| `settings.springBoot` | `enabled`, `version` (4.1.1), `applyBom` (`true`) |
+| `settings.lombok` | `enabled`, `version` (1.18.48) |
 | `settings.java.annotationProcessing.processors` | Java annotation processors |
 
 Per-technology behavior is in `builtin-tech.md`.

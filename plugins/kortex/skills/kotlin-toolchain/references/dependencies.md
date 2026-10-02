@@ -1,6 +1,6 @@
 # Dependencies And Repositories
 
-Kotlin Toolchain `v0.12.2`.
+Kotlin Toolchain `v0.13.0`.
 
 ## Notation
 
@@ -11,8 +11,8 @@ dependencies:
   - $libs.apache.commons.lang3               # project catalog
   - $compose.ui                              # toolchain catalog
   - bom: io.ktor:ktor-bom:2.2.0
-  - swiftPackage: ...                        # iOS apps only
-  - localSwiftPackage: ./path                # iOS apps only
+  - swiftPackage: ...                        # Apple targets; object form below
+  - localSwiftPackage: ...                   # Apple targets; path + products
 ```
 
 | Item | Meaning |
@@ -22,11 +22,10 @@ dependencies:
 | `$<catalog.key>` | Entry from a project or toolchain catalog |
 | `bom: <groupId>:<artifactId>:<version>` | Import a BOM |
 | `bom: $<catalog.key>` | Import a BOM from a catalog |
-| `swiftPackage: ...` | Remote Swift package, `ios/app` only. New in `0.12`. |
-| `localSwiftPackage: <path>` | Local Swift package, `ios/app` only. New in `0.12`. |
+| `swiftPackage: ...` | Remote Swift package for Apple targets; `repository`, `version`, `products` |
+| `localSwiftPackage: ...` | Local Swift package for Apple targets; `path`, `products` |
 
-The upstream reference lists the two Swift package forms but does not spell out the payload of `swiftPackage:`. Check
-`./kotlin show dependencies` or the module schema in the IDE before writing one.
+See [SwiftPM dependencies](#swiftpm-dependencies) below for the `0.13` forms and Kotlin interop limits.
 
 ### Module Dependencies
 
@@ -45,7 +44,7 @@ external Maven dependency, not a module. Upstream may deprecate relative module 
 
 ### Classifiers And Packaging Types
 
-Classifiers and packaging types are new in `0.12`. The full grammar is
+The full grammar is
 `<groupId>:<artifactId>[:<version>[:<classifier>]][@<packaging>]` — version, classifier, and packaging are all
 optional, and a classifier requires a version before it.
 
@@ -191,7 +190,7 @@ A bare string is used as the `url`, and the `id` defaults to that url.
 
 ### Overriding Or Disabling Defaults
 
-New in `0.12`. Declaring a repository with a default repository's `id` replaces it. That is how to point at a company
+Declaring a repository with a default repository's `id` replaces it. That is how to point at a company
 mirror or attach credentials to Maven Central:
 
 ```yaml
@@ -247,4 +246,47 @@ The docs disagree with themselves on the extension: the `module.yaml` reference 
 supported, while every publishing example uses `creds.properties`. Copy whatever the project already uses, or try
 `.properties` first — that is what the worked examples do.
 
-A missing credentials file no longer breaks an unrelated build in `0.12` — it only fails the operation that needs it.
+A missing credentials file fails only the operation that needs it.
+
+## SwiftPM Dependencies
+
+New in `0.13`: Apple targets in `kmp/lib` and application modules can import Objective-C-visible APIs from Swift
+packages. This expands the earlier iOS-app dependency support. Select the package's products explicitly and qualify
+the dependency when it supports only some targets:
+
+```yaml
+product:
+  type: kmp/lib
+  platforms: [iosArm64, iosSimulatorArm64, macosArm64]
+
+dependencies@ios:
+  - swiftPackage:
+      repository: https://github.com/googlemaps/ios-maps-sdk.git
+      version: "10.6.0"
+      products: [GoogleMaps]
+```
+
+A version string is an exact requirement. The object form supports `type: from`, `branch`, or `revision` with a
+`value` (version, branch name, or commit SHA):
+
+```yaml
+dependencies@ios:
+  - swiftPackage:
+      repository: https://github.com/googlemaps/ios-maps-sdk.git
+      version:
+        type: from
+        value: "10.6.0"
+      products: [GoogleMaps]
+  - localSwiftPackage:
+      path: //native/CryptoKitWrapper
+      products: [CryptoKitWrapper]
+```
+
+`localSwiftPackage` is an object, not a bare path. The path points to a Swift package containing `Package.swift`.
+The import mechanism discovers Clang modules in the selected products; Kotlin imports the exposed declarations from
+`swiftPMImport.<kotlin-module-name>`. Pure Swift APIs need a wrapper exposing Objective-C-compatible declarations,
+for example an `@objc public` class extending `NSObject`. This is not arbitrary Swift-to-Kotlin interop.
+
+Published libraries carry their declared Swift dependencies in a `-swiftpm-metadata.json` artifact; dependencies'
+metadata is collected transitively. Local package paths are stored as absolute paths, so a library with local Swift
+packages may publish only to `mavenLocal`. Use remote packages for libraries shared through other repositories.

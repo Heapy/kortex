@@ -7,8 +7,7 @@ JShell, and related development workflows.
 
 - Kotlin Toolchain declarative project setup with `module.yaml`, `project.yaml`, templates, dependencies, plugins,
   and the `kotlin` CLI.
-- Version-aware guidance for Kotlin Toolchain `v0.12.x`, with a retained `v0.11.x` snapshot and a 0.11 -> 0.12
-  migration guide.
+- Kotlin Toolchain `v0.13.x` guidance and a migration guide for upgrading to this release.
 - Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm, Kotlin/Native, server-side apps, testing,
   publishing, migration, and toolchain provisioning.
 - Modern Kotlin language features (2.0–2.4.x, including 2.4.10 and the 2.4.20-Beta1 EAP) with experimental compiler
@@ -19,13 +18,12 @@ JShell, and related development workflows.
 
 ## Files
 
-- `skills/kotlin-toolchain/SKILL.md` - default Kotlin Toolchain skill for `v0.12.x`; operational base plus a map of
+- `skills/kotlin-toolchain/SKILL.md` - default Kotlin Toolchain skill for `v0.13.x`; operational base plus a map of
   topic references.
 - `skills/kotlin-toolchain/references/` - per-topic detail: CLI, project model, product types, dependencies, settings,
-  built-in technologies, multiplatform, templates, publishing, plugins, Maven and Gradle migration, the 0.11 -> 0.12
-  upgrade, known issues, and Codex cache setup.
-- `skills/kotlin-toolchain/SKILL-0.11.md` - historical skill for projects still pinned to `v0.11.x`.
-- `skills/kotlin-toolchain/generation/` - retained upstream documentation dumps and regeneration notes.
+  built-in technologies, multiplatform, templates, publishing, plugins, Maven and Gradle migration, upgrading to
+  the current release, known issues, and Codex cache setup.
+- `skills/kotlin-toolchain/generation/` - the current upstream documentation snapshot and regeneration notes.
 - `skills/kotlin-toolchain/scripts/aggregate-upstream-docs.sh` - helper for rebuilding upstream documentation dumps.
 - `skills/main-kts/SKILL.md` - executable Kotlin `.main.kts` scripts.
 - `skills/modern-kotlin/SKILL.md` - modern Kotlin language features and experimental flags.
