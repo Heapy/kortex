@@ -6,15 +6,12 @@ into every checkout.
 
 ## Two Caches
 
-`0.12` splits them cleanly, and both can be relocated:
+The bootstrap and shared caches can both be relocated:
 
 | Cache | Holds | Relocate with |
 |---|---|---|
 | Bootstrap | The wrapper's copy of the CLI distribution | `KOTLIN_CLI_BOOTSTRAP_CACHE_DIR` |
 | Shared | Downloaded dependencies, JDKs, tools — shared by all projects | `KOTLIN_SHARED_CACHE_DIR`, or `--shared-cache-dir` which wins over it |
-
-`KOTLIN_SHARED_CACHE_DIR` and `--shared-cache-dir` are new in `0.12`. The `0.11.x` flag `--shared-caches-root` was
-removed — a script still passing it fails.
 
 Pointing both variables at one directory you already grant is usually simpler than enumerating default cache roots.
 

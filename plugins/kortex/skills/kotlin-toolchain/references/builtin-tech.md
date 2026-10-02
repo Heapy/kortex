@@ -1,6 +1,6 @@
 # Built-In Technologies
 
-Kotlin Toolchain `v0.12.2`. Prefer the short settings forms unless you need customization.
+Kotlin Toolchain `v0.13.0`. Prefer the short settings forms unless you need customization.
 
 ## Compose Multiplatform
 
@@ -13,14 +13,14 @@ Enabling it:
 
 - configures the Compose compiler plugin;
 - adds `org.jetbrains.compose.runtime:runtime` and `org.jetbrains.compose.components:components-resources`
-  implicitly (the second one is new in `0.12`);
-- enables the `$compose.*` catalog for optional Compose modules, versioned by `settings.compose.version` (1.11.1).
+  implicitly;
+- enables the `$compose.*` catalog for optional Compose modules, versioned by `settings.compose.version` (1.12.1).
 
 Useful catalog entries: `$compose.foundation`, `$compose.material`, `$compose.ui`,
 `$compose.desktop.currentOs`, `$compose.hotReload.runtimeApi`.
 
-Since `0.12`, the compose-resources library is skipped when a module has no resources. The docs still describe the
-dependency as unconditional; the release notes record the change.
+The compose-resources library is skipped when a module has no resources, despite the tagged docs describing the
+dependency as unconditional.
 
 ### Resources
 
@@ -28,8 +28,9 @@ Put resources under `composeResources`. Accessors are generated into `<sanitized
 
 `<sanitized-name>` is derived from `settings.publishing.group` and `artifactId` when those are set, otherwise from the
 module name. Sanitizing lowercases it, turns `-` into `_`, and prefixes `_` if it starts with a digit. So module
-`my-kmp-module` with no publishing settings yields `my_kmp_module.generated.resources`. The publishing-derived part is
-new in `0.12` — a module that gains publishing settings changes its generated package.
+`my-kmp-module` with no publishing settings yields `my_kmp_module.generated.resources`. Adding publishing
+settings changes the generated package. With a group, the form is
+`<sanitized-group>.<sanitized-artifact-id>.generated.resources`; the effective artifact ID defaults to the module name.
 
 Override with:
 
@@ -42,15 +43,20 @@ settings:
       nameOfResClass: Res
 ```
 
-Compose Multiplatform resources are **not** included in a published KMP library yet (KTC-5698).
+Since `0.13`, Compose resources are included in KMP publications (KTC-5698) and can be consumed from published
+dependencies (KTC-3585). Generated accessors are internal by default; set `exposedAccessors: true` only to expose
+resources as library API.
 
 ### Hot Reload
 
 `settings.compose.experimental.hotReload.version` defaults to 1.2.0. Run it from the CLI with
-`./kotlin run --compose-hot-reload-mode`, or from the IDE, which needs the Kotlin Toolchain plugin and a module with a
+`./kotlin run --compose-hot-reload`, or from the IDE, which needs the Kotlin Toolchain plugin and a module with a
 `jvm` target.
 
-`0.12` added a filesystem watcher to the standalone CLI and an MCP server for the reload loop. **The `v0.12.2` docs
+In `0.13`, ordinary `kotlin run` automatically enables hot reload for eligible JVM Compose modules; disable it with
+`--no-compose-hot-reload`. The old `--compose-hot-reload-mode` flag is retained as a deprecated alias.
+
+The standalone CLI has a filesystem watcher and an MCP server for the reload loop. **The `v0.13.0` docs
 still carry the old warning that the CLI does not watch the filesystem — that text is stale.** The shipped code
 watches both source and build-model paths, and a change to `module.yaml` triggers a full rebuild-and-reload.
 
@@ -78,7 +84,7 @@ settings:
       format: json
 ```
 
-`enabled` is implied when `format` is set. In `0.12`, `format` is a plain string rather than an enum.
+`enabled` is implied when `format` is set. `format` is a plain string.
 
 ## Ktor
 
@@ -88,8 +94,8 @@ settings:
 ```
 
 Applies the Ktor BOM (`applyBom: true` by default), contributes Ktor entries to a built-in library catalog at
-version 3.5.2, and adds the `io.ktor.development=true` system property when the app runs under `kotlin run`. In `0.12`
-the catalog is aligned with the published `ktor-version-catalog`, so some entry names differ from `0.11.x`.
+version 3.6.0, and adds the `io.ktor.development=true` system property when the app runs under `kotlin run`. The catalog
+is aligned with the published `ktor-version-catalog`.
 
 ## Spring Boot
 
@@ -98,7 +104,7 @@ settings:
   springBoot: enabled
 ```
 
-At version 4.1.0 this:
+At version 4.1.1 this:
 
 - applies the Spring Boot dependencies BOM, so starters can be declared without versions;
 - configures `all-open` with the `spring` preset;
@@ -106,7 +112,7 @@ At version 4.1.0 this:
 - passes `-parameters` to `javac` and `-java-parameters`, `-Xjsr305=strict` to `kotlinc`;
 - adds catalog entries and the `classes` runtime classpath mode so devtools work.
 
-**Changed in `0.12`:** it no longer adds `spring-boot-starter` and `spring-boot-starter-test` for you. Declare the
+It does not add `spring-boot-starter` and `spring-boot-starter-test` for you. Declare the
 starters you actually need:
 
 ```yaml
@@ -130,19 +136,17 @@ settings:
 | Attribute | Default |
 |---|---|
 | `enabled` | `false` |
-| `version` | 0.10.3 |
+| `version` | 0.10.4 |
 | `applyBom` | `true` |
 | `annotationTypeSafetyEnabled` | `true` |
 
 Enabling it turns on `@Rpc` code generation, applies the BOM, adds
-`org.jetbrains.kotlinx:kotlinx-rpc-core` implicitly (new in `0.12`), and contributes catalog entries starting with
+`org.jetbrains.kotlinx:kotlinx-rpc-core` implicitly, and contributes catalog entries starting with
 `$kotlin.rpc.`.
 
 Disabling `annotationTypeSafetyEnabled` is unsafe and only warranted when the type-safety analysis rejects valid code.
 
 ## Kotlin DataFrame
-
-New in `0.12`.
 
 ```yaml
 settings:
@@ -159,8 +163,8 @@ IDE support for the plugin ships in the Kotlin Toolchain IDEA plugin.
 
 ## Power Assert
 
-Enriches assertion failure messages with intermediate values. Present since `0.11.x`; `0.12` documents it as a
-first-class `settings.kotlin` block and adds the runtime library implicitly.
+Enriches assertion failure messages with intermediate values. Configure it under `settings.kotlin`; the runtime
+library is added implicitly.
 
 ```yaml
 settings:
@@ -184,7 +188,7 @@ KSP2 only — processors must be KSP2-compatible. KSP1 is no longer part of KSP 
 settings:
   kotlin:
     ksp:
-      version: 2.3.11
+      version: 2.3.12
       processors:
         - androidx.room:room-compiler:2.7.0-alpha12
         - //my-processor          # a local jvm/lib module
@@ -234,7 +238,7 @@ settings:
   lombok: enabled
 ```
 
-Adds the Lombok dependency (1.18.46), the Java annotation processor, and the Kotlin compiler plugin. JVM only.
+Adds the Lombok dependency (1.18.48), the Java annotation processor, and the Kotlin compiler plugin. JVM only.
 
 ## Java Annotation Processing
 

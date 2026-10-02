@@ -1,6 +1,6 @@
 # Maven Migration And Maven Plugins
 
-Kotlin Toolchain `v0.12.2`.
+Kotlin Toolchain `v0.13.0`.
 
 There is no conversion tool for Gradle projects at the moment: Gradle build scripts contain arbitrary code, which
 makes a deterministic conversion hard to define — see [`gradle-migration.md`](gradle-migration.md) for the manual
@@ -20,7 +20,7 @@ Options:
   related modules are converted.
 - `--overwrite-existing` — by default the converter fails when `project.yaml` or a `module.yaml` already exists.
 - `--enable-compatibility-plugins` — generate unknown Maven plugin entries already enabled, accepting the risk of
-  untested plugin configurations. New in `0.12`.
+  untested plugin configurations.
 
 ### What It Produces
 
@@ -31,8 +31,7 @@ Options:
 
 ### Dependencies
 
-- Reactor module dependencies become `//` module dependencies, e.g. `- //my-lib`. In `0.11.x` they became relative
-  paths.
+- Reactor module dependencies become `//` module dependencies, e.g. `- //my-lib`.
 - External dependencies keep their Maven coordinates.
 - Parent POM BOMs are imported as `bom:` entries, including transitive parents, ordered outermost first.
 - Repositories, including those inherited from parent POMs, land in `repositories`.
@@ -88,15 +87,12 @@ configuration can only vary by platform), **extensions**, **dependency exclusion
 **optional dependencies**, **system-scoped dependencies**, and **variable substitution** (values are inlined where
 possible; for dependencies, use a library catalog instead).
 
-`0.12` fixed several converter and POM-parsing bugs: variable interpolation in activation-profile paths, system
-properties in `pom.xml` substitution, unix-family profiles on macOS, and profile activation when all criteria are
-satisfied.
-
 ## Maven Plugins At Build Time
 
 JVM-only. Modules must be `jvm/app` or `jvm/lib`. This is a prototype that upstream says may be dropped at any time.
 
-Declare coordinates project-wide:
+Declare coordinates project-wide. In `0.13`, both `project.yaml` plugin entries and per-mojo extra dependencies
+can also reference library-catalog entries such as `$libs.checkstyle.plugin` / `$libs.nohttp.checkstyle`:
 
 ```yaml title="project.yaml"
 modules:

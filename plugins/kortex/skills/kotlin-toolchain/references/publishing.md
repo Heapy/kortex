@@ -1,21 +1,24 @@
 # Publishing Libraries
 
-Kotlin Toolchain `v0.12.2`. Publishing is still in preview and likely to change.
+Kotlin Toolchain `v0.13.0`. Publishing is still in preview and likely to change.
 
 ## What Can Be Published
 
-All library modules — `jvm/lib` and `kmp/lib` — on every Kotlin platform. This is the headline change from `0.11.x`,
-where only JVM libraries worked and KMP publications were incomplete and not consumable.
+All library modules — `jvm/lib` and `kmp/lib` — on every Kotlin platform.
 
 The docs put it as a compatibility guarantee: the publication format is consumable by Maven, Gradle, and any build
-tool that reads the same formats, and consumers do not need the Kotlin Toolchain. Under the hood `0.12` publishes
+tool that reads the same formats, and consumers do not need the Kotlin Toolchain. The toolchain publishes
 Gradle module metadata alongside `pom.xml` (KTC-5272).
 
 Libraries binding to native C libraries are covered: `cinterop` bindings are published in commonized form for common
 code and per platform, so consumers get the same C API without setting up interop themselves.
 
-Not yet covered: Compose Multiplatform resources are not part of a KMP publication (KTC-5698). Plugins cannot be
-published at all — see `known-issues.md`.
+Since `0.13`, KMP publications include Compose resources and SwiftPM dependency metadata. A separate
+`-swiftpm-metadata.json` artifact describes the library's declared Swift packages; transitive packages are collected
+through the dependency graph. A library depending on a local Swift package can publish only to `mavenLocal`, because
+the metadata contains an absolute machine-local path. Use remote Swift packages for shared publications.
+
+Plugins still cannot be published — see `known-issues.md`.
 
 ## Regular Maven Repository
 
@@ -61,7 +64,7 @@ depend on:
 kotlin publish -m my-lib --transitive someIdOfYourChoosing
 ```
 
-Since `0.12` the choice is not optional: when the selected modules depend on other local modules, the command fails
+When the selected modules depend on other local modules, the command fails
 and asks for `--transitive` or `--non-transitive`.
 
 If a module depends on other local modules, those must have publishing enabled too. Share the publishing block through
@@ -79,8 +82,7 @@ repositories:
 kotlin publish mavenLocal
 ```
 
-No credentials needed. This is the fastest way to try a library from another project on the same machine. `0.12` adds
-incremental caching and cleaner logging for this path.
+No credentials needed. This is the fastest way to try a library from another project on the same machine.
 
 ## Maven Central
 
@@ -92,7 +94,11 @@ incremental caching and cleaner logging for this path.
 
 ### Configuration
 
-Sonatype requires javadoc and sources JARs, checksums, PGP signatures, and mandatory POM metadata:
+Sonatype requires javadoc and sources JARs, checksums, PGP signatures, and mandatory POM metadata.
+In `0.13`, `settings.publishing.pom.description` can supply the description instead of the module-level
+`description` (KTC-5845). The module description remains the default when the POM override is absent.
+
+Example:
 
 ```yaml title="module.yaml"
 product: jvm/lib
@@ -117,9 +123,6 @@ settings:
           url: https://opensource.org/license/mit
 ```
 
-Requires `0.12.1` or later. On `0.12.0` this configuration still fails with `Cannot publish to repository 'mavenCentral'
-because it's not marked as publishable` (KTC-5799), and no configuration works around it.
-
 `pom.scm` as a bare string is shorthand for `pom.scm.url`; `connection` and `developerConnection` are derived as
 `scm:git:$url` unless set explicitly.
 
@@ -141,8 +144,8 @@ Most of this is identical across a project. Put it in a shared template.
 ### Checksums
 
 `settings.publishing.checksums` defaults to `[md5, sha1]` — exactly what Maven Central requires, keeping the file
-count down. Accepted values: `md5`, `sha1`, `sha256`, `sha512`. `0.12` stopped publishing unnecessary checksum files
-for `.asc` signatures, and honors this setting for non-Central repositories too.
+count down. Accepted values: `md5`, `sha1`, `sha256`, `sha512`. The setting also applies to non-Central repositories;
+`.asc` signatures do not get additional checksum files.
 
 ### Credentials
 
@@ -177,8 +180,6 @@ settings:
     mavenCentral:
       publishingMode: auto
 ```
-
-In `0.11.x` this lived at `settings.mavenCentral.publishingMode`. Update the path when migrating.
 
 Keep `manual` until the first deployment is proven. Released Maven Central artifacts cannot be removed — Sonatype's
 policy is strict, and `auto` gives you no chance to inspect what went out.

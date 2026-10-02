@@ -1,6 +1,6 @@
 # CLI, Wrapper, And Provisioning
 
-Kotlin Toolchain `v0.12.2`.
+Kotlin Toolchain `v0.13.0`.
 
 ## Getting The CLI
 
@@ -9,18 +9,19 @@ the project can run `./kotlin build` with no installation.
 
 Global install, when there is no wrapper yet:
 
-- SDKMAN: `sdk install kotlintoolchain`
+- SDKMAN: `sdk update`, then `sdk install kotlintoolchain`
 - macOS/Linux script: `curl -fsSL https://kotl.in/install.sh | sh`
 - Windows: `powershell -ExecutionPolicy ByPass -c "irm 'https://kotl.in/install.ps1' | iex"`
 
 The script installs into `~/.local/bin` and updates `PATH`; restart the shell afterwards.
 
 The IntelliJ IDEA new-project wizard generates the wrapper. Creating a `module.yaml` in a blank project makes IDEA
-offer to add it.
+offer to add it. Since `0.13`, `kotlin update --create` creates missing wrappers without an interactive prompt;
+use `--target-version 0.13.0` to pin the release rather than selecting whatever is latest.
 
 ## Project-Local Version Detection
 
-New in `0.12`. A globally installed wrapper does not blindly use its own version. It walks up from the current
+A globally installed wrapper does not blindly use its own version. It walks up from the current
 directory looking for a directory that has `project.yaml` or `module.yaml` **and** its own `kotlin` wrapper. If it
 finds one, it reads that wrapper's version and distribution checksum and uses those instead.
 
@@ -32,7 +33,7 @@ Discover everything with `kotlin --help` and `kotlin <command> --help` rather th
 
 | Command | What it does |
 |---|---|
-| `kotlin init` | Create a new project from a template |
+| `kotlin init` | Create a project; `0.13` adds the interactive KMP wizard |
 | `kotlin build` | Compile and link all code |
 | `kotlin run [-m <module>]` | Run an application module |
 | `kotlin test` | Run tests |
@@ -43,7 +44,7 @@ Discover everything with `kotlin --help` and `kotlin <command> --help` rather th
 | `kotlin task :<module>:<task>@<pluginId>` | Run one task directly, for debugging plugins |
 | `kotlin show modules\|settings\|dependencies\|tasks\|checks\|commands` | Introspect the effective model |
 | `kotlin clean` | Remove build output and caches |
-| `kotlin update [--dev]` | Update the wrapper and distribution to the latest release |
+| `kotlin update [--target-version <version> \| --dev] [--create]` | Update/create wrappers and verify the selected distribution; latest stable by default |
 | `kotlin generate-completion <bash\|zsh\|fish>` | Emit a shell completion script |
 | `kotlin tool convert-project` | Convert a Maven reactor |
 | `kotlin tool generate-keystore` | Create an Android signing keystore |
@@ -63,15 +64,36 @@ it:
 kotlin publish -m my-lib --transitive someRepoId
 ```
 
-`-m`/`--module` can repeat. Since `0.12`, when the selected modules depend on other local modules the command stops
+`-m`/`--module` can repeat. When the selected modules depend on other local modules the command stops
 and asks you to pass `--transitive` or `--non-transitive` — it will not decide for you.
 
-### Removed Options
+### Tests And Tag Filters
 
-`--root`, `--build-output`, and `--shared-caches-root` were removed in `0.12` (KTC-5419). Scripts and CI jobs that
-still pass them fail. `--shared-cache-dir` (or `KOTLIN_SHARED_CACHE_DIR`) is the documented replacement for the last
-one; `--project-dir` covers the project root. The upstream docs do not enumerate CLI options, so confirm the exact
-spelling with `kotlin <command> --help` before editing a CI script.
+```shell
+./kotlin test -m core --include-tag 'fast & !flaky'
+./kotlin test -m core --exclude-tag slow
+./kotlin test -m web --platform wasmJs
+```
+
+`--include-tag` / `--exclude-tag` accept JUnit tag expressions (`!`, `&`, `|`, parentheses, `any()`, `none()`).
+Repeated includes use OR; exclusions remove matches. Quote expressions for the shell. Only JVM and Android tests
+have tags; other platforms count as untagged and run only when the expressions allow untagged tests. When any test
+filter is used in a multi-module project, select modules with `-m` / `--include-module` or `--exclude-module`.
+
+Wasm-JS tests run in Chromium provisioned via Playwright in `0.13`. A Wasm-WASI test runner is not registered.
+Wasm class filters support `*`, not `?`; use package-qualified patterns rather than an uppercase class-name prefix.
+These details come from the tagged CLI and test tasks; the tagged Wasm-JS Markdown still says tests are unsupported.
+
+### Compose Runs
+
+`kotlin run` automatically enables hot reload for eligible JVM Compose modules. Use `--no-compose-hot-reload` to
+turn it off or `--compose-hot-reload` to request it explicitly. The old `--compose-hot-reload-mode` remains a hidden,
+deprecated alias in `0.13`. See [built-in technologies](builtin-tech.md).
+
+### Directory Options
+
+Use `--project-dir` for the project root, `--build-dir` for build output, and `--shared-cache-dir` for the shared
+cache. Confirm command-specific options with `kotlin <command> --help` before editing a CI script.
 
 ## Caches
 
@@ -88,8 +110,7 @@ Two distinct caches:
 Relocate with `KOTLIN_CLI_BOOTSTRAP_CACHE_DIR`. XDG conventions are not honored here.
 
 **Shared cache** — downloaded dependencies, JDKs, and tools, shared across all projects. Relocate with
-`KOTLIN_SHARED_CACHE_DIR` or `--shared-cache-dir`, which wins over the variable. Both are new in `0.12`; the regular
-cache does respect XDG on Linux.
+`KOTLIN_SHARED_CACHE_DIR` or `--shared-cache-dir`, which wins over the variable. The shared cache respects XDG on Linux.
 
 Provisioning is safe to run concurrently. Parallel CLI invocations do not disturb each other.
 
@@ -97,6 +118,7 @@ Provisioning is safe to run concurrently. Parallel CLI invocations do not distur
 
 | Variable | Effect |
 |---|---|
+| `KOTLIN_TOOLCHAIN_BUILD_DIR` | Build output root; `--build-dir` takes precedence. Replaces `AMPER_BUILD_DIR` in `0.13`. |
 | `KOTLIN_CLI_NO_WELCOME_BANNER` | Any non-empty value silences the first-run banner. Useful in CI. |
 | `KOTLIN_CLI_JAVA_OPTIONS` | JVM options for the CLI process itself |
 | `KOTLIN_CLI_JAVA_HOME` | Use this JRE for the CLI instead of provisioning one. You own its validity. |
@@ -107,8 +129,8 @@ that may change.
 
 ## JDK Provisioning
 
-By default the toolchain does not constrain the JDK vendor but expects a specific major version: **25** in `0.12`
-(21 in `0.11.x`). With the default `selectionMode: auto` it checks `JAVA_HOME` first and provisions a matching JDK via
+By default the toolchain does not constrain the JDK vendor but expects major version **25**. With the default
+`selectionMode: auto` it checks `JAVA_HOME` first and provisions a matching JDK via
 the Foojay Discovery API if that does not fit.
 
 The toolchain itself now requires JDK 17 or newer to run.
@@ -136,11 +158,7 @@ Selection modes:
 - `alwaysProvision` — ignore `JAVA_HOME`, always use the toolchain-managed JDK (downloading it the first time).
 - `javaHome` — require `JAVA_HOME` to match and fail otherwise. Provisioning is disabled.
 
-Supported distributions in `0.12`: `temurin`, `zulu`, `corretto`, `jetbrains`, `oracleOpenJdk`, `microsoft`,
+Supported distributions: `temurin`, `zulu`, `corretto`, `jetbrains`, `oracleOpenJdk`, `microsoft`,
 `dragonwell`, `liberica`, `sapMachine`, `semeru`, `graalVM`, and `oracleGraalVM` (requires license).
-
-`0.11.x` accepted `bisheng`, `kona`, `openLogic`, `oracle`, `zuluPrime`, and `semeruCertified`. Those are gone in
-`0.12`. `oracle` (Oracle JDK, licensed) has no drop-in replacement: `oracleOpenJdk` is Oracle's free OpenJDK build,
-`oracleGraalVM` is a licensed but different JDK. Pick by intent or drop the constraint.
 
 Restricting `distributions` to a paid vendor without listing it in `acknowledgedLicenses` is an error.

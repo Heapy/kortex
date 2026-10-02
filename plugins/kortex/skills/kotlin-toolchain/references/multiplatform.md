@@ -1,6 +1,6 @@
 # Multiplatform Modules
 
-Kotlin Toolchain `v0.12.2`.
+Kotlin Toolchain `v0.13.0`.
 
 ## Platform Hierarchy
 
@@ -44,7 +44,7 @@ common
 
 Intermediate nodes are platform *families*, leaves are *platforms*. Not all of them are equally supported or tested.
 
-`macosX64`, `watchosArm32`, and `tvosX64` are deprecated as of `0.12`. `iosX64` still exists for `kmp/lib` but is not
+`macosX64`, `watchosArm32`, and `tvosX64` are deprecated. `iosX64` still exists for `kmp/lib` but is not
 accepted by `ios/app` and is being phased out.
 
 ## Choosing Platforms
@@ -106,7 +106,7 @@ Settings:
 ```yaml
 settings:
   kotlin:
-    languageVersion: 2.4
+    languageVersion: "2.4"
     freeCompilerArgs: [x]
   android:
     compileSdk: 33
@@ -116,7 +116,7 @@ settings@android:
 
 settings@ios:
   kotlin:
-    languageVersion: 2.3
+    languageVersion: "2.3"
     freeCompilerArgs: [y]
 
 settings@iosSimulatorArm64:
@@ -179,7 +179,7 @@ dependencies@ios:
   - io.ktor:ktor-client-darwin:2.3.0
 ```
 
-New in `0.12`: a JVM+Android "common" fragment can depend on plain JVM libraries, and a `jvm/lib` module can be added
+A JVM+Android "common" fragment can depend on plain JVM libraries, and a `jvm/lib` module can be added
 as a dependency of an Android fragment.
 
 ## Native Interop (cinterop)
@@ -195,14 +195,20 @@ The toolchain detects them and configures `cinterop` for every applicable native
 Use `cinterop@<platform>` to limit definitions to a platform or family. Alternatively, keep a single `.def` in the
 common directory and use its own platform-specific keys (`compilerOpts.linux` vs `compilerOpts.osx`). Both work.
 
-**Bundled headers**, new in `0.12`: put vendored C headers in an `include` directory next to the `.def` files. The
+**Bundled headers**: put vendored C headers in an `include` directory next to the `.def` files. The
 toolchain passes it to `cinterop` as an extra header search path, equivalent to `-I<path>`. No configuration needed.
 
-Published KMP libraries carry `cinterop` bindings twice: commonized, for use from common code, and per platform. That
-is what the publishing docs promise. The release notes add that `0.12` commonizes cinterop klibs (KTC-5437) and feeds
-commonized cinterops into KMP metadata compilation (KTC-5585).
+Published KMP libraries carry `cinterop` bindings twice: commonized, for use from common code, and per platform.
+Commonized cinterops are included in KMP metadata compilation.
 
 To generate or provision a `.def` file dynamically, write a plugin that contributes `generated.cinteropDefinitions`.
+
+## SwiftPM On Apple Targets
+
+`0.13` imports Objective-C-visible APIs from remote or local Swift packages into Apple fragments. Declare
+`swiftPackage` / `localSwiftPackage` under a suitable `dependencies@apple` or `dependencies@ios` block when the
+package does not support all targets. Kotlin sees the APIs under `swiftPMImport.<module>`.
+See [dependencies](dependencies.md#swiftpm-dependencies) for version requirements, products, and publishing limits.
 
 ## KSP In Multiplatform Modules
 

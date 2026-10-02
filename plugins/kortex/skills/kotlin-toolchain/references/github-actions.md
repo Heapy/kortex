@@ -13,7 +13,8 @@ the Kotlin Toolchain version. Read the linked README and `action.yml` at the sel
 ## Setup and checks
 
 Check out the project before setup. `version: auto` detects the committed wrapper pin; without wrappers, setup
-v1.0.1 falls back to 0.13.0, not this skill's 0.12.2 snapshot. Use an explicit version when there is no project pin.
+v1.0.1 falls back to 0.13.0. Use an explicit version when there is no project pin rather than relying on an action's
+fallback to track this skill.
 The actions require Node.js 22+ and Bash, available on the supported GitHub-hosted Linux, macOS, and Windows runners.
 Run setup before `ktc-check` or `ktc-publish`; use the same `working-directory` for each action in a nested project.
 
