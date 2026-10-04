@@ -7,7 +7,7 @@ the Kotlin Toolchain version. Read the linked README and `action.yml` at the sel
 |---|---|
 | [`Heapy/setup-ktc`](https://github.com/Heapy/setup-ktc) | Install a checksum-verified CLI wrapper and cache toolchain downloads, dependencies, JDKs, and Kotlin/Native data |
 | [`Heapy/update-ktc`](https://github.com/Heapy/update-ktc) | Update both wrappers, validate with build/check, and open or maintain an upgrade PR |
-| [`Heapy/ktc-check`](https://github.com/Heapy/ktc-check) | Build and run checks, summarize JUnit results, annotate failures, and upload reports even on failure |
+| [`Heapy/ktc-check`](https://github.com/Heapy/ktc-check) | Build and test selected platforms, run plugin checks, summarize JUnit results, annotate failures, and upload reports even on failure |
 | [`Heapy/ktc-publish`](https://github.com/Heapy/ktc-publish) | Run checks and prepare a Maven Central bundle or explicitly publish to a configured Maven repository |
 
 ## Setup and checks
@@ -37,6 +37,32 @@ jobs:
 The example uses major tags for readability. Prefer verified release commit SHAs in maintained workflows and let
 Dependabot update them. `ktc-check` builds first by default and needs no `checks: write` permission. Set a unique
 `artifact-name` when multiple matrix entries share the same OS, architecture, and job ID.
+
+### Platform selection
+
+Since [ktc-check v1.1.0](https://github.com/Heapy/ktc-check/releases/tag/v1.1.0), the `platforms` input accepts comma-
+or whitespace-separated target names. Select targets declared by your modules that can build and run on the runner;
+cross-compiling an executable does not make that runner able to test it. For example, on a Linux x64 runner:
+
+```yaml
+- uses: Heapy/ktc-check@v1
+  with:
+    checks: tests
+    platforms: linuxX64, jvm
+    artifact-name: kotlin-reports-linuxX64-jvm
+```
+
+With `platforms` set, the action selects platforms for `kotlin build` and runs built-in tests through
+`kotlin test --platform ...`. Kotlin Toolchain 0.13's `kotlin check` does not accept platform selection, so plugin
+checks run separately with the selected modules and their normal platform behavior, without repeating built-in
+tests. An empty `platforms` input preserves the existing build/check commands.
+
+`modules`, `checks`, `skip`, and `build: false` still apply. Selecting only plugin checks does not run built-in
+tests. Use `build: false` when an earlier step has already built the required executables. See the
+[v1.1.0 target table](https://github.com/Heapy/ktc-check/blob/v1.1.0/README.md#platform-selection) for Kotlin Toolchain
+0.13.0 target identifiers and deprecated targets; actual support also depends on product type and runner.
+
+### Caching
 
 Setup cache keys omit branch names so feature branches can reuse eligible default-branch caches. With
 `cache-read-only: auto`, all PRs, including forks, restore only; push, scheduled, and manual runs may save.
