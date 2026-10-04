@@ -5,7 +5,7 @@ the Kotlin Toolchain version. Read the linked README and `action.yml` at the sel
 
 | Action | Use it for |
 |---|---|
-| [`Heapy/setup-ktc`](https://github.com/Heapy/setup-ktc) | Install a checksum-verified CLI wrapper and cache toolchain downloads, dependencies, and JDKs |
+| [`Heapy/setup-ktc`](https://github.com/Heapy/setup-ktc) | Install a checksum-verified CLI wrapper and cache toolchain downloads, dependencies, JDKs, and Kotlin/Native data |
 | [`Heapy/update-ktc`](https://github.com/Heapy/update-ktc) | Update both wrappers, validate with build/check, and open or maintain an upgrade PR |
 | [`Heapy/ktc-check`](https://github.com/Heapy/ktc-check) | Build and run checks, summarize JUnit results, annotate failures, and upload reports even on failure |
 | [`Heapy/ktc-publish`](https://github.com/Heapy/ktc-publish) | Run checks and prepare a Maven Central bundle or explicitly publish to a configured Maven repository |
@@ -13,8 +13,8 @@ the Kotlin Toolchain version. Read the linked README and `action.yml` at the sel
 ## Setup and checks
 
 Check out the project before setup. `version: auto` detects the committed wrapper pin; without wrappers, setup
-v1.0.1 falls back to 0.13.0. Use an explicit version when there is no project pin rather than relying on an action's
-fallback to track this skill.
+[v1.1.0](https://github.com/Heapy/setup-ktc/releases/tag/v1.1.0) falls back to 0.13.0. Use an explicit version when
+there is no project pin rather than relying on an action's fallback to track this skill.
 The actions require Node.js 22+ and Bash, available on the supported GitHub-hosted Linux, macOS, and Windows runners.
 Run setup before `ktc-check` or `ktc-publish`; use the same `working-directory` for each action in a nested project.
 
@@ -41,8 +41,24 @@ Dependabot update them. `ktc-check` builds first by default and needs no `checks
 Setup cache keys omit branch names so feature branches can reuse eligible default-branch caches. With
 `cache-read-only: auto`, all PRs, including forks, restore only; push, scheduled, and manual runs may save.
 GitHub enforces branch/repository access: fork PRs in the parent can restore eligible base caches, while pushes
-inside a fork use the fork's own cache. Project build outputs and `~/.konan` are not cached. Use
+inside a fork use the fork's own cache. Project build outputs are not cached. Use
 `cache-key-suffix` to invalidate a namespace and never execute untrusted fork code under `pull_request_target`.
+
+Since setup v1.1.0, Kotlin/Native data is cached by default in a separate namespace, alongside the toolchain caches.
+The native path is `~/.konan`, or an existing `KONAN_DATA_DIR`; a custom path must be absolute and contain no line
+breaks. Setup preserves that environment setting and existing contents. Native cache keys use the same OS,
+architecture, toolchain, configuration, and `cache-key-suffix` boundaries, with the same `cache-read-only` policy.
+No project-model detection is needed; if the native directory does not exist, there is no native cache to save.
+
+Set `cache-konan: false` to disable only native caching, or `cache: false` to disable both toolchain and native
+caching. The `konan-cache-hit` output reports whether the exact native cache key was restored and is empty when
+native caching is disabled.
+
+```yaml
+- uses: Heapy/setup-ktc@v1
+  with:
+    cache-konan: false
+```
 
 ## Wrapper upgrades and publication
 
@@ -64,4 +80,3 @@ or tested there: verify cinterop dependencies, SDKs, and the selected toolchain'
 for the underlying constraints; Gradle-specific instructions there do not configure Kotlin Toolchain.
 The initial `ktc-publish` v1.0.0 integration tests cover JVM Maven Local publication on three OSes and a signed
 Central bundle; they do not establish all-target KMP publication coverage.
-
