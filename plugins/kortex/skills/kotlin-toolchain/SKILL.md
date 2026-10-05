@@ -22,8 +22,8 @@ This skill is generated from the official upstream docs for `v0.13.0`, the defau
 - Generation notes: `generation/generation-steps.md`
 
 Statements here come from those docs, from the `v0.13.0` release notes, and from spot-checks against the tagged source
-tree. Where the docs lag the code, this skill follows the code and says so. The GitHub Actions section below is
-separately maintained Heapy integration guidance, not part of that upstream snapshot.
+tree. Where the docs lag the code, this skill follows the code and says so. The GitHub Actions and local plugin
+distribution guidance are separately maintained Heapy integrations, not part of that upstream snapshot.
 
 The tagged docs still contain stale Kotlin defaults, Android namespace defaults, and Wasm-test limitations. This
 skill follows the tagged source for those points; see [migration and source notes](references/migrating-0.12-to-0.13.md).
@@ -55,6 +55,7 @@ distribution paths. Do not rename those to `kotlin`. The YouTrack project, howev
 | [`references/publishing.md`](references/publishing.md) | JVM and KMP publishing, Maven Central, `mavenLocal`, signing |
 | [`references/github-actions.md`](references/github-actions.md) | Heapy actions for CI, caching, wrapper upgrades, and library publication |
 | [`references/plugins.md`](references/plugins.md) | Authoring `jvm/amper-plugin` modules, `plugin.yaml`, task actions |
+| [`references/ktc-plugins.md`](references/ktc-plugins.md) | Installing and updating local source plugins, `ktc-plugin.yaml`, available Heapy plugins and compatibility limits |
 | [`references/maven-migration.md`](references/maven-migration.md) | `convert-project`, `mavenPlugins`, migration gaps |
 | [`references/gradle-migration.md`](references/gradle-migration.md) | Translating `build.gradle(.kts)`, convention plugins, and source sets by hand |
 | [`references/migrating-0.12-to-0.13.md`](references/migrating-0.12-to-0.13.md) | Upgrading to `0.13` and tagged-doc corrections |
@@ -398,9 +399,13 @@ and fork caching, token permissions, and publishing host requirements.
 
 Plugins are local modules with `product: jvm/amper-plugin`, registered in `project.yaml.plugins` and enabled per module
 under `plugins:`. Task actions are top-level public `@TaskAction` functions; `plugin.yaml` registers tasks, generated
-outputs, checks, and commands. Plugins cannot be published — see
+outputs, checks, and commands. Plugins cannot be consumed as Maven-published build dependencies — see
 [`references/known-issues.md`](references/known-issues.md). Full guidance in
 [`references/plugins.md`](references/plugins.md).
+
+For source distribution, use [Heapy's local plugin installer and catalog](references/ktc-plugins.md). It covers
+`ktc-plugins`, producer `ktc-plugin.yaml` descriptors, consumer lockfiles, and the ktlint, ktfmt, BCV, Kover, Dokka,
+and Jib adapters. Check each adapter's platform and parser limits before enabling it on a real module.
 
 ## Pitfalls
 

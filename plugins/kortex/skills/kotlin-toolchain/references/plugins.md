@@ -1,7 +1,11 @@
 # Build Plugins
 
-Kotlin Toolchain `v0.13.0`. Plugins are local to a project — they cannot be published or consumed as a published
-dependency (KTC-4871).
+Kotlin Toolchain `v0.13.0`. Plugins are local to a project; they cannot be consumed as Maven-published build
+dependencies (KTC-4871).
+
+Local sources can be shared through [Heapy's plugin installer and catalog](ktc-plugins.md), which describes
+`ktc-plugin.yaml` producer metadata, locked source installation, and available integrations. That installer leaves
+the module local to the consumer project; the `plugin.yaml` below remains the Toolchain task definition.
 
 ## Structure
 
@@ -26,8 +30,8 @@ pluginInfo:
 `src`, not pulled from a dependency.
 
 The plugin ID defaults to the module name and is used everywhere the plugin is referenced. Leave it at the default
-unless you have a reason: the format is not well defined yet, and sharing plugins across projects is unsupported
-anyway.
+unless you have a reason: the format is not well defined yet. When distributing sources with an inferred ID,
+preserve the module directory's basename so registration and activation keep the same identity.
 
 ## Registering And Enabling
 

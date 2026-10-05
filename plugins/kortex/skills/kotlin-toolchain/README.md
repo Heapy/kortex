@@ -5,6 +5,9 @@ This directory contains the Agent Skill for
 YAML project model, the `kotlin` CLI, supported product types, dependencies, multiplatform projects, publishing, and
 local build plugins.
 
+The [local plugin catalog](references/ktc-plugins.md) describes Heapy's `ktc-plugins` source installer, producer
+descriptors, and the separately maintained ktlint, ktfmt, BCV, Kover, Dokka, and Jib integrations.
+
 The default skill is based on Kotlin Toolchain `v0.13.0` at
 `abc7a5f7579e9ef267107782048c76777f0bf932`. The [migration guide](references/migrating-0.12-to-0.13.md)
 covers upgrading an existing project to this release.
