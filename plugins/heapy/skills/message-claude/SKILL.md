@@ -14,16 +14,17 @@ permission rule that denied either tool. The workflow below is for external call
 standalone Codex session, Codex launched by Claude, a hook, or a script.
 
 The bundled helper supports macOS, Linux, and WSL 2. Native Windows uses a named pipe and is not
-implemented here.
+implemented here. Requires JDK 17+ and Kotlin 2.4.21+ (`kotlinr` on `PATH`).
+The first run resolves the pinned JSON dependency and compiles the script.
 
 ## Send a message
 
-Resolve [scripts/message_claude.py](scripts/message_claude.py) from this skill's directory.
+Resolve [scripts/message_claude.main.kts](scripts/message_claude.main.kts) from this skill's directory.
 
 1. List the registered sessions:
 
    ```sh
-   python3 <skill-dir>/scripts/message_claude.py --list
+   kotlinr <skill-dir>/scripts/message_claude.main.kts --list
    ```
 
 2. Select the target by its exact `name`. If names repeat, narrow with `--cwd` or `--pid`. Never
@@ -32,7 +33,7 @@ Resolve [scripts/message_claude.py](scripts/message_claude.py) from this skill's
 3. Send a short message:
 
    ```sh
-   python3 <skill-dir>/scripts/message_claude.py \
+   kotlinr <skill-dir>/scripts/message_claude.main.kts \
      --name the-session-name \
      --message 'codex: the migration finished; tenant_id is the new column'
    ```

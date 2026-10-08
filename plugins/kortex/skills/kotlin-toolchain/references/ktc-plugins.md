@@ -87,9 +87,17 @@ registration, launcher, and parent `plugins/.gitignore`, then restore sources be
 files. `status` and `verify` are read-only. `sync --offline` needs a cached source archive if sources are missing.
 The installer does not commit changes or execute plugin code; subsequent builds execute the installed plugin.
 
-The initial installer accepts self-contained modules with literal dependency versions. Producer version-catalog
-aliases and external local helper modules/templates are rejected. A source module can also be installed without a
-descriptor by supplying `--path` and `--license-file`; consult the installer README for the full contract.
+Installer 0.2.0 introduced opt-in producer catalogs through `catalog.file` and `catalog.export` in the producer
+descriptor. Declared producer `$libs.*` dependencies resolve to pinned coordinates; explicitly exported libraries
+become managed consumer catalog entries. External local helper modules/templates remain unsupported. A source
+module can also be installed without a descriptor by supplying `--path` and `--license-file`; consult the installer
+README for the full contract.
+
+Installer **0.3.0** also preserves producer `version.ref` aliases as shared managed consumer version entries.
+Existing lockfiles still restore with `sync`; an explicit `update` adopts version references. New lockfiles containing
+`catalog.versionRefs` require installer 0.3.0 or newer, so upgrade consumer launchers before adopting that format.
+Producer descriptors remain `schemaVersion: 1` with `module`, `licenseFiles`, and optional `catalog`; no producer
+manifest version bump or installer-version field is required.
 
 ## Available Plugins
 

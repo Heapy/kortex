@@ -203,21 +203,26 @@ Version by **Ktor minor line**, matching the style of the `kotlin-toolchain` ski
 
    ```shell
    git status --short
-   python3 - <<'PY'
-   from pathlib import Path
-   base = Path('plugins/kortex/skills/ktor')
-   files = [base/'SKILL.md', base/'references/server.md', base/'references/client.md']
-   for p in files:
-       txt = p.read_text()
-       print(f'{p}: {len(txt)} bytes, {txt.count(chr(10)) + 1} lines')
-   main = files[0].read_text()
-   assert main.startswith('---\n') and '\n---\n' in main
-   assert 'name: ktor' in main and 'description:' in main
-   assert '3.5.x' in main
-   assert 'references/server.md' in main
-   assert 'references/client.md' in main
-   print('OK')
-   PY
+   validation_dir=$(mktemp -d)
+   cat > "$validation_dir/verify.main.kts" <<'KOTLIN'
+   #!/usr/bin/env kotlinr
+   import java.io.File
+   val base = File("plugins/kortex/skills/ktor")
+   val files = listOf("SKILL.md", "references/server.md", "references/client.md").map(base::resolve)
+   for (file in files) {
+       val text = file.readText()
+       println("$file: ${file.length()} bytes, ${text.count { it == '\n' } + 1} lines")
+   }
+   val main = files.first().readText()
+   check(main.startsWith("---\n") && "\n---\n" in main)
+   check("name: ktor" in main && "description:" in main)
+   check("3.5.x" in main)
+   check("references/server.md" in main)
+   check("references/client.md" in main)
+   println("OK")
+   KOTLIN
+   kotlinr "$validation_dir/verify.main.kts"
+   rm -r "$validation_dir"
    ```
 
 ## Quality Bar
