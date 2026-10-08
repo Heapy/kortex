@@ -1,6 +1,6 @@
 {
   "name": "kortex",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "description": "Kotlin Agent Skills for Codex - Kotlin Toolchain (Amper), Kotlin/JVM, Multiplatform, and more",
   "author": {
     "name": "Ruslan Ibrahimau",

@@ -1,6 +1,6 @@
 {
   "name": "kotgent",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "description": "Kotgent task and structured-plan workflows with browser review, coordinated worker sessions and verified serial merges",
   "author": {
     "name": "Ruslan Ibrahimau",
