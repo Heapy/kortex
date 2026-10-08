@@ -1,6 +1,6 @@
 ---
 name: main-kts
-description: Use when creating, writing, or running standalone executable Kotlin scripts with the `.main.kts` extension, including the `kotlin` script runner, shebang execution, `@file:DependsOn`/`@file:Repository`/`@file:Import`/`@file:CompilerOptions`/`@file:OptIn` annotations, script dependencies, command-line `args`, compiled-script caching, and common scripting libraries such as ktor, kotlinx-serialization, kotlinx-coroutines, clikt, and kotlinx-html.
+description: Use when creating, writing, or running standalone executable Kotlin scripts with the `.main.kts` extension, including the `kotlin` script runner, shebang execution, `@file:DependsOn`/`@file:Repository`/`@file:Import`/`@file:CompilerOptions`/`@file:OptIn` annotations, script dependencies, command-line `args`, compiled-script caching, GitHub Actions setup with Heapy/setup-main-kts, and common scripting libraries such as ktor, kotlinx-serialization, kotlinx-coroutines, clikt, and kotlinx-html.
 ---
 
 # Kotlin Scripts (.main.kts)
@@ -108,6 +108,42 @@ Both compile and execute a `.main.kts` — since Kotlin 1.3.70 the runner handle
 Both apply `-Xplugin` at the script's compile phase — this is how `@Serializable` is made to work (see Serialization
 formats). For debugging compiler-plugin problems, prefer `kotlinc -script`: you work with the compiler and its options
 directly, without the runner's own command-line parsing in between.
+
+## GitHub Actions
+
+For `.main.kts` in CI, use [Setup Kotlin Scripting](https://github.com/Heapy/setup-main-kts), also available on
+[GitHub Marketplace](https://github.com/marketplace/actions/setup-kotlin-scripting). It installs Java and the Kotlin
+compiler, verifies the compiler archive checksum, and caches the archive, Maven dependencies, and compiled scripts.
+
+Check out the repository before setup so the action can hash the scripts. Run scripts in subsequent steps:
+
+```yaml
+steps:
+  - uses: actions/checkout@v7
+  - uses: Heapy/setup-main-kts@b0858237748f325b825e752bbac2ec2eb1fb9419 # v1.0.1
+    with:
+      kotlin-version: '2.4.20'
+      java-version: '25'
+  - run: kotlinr scripts/check.main.kts
+```
+
+Keep the project's Kotlin/JDK version pins when adopting the action. It exports `JAVA_HOME`, `KOTLIN_HOME`, and
+`KOTLIN_MAIN_KTS_COMPILED_SCRIPTS_CACHE_DIR`, adds the compiler to `PATH`, and provides `kotlinr` even for older Kotlin
+releases through a compatibility shim. To reuse Java from an earlier `actions/setup-java` step, set `setup-java: 'false'`;
+an existing `JAVA_HOME` is required.
+
+- `cache-dependency-path` defaults to `**/*.main.kts`. Extend its newline-separated patterns to include imported scripts,
+  local JARs, and compiler plugins that affect compilation.
+- Put command-line compiler flags/classpath identity in `cache-compiler-options` **and** pass them to the runner.
+  This input only invalidates the cache; it does not configure compilation.
+- Compiled scripts restore only on an exact cache-key match. Cache saves happen after the job, including files produced
+  by later script steps. By default, PR jobs only restore; saves are enabled for push, workflow_dispatch, and schedule.
+- Keep sources and compiler options stable after setup. If they change during the job, disable cross-job compiled caching
+  with `cache-compiled-scripts: 'false'` and clear the local compiled cache before running the changed configuration.
+- Kotlin Toolchain remains a separate installation. `toolchain-java-home: 'true'` also exports `KOTLIN_CLI_JAVA_HOME`
+  for its CLI JVM; enable it only with a compatible JDK. This is separate from the Toolchain project's JDK selection.
+
+See the action's README for all inputs, cache controls, and platform requirements.
 
 ## Common Dependencies
 
