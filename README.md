@@ -48,6 +48,7 @@ Repository-aware backlog workflows through the `kotgent` CLI:
 Personal engineering and repository-maintenance workflows:
 
 - `fix-issues` - triage, reproduce, diagnose, fix, and verify repository issues.
+- `repo-cleanup` - manual-only cleanup of merged local branches and clean worktrees; propose atomic commits and review stash and IDEA shelves.
 - `amnesia` - recap a returning user's session and the work completed since their last message.
 - `call-codex` - drive the Codex CLI as an independent reviewer or scoped executor.
 - `code-review-judge` - go through code-review findings one by one with the user and decide whether and how to fix each.

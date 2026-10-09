@@ -1,0 +1,6 @@
+interface:
+  display_name: "Repository Cleanup"
+  short_description: "Clean merged branches and review local work"
+  default_prompt: "Use $heapy:repo-cleanup to remove eligible merged local branches and clean worktrees, propose atomic commits, and review stash and IDEA shelves."
+policy:
+  allow_implicit_invocation: false

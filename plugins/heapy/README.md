@@ -5,6 +5,7 @@ Agent skills for personal workflows and Heapy package work, including projects s
 ## What it covers
 
 - Personal engineering workflows.
+- Manually invoked repository cleanup: merged local branches, clean worktrees, atomic commit proposals, stash and IDEA shelf review.
 - Heapy package work for `komok`, `kinetica`, and similar packages.
 - Issue fixing workflows: capture the source, reproduce or localize, diagnose, implement, verify, and hand off.
 - Session recaps after stepping away from a long-running session.
@@ -18,6 +19,7 @@ Agent skills for personal workflows and Heapy package work, including projects s
 ## Files
 
 - `skills/fix-issues/SKILL.md` - repository issue triage, implementation, and verification workflow.
+- `skills/repo-cleanup/SKILL.md` - manual-only cleanup of fully merged local branches and clean worktrees, with working-directory, stash and IDEA shelf inspection.
 - `skills/amnesia/SKILL.md` - session recap: start time, last user message, and what changed since.
 - `skills/call-codex/SKILL.md` - invoking the codex CLI as reviewer or executor: sandbox grants, flags, prompt shape, and integration traps.
 - `skills/code-review-judge/SKILL.md` - recording every finding up front, then discussing one finding per turn with ratings, options, and a recommendation before the user decides.
@@ -32,6 +34,9 @@ Ask the agent to use a skill explicitly when needed:
 
 ```text
 Use the fix-issues skill to resolve the failing CI check
+Codex: $heapy:repo-cleanup tidy this local repository and propose atomic commits for unfinished work
+Claude Code: /heapy:repo-cleanup audit only; report cleanup candidates, stash and IDEA shelves
+Junie: Use the repo-cleanup skill to tidy this local repository
 Use the amnesia skill to recap this session and tell me what I missed
 Use the call-codex skill to challenge these review findings
 Use the code-review-judge skill to go through these findings with me and decide which to fix

@@ -1,7 +1,7 @@
 {
   "name": "heapy",
-  "version": "0.17.3",
-  "description": "Personal skills and Heapy package skills for komok, kinetica, and related workflows",
+  "version": "0.17.4",
+  "description": "Personal skills, manual repository cleanup, and Heapy package skills for komok, kinetica, and related workflows",
   "author": {
     "name": "Ruslan Ibrahimau",
     "email": "ruslan@heapy.io"
