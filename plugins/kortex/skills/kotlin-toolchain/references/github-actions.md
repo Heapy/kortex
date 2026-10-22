@@ -1,10 +1,11 @@
 # GitHub Actions
 
-Heapy maintains four Apache-2.0 actions, available in GitHub Marketplace. Their action versions are independent of
-the Kotlin Toolchain version. Read the linked README and `action.yml` at the selected release for the full contract.
+Heapy maintains the following Apache-2.0 actions. Their action versions are independent of the Kotlin Toolchain
+and plugin installer versions. Read the linked README and `action.yml` at the selected release for the full contract.
 
 | Action | Use it for |
 |---|---|
+| [`Heapy/setup-ktc-plugins`](https://github.com/Heapy/setup-ktc-plugins) | Restore and verify locked source plugins with the project's checksum-pinned installer; cache native binaries and source archives |
 | [`Heapy/setup-ktc`](https://github.com/Heapy/setup-ktc) | Install a checksum-verified CLI wrapper and cache toolchain downloads, dependencies, JDKs, and Kotlin/Native data |
 | [`Heapy/update-ktc`](https://github.com/Heapy/update-ktc) | Update both wrappers, validate with build/check, and open or maintain an upgrade PR |
 | [`Heapy/ktc-check`](https://github.com/Heapy/ktc-check) | Build and test selected platforms, run plugin checks, summarize JUnit results, annotate failures, and upload reports even on failure |
@@ -37,6 +38,11 @@ jobs:
 The example uses major tags for readability. Prefer verified release commit SHAs in maintained workflows and let
 Dependabot update them. `ktc-check` builds first by default and needs no `checks: write` permission. Set a unique
 `artifact-name` when multiple matrix entries share the same OS, architecture, and job ID.
+
+Since [ktc-check v1.1.1](https://github.com/Heapy/ktc-check/releases/tag/v1.1.1), `command-timeout-minutes`
+configures each CLI command's timeout (default **20** minutes).
+Increase it for long builds or tests; the workflow job's `timeout-minutes` independently limits the whole job
+and does not override this action input.
 
 ### Platform selection
 
@@ -85,6 +91,48 @@ native caching is disabled.
   with:
     cache-konan: false
 ```
+
+## Restore locked source plugins
+
+For projects using [ktc-plugins](ktc-plugins.md), run `setup-ktc-plugins` after checkout and before Toolchain loads
+the project, including checks, publication, and wrapper-upgrade validation:
+
+```yaml
+- uses: actions/checkout@v7
+- uses: Heapy/setup-ktc-plugins@v1
+- uses: Heapy/setup-ktc@v1
+- uses: Heapy/ktc-check@v1
+```
+
+The action requires an existing installation with at least one plugin. Commit the release launchers `ktc-plugins`
+and `ktc-plugins.bat`, `ktc-plugins.yaml`, `ktc-plugins.lock.yaml`, project configuration, and managed ignore files.
+Use the same `working-directory` for all actions in a nested project. It uses the launcher's pinned installer;
+it does not rewrite wrappers or advance plugin refs. Upgrade the installer separately with `wrapper update`.
+
+Both `sync` and `verify` default to `true`: restore missing sources from the lock, then check contents, declarations,
+and Git tracking/ignore state. Set `sync: false` for verification-only use with vendored sources; disabling both
+only bootstraps the executable. Missing/stale lock entries, modified sources, and corrupt binaries fail the job.
+Development launchers without release pins and `KTC_PLUGINS_BINARY` overrides are rejected.
+
+Binary/archive caches live outside the checkout and include OS/architecture, launcher, manifest, and lock hashes
+in their keys. `cache-read-only: auto` restores without saving on PRs; push, scheduled, and manual runs may save.
+Use `cache: false` to disable caching or `cache-key-suffix` to invalidate it. Project source trees and locks are
+not cached. The action exports `KTC_PLUGINS_BINARY_CACHE` and `KTC_PLUGINS_CACHE_DIR`; invoke the project launcher
+in later steps. Outputs are `version`, `wrapper-path`, and `cache-hit`.
+
+`token` defaults to the workflow token. Private plugin repositories generally require a GitHub App token or
+fine-grained PAT with read access to those repositories. Disable caching if the workflow's cache readers should
+not have access to private source archives. Use ordinary `pull_request` workflows for contributions, since the
+action executes the checked-out launcher.
+
+[v1.0.0](https://github.com/Heapy/setup-ktc-plugins/releases/tag/v1.0.0) was integration-tested with installer
+**0.3.1** on Linux x64/ARM64 (glibc), macOS ARM64, and Windows x64. It requires Node.js 22+, Bash, Git, and curl;
+Windows launchers also use Windows PowerShell. The installer needs no JVM. Intel macOS, Windows ARM64, and
+Alpine/musl are unsupported. These runner limits are narrower than those of the other Toolchain actions.
+
+For verification scripts written as `.main.kts`, [Heapy/setup-main-kts](https://github.com/Heapy/setup-main-kts)
+installs the separate Kotlin script runner (`kotlinr`) and caches its dependencies. It does not replace
+`setup-ktc`: the Toolchain's `kotlin` CLI cannot run those scripts.
 
 ## Wrapper upgrades and publication
 

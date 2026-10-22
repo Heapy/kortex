@@ -6,7 +6,9 @@ YAML project model, the `kotlin` CLI, supported product types, dependencies, mul
 local build plugins.
 
 The [local plugin catalog](references/ktc-plugins.md) describes Heapy's `ktc-plugins` source installer, producer
-descriptors, and the separately maintained ktlint, ktfmt, BCV, Kover, Dokka, and Jib integrations.
+descriptors, and the separately maintained formatting, BCV, Kover, Dokka, Jib, Application, Benchmark, Kotest,
+and SQLDelight integrations. The [GitHub Actions guide](references/github-actions.md) covers CI, publishing,
+wrapper upgrades, and locked plugin restoration with `Heapy/setup-ktc-plugins`.
 
 The default skill is based on Kotlin Toolchain `v0.13.0` at
 `abc7a5f7579e9ef267107782048c76777f0bf932`. The [migration guide](references/migrating-0.12-to-0.13.md)

@@ -11,10 +11,13 @@ for the Toolchain API itself.
 
 ## Install and Enable
 
-Obtain `ktc-plugins` using its [build and launcher instructions](https://github.com/Heapy/ktc-plugins#build-and-run-locally).
-The examples assume a working `./ktc-plugins` launcher in the consumer root. A source build can select its executable
-through `KTC_PLUGINS_BINARY`; published launchers, when available, pin and verify a release executable. The native
-installer needs Git and curl; the subsequent build uses the consumer's Kotlin Toolchain wrapper.
+Download both generated launchers, `ktc-plugins` and `ktc-plugins.bat`, from the
+[0.3.1 release](https://github.com/Heapy/ktc-plugins/releases/tag/v0.3.1) into the consumer root, make the Unix
+launcher executable, and commit them. They download the matching native executable and verify its pinned SHA-256
+on every invocation. Repository checkout launchers are development templates without release pins; use the release
+assets for consumers and CI. The native installer needs Git and curl, but no JVM; subsequent builds use the
+consumer's Kotlin Toolchain wrapper. See the [local build instructions](https://github.com/Heapy/ktc-plugins#build-and-run-locally)
+only when developing the installer (`KTC_PLUGINS_BINARY` bypasses release checksum verification).
 
 For an existing JVM module named `library`:
 
@@ -53,7 +56,7 @@ the plugin module does not install those sibling templates. Registration still b
 
 ## Producer Descriptor and Consumer Lock
 
-Each of the six catalog repositories contains a root **`ktc-plugin.yaml`**. For example:
+Each catalog repository contains a root **`ktc-plugin.yaml`**. For example:
 
 ```yaml
 schemaVersion: 1
@@ -87,6 +90,20 @@ registration, launcher, and parent `plugins/.gitignore`, then restore sources be
 files. `status` and `verify` are read-only. `sync --offline` needs a cached source archive if sources are missing.
 The installer does not commit changes or execute plugin code; subsequent builds execute the installed plugin.
 
+In GitHub Actions, [setup-ktc-plugins](github-actions.md#restore-locked-source-plugins) restores and verifies the
+locked sources before Toolchain loads the project, with separate binary/archive caching.
+
+Use `diff <name>` or `update <name> --dry-run` to review changes. `outdated` compares the lock with declared refs;
+it does not search for newer release tags. Upgrade the installer independently of plugin sources:
+
+```sh
+./ktc-plugins wrapper update --version 0.3.1 --dry-run
+./ktc-plugins wrapper update --version 0.3.1
+```
+
+Choose an exact published stable release, review both launcher changes, and commit them. The updater verifies
+release digests and native binary pins and refuses locally modified launchers or development templates.
+
 Installer 0.2.0 introduced opt-in producer catalogs through `catalog.file` and `catalog.export` in the producer
 descriptor. Declared producer `$libs.*` dependencies resolve to pinned coordinates; explicitly exported libraries
 become managed consumer catalog entries. External local helper modules/templates remain unsupported. A source
@@ -101,7 +118,7 @@ manifest version bump or installer-version field is required.
 
 ## Available Plugins
 
-All six repositories below target Kotlin Toolchain **0.13.0**. The selector is also the activation key under
+The repositories below target Kotlin Toolchain **0.13.0**. The selector is also the activation key under
 `plugins:`; each module lives at `plugins/<selector>` in its producer repository.
 
 | Repository | Selector | Engine | Checks and explicit commands | Scope |
@@ -112,9 +129,43 @@ All six repositories below target Kotlin Toolchain **0.13.0**. The selector is a
 | [Heapy/ktc-kover](https://github.com/Heapy/ktc-kover) | `kover` | Kover 0.9.11 | `check koverCheck`; `do koverReport` | Per-module JVM line coverage, HTML/XML reports, minimum threshold |
 | [Heapy/ktc-dokka](https://github.com/Heapy/ktc-dokka) | `dokka` | Dokka 2.2.0 | `do dokkaHtml` | One HTML API site per JVM main compilation |
 | [Heapy/ktc-jib](https://github.com/Heapy/ktc-jib) | `jib` | Jib Core 0.28.2 | `do jibTar`; `do jibPublish` | JVM application JARs packaged as Linux container images |
+| [Heapy/ktc-application](https://github.com/Heapy/ktc-application) | `application` | Commons Compress 1.28.0 | `do installDist`; `do distTar`; `do distZip` | JVM distributions with runtime JARs, Unix/Windows scripts, reproducible archives |
+| [Heapy/ktc-benchmark](https://github.com/Heapy/ktc-benchmark) | `benchmark` | kotlinx-benchmark 0.5.0, JMH 1.37 | `do benchmarkSmoke`; `do benchmark` | JVM, desktop Native, JS, Wasm-JS, and Wasm-WASI benchmarks |
+| [Heapy/ktc-kotest](https://github.com/Heapy/ktc-kotest) | `kotest` | Kotest 6.2.5, Playwright 1.61.0 | `test --platform <jvm-or-native-target>`; `check kotestJs kotestWasm` | Kotest tests on JVM/Native and Node/Chromium web runtimes |
+| [Heapy/ktc-spotless](https://github.com/Heapy/ktc-spotless) | `spotless` | Spotless library 4.10.4 | `check spotlessCheck`; `do spotlessApply` | Whitespace, line endings, and license headers for configured file groups |
+| [Heapy/ktc-sqldelight](https://github.com/Heapy/ktc-sqldelight) | `sqldelight` | SQLDelight 2.3.2, SQLite dialect 3.38 | Generation participates in `build` | Typed SQL sources and managed runtime/driver catalog exports |
 
 Run these through `./kotlin`, selecting a consumer with `-m <module>`. Checks join ordinary `./kotlin check`;
-formatting, baseline updates, documentation, and image publication require explicit commands.
+formatting, baseline updates, documentation, distributions, benchmarks, and image publication require explicit commands.
+
+### Setup for the additional integrations
+
+- **Application:** enable on a `jvm/app` module, set `settings.jvm.mainClass` explicitly, and retain
+  `settings.jvm.runtimeClasspathMode: jars`. Distributions contain runtime JARs and launch scripts; they do not
+  bundle a JRE, native executable, or OS installer. Generated launchers need Java 9+ and the application's own
+  JVM release requirement. Archive reproducibility assumes identical input JARs.
+- **Benchmark:** apply `//plugins/benchmark/benchmark.module-template.yaml` to a benchmark library; enable the
+  plugin on separate executable runners with a required `platform` and a forwarding entry point, following the
+  repository example. The template ships inside the installed plugin. Native runners need matching hosts;
+  web runners need Node.js 24. `benchmarkSmoke` checks integration, not performance. Benchmarks run explicitly;
+  each invocation replaces that command's previous report. Non-JVM artifact discovery is tied to Toolchain 0.13.0.
+- **Kotest:** apply `//plugins/kotest/kotest.module-template.yaml` to test modules; it supplies activation,
+  test dependencies, and KSP discovery. Enabling the plugin alone is insufficient. Web checks need Node.js 24+
+  and Chromium installed separately with the pinned Playwright version (`npx --yes playwright@1.61.0 install chromium`,
+  or `install --with-deps chromium` on Linux). Both runtimes run by default; `browser: false` selects Node-only.
+  JVM/Native use ordinary Toolchain tests. Android variants and Wasm-WASI are outside this adapter's scope.
+  Web reports live under `build/tasks/`, so do not assume actions collecting only `build/reports/` include them.
+- **Spotless:** configure a nonempty `formats` map with module-relative `includes`. This adapter exposes generic
+  whitespace and license steps, not ktlint/ktfmt/Prettier engines or the full Spotless DSL. It does not read
+  `.editorconfig` or `.gitignore`; use explicit exclusions and disjoint file groups. License delimiters must
+  preserve the intended declarations, especially for package-less files and languages other than Kotlin.
+- **SQLDelight:** requires installer 0.3.0+ for shared exported `version.ref` entries. Enable `sqldelight` with
+  `packageName`; `className` defaults to `Database`, and `sourceDirectory` to module-relative `sqldelight`.
+  Declare `$libs.ktc.sqldelight.runtime` and the target's driver explicitly; exports only add catalog entries.
+  Available aliases also include `.native.driver`, `.sqlite.driver`, and `.coroutines.extensions` under
+  `$libs.ktc.sqldelight`. It generates one synchronous database per module from `.sq` files; `.sqm` migrations
+  are neither generated nor verified. Review database upgrades separately. Update managed sources/catalogs
+  through the installer instead of editing them in place.
 
 ### Compatibility Boundaries
 
@@ -147,7 +198,7 @@ the full trial results and limitations.
 
 ### Other Heapy Local Plugins
 
-These repositories predate the six adapters above; follow their own version and installation guidance:
+These repositories target older Toolchain versions; follow their own version and installation guidance:
 
 | Repository | Module / activation key | Purpose and declared baseline |
 |---|---|---|
@@ -156,3 +207,4 @@ These repositories predate the six adapters above; follow their own version and 
 
 These are separate integrations, not evidence that every listed plugin supports every Toolchain version. The detekt
 policy includes ktlint rules; account for that overlap when choosing a formatter.
+Its producer selector is `detekt`, while its module basename and activation key are `heapy-detekt`.

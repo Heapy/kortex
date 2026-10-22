@@ -53,7 +53,7 @@ distribution paths. Do not rename those to `kotlin`. The YouTrack project, howev
 | [`references/multiplatform.md`](references/multiplatform.md) | Platform hierarchy, aliases, propagation, cinterop |
 | [`references/templates.md`](references/templates.md) | Nested templates, precedence, merging, conflict resolution |
 | [`references/publishing.md`](references/publishing.md) | JVM and KMP publishing, Maven Central, `mavenLocal`, signing |
-| [`references/github-actions.md`](references/github-actions.md) | Heapy actions for CI, caching, wrapper upgrades, and library publication |
+| [`references/github-actions.md`](references/github-actions.md) | Heapy actions for CI, locked plugin restoration, caching, wrapper upgrades, and library publication |
 | [`references/plugins.md`](references/plugins.md) | Authoring `jvm/amper-plugin` modules, `plugin.yaml`, task actions |
 | [`references/ktc-plugins.md`](references/ktc-plugins.md) | Installing and updating local source plugins, `ktc-plugin.yaml`, available Heapy plugins and compatibility limits |
 | [`references/maven-migration.md`](references/maven-migration.md) | `convert-project`, `mavenPlugins`, migration gaps |
@@ -392,8 +392,10 @@ See [dependencies](references/dependencies.md) for exact version syntax and publ
 ## GitHub Actions
 
 For GitHub CI, wrapper upgrade PRs, and library publication, use Heapy's `setup-ktc`, `update-ktc`, `ktc-check`,
-and `ktc-publish` actions. Read [GitHub Actions](references/github-actions.md) for setup examples, feature-branch
-and fork caching, token permissions, and publishing host requirements.
+and `ktc-publish` actions. Projects using `ktc-plugins` can restore and verify locked sources with
+[`Heapy/setup-ktc-plugins`](https://github.com/Heapy/setup-ktc-plugins) after checkout, before Toolchain loads the
+project. Read [GitHub Actions](references/github-actions.md) for setup examples, plugin launcher requirements,
+feature-branch and fork caching, token permissions, and publishing host requirements.
 
 ## Plugin Authoring
 
@@ -404,8 +406,9 @@ outputs, checks, and commands. Plugins cannot be consumed as Maven-published bui
 [`references/plugins.md`](references/plugins.md).
 
 For source distribution, use [Heapy's local plugin installer and catalog](references/ktc-plugins.md). It covers
-`ktc-plugins`, producer `ktc-plugin.yaml` descriptors, consumer lockfiles, and the ktlint, ktfmt, BCV, Kover, Dokka,
-and Jib adapters. Check each adapter's platform and parser limits before enabling it on a real module.
+`ktc-plugins`, producer `ktc-plugin.yaml` descriptors, consumer lockfiles, and integrations for formatting, API checks,
+coverage, documentation, containers, application distributions, benchmarks, Kotest, and SQLDelight.
+Check each adapter's configuration, platform, and parser limits before enabling it on a real module.
 
 ## Pitfalls
 
