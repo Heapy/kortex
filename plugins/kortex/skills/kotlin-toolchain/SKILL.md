@@ -1,6 +1,6 @@
 ---
 name: kotlin-toolchain
-description: Use when working with JetBrains Kotlin Toolchain v0.13.x, formerly Amper, including module.yaml, project.yaml, module templates, nested templates, libs.versions.toml, the kotlin CLI wrapper, `//` project paths, Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm (wasm-js, wasm-wasi), Kotlin/Native, server-side apps, dependencies, testing, SwiftPM dependencies, KMP library publishing, Maven Central, build plugins, built-in technologies (Compose, Ktor, Spring Boot, serialization, kotlinx.rpc, DataFrame, Power Assert, KSP, Lombok), Maven and Gradle migration, JDK provisioning, and toolchain caches.
+description: Use when working with JetBrains Kotlin Toolchain v0.13.x, formerly Amper, including module.yaml, project.yaml, module templates, nested templates, libs.versions.toml, the kotlin CLI wrapper, `//` project paths, Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm (wasm-js, wasm-wasi), Kotlin/Native, Apple platform support and deprecations, macOS/Xcode compatibility, ARM64 hosts and cross-compilation, GitHub Actions runners, server-side apps, dependencies, testing, SwiftPM dependencies, KMP library publishing, Maven Central, build plugins, built-in technologies (Compose, Ktor, Spring Boot, serialization, kotlinx.rpc, DataFrame, Power Assert, KSP, Lombok), Maven and Gradle migration, JDK provisioning, and toolchain caches.
 ---
 
 # Kotlin Toolchain
@@ -23,7 +23,9 @@ This skill is generated from the official upstream docs for `v0.13.0`, the defau
 
 Statements here come from those docs, from the `v0.13.0` release notes, and from spot-checks against the tagged source
 tree. Where the docs lag the code, this skill follows the code and says so. The GitHub Actions and local plugin
-distribution guidance are separately maintained Heapy integrations, not part of that upstream snapshot.
+distribution guidance are separately maintained Heapy integrations, not part of that upstream snapshot. The
+[Native host and Apple compatibility notes](references/native-platform-support.md) are separately dated against
+Kotlin, Apple, and runner documentation; they do not change the pinned KTC version.
 
 The tagged docs still contain stale Kotlin defaults, Android namespace defaults, and Wasm-test limitations. This
 skill follows the tagged source for those points; see [migration and source notes](references/migrating-0.12-to-0.13.md).
@@ -51,6 +53,7 @@ distribution paths. Do not rename those to `kotlin`. The YouTrack project, howev
 | [`references/settings.md`](references/settings.md) | Full `settings` tree, defaults table, compiler knobs |
 | [`references/builtin-tech.md`](references/builtin-tech.md) | Compose, serialization, Ktor, Spring, RPC, DataFrame, Power Assert, KSP, Lombok, Parcelize |
 | [`references/multiplatform.md`](references/multiplatform.md) | Platform hierarchy, aliases, propagation, cinterop |
+| [`references/native-platform-support.md`](references/native-platform-support.md) | Native host vs target support, Apple Silicon/macOS 27/Xcode 27, deprecated targets, Linux ARM64 build/test split, CI runner selection |
 | [`references/templates.md`](references/templates.md) | Nested templates, precedence, merging, conflict resolution |
 | [`references/publishing.md`](references/publishing.md) | JVM and KMP publishing, Maven Central, `mavenLocal`, signing |
 | [`references/github-actions.md`](references/github-actions.md) | Heapy actions for CI, locked plugin restoration, caching, wrapper upgrades, and library publication |
@@ -104,6 +107,8 @@ When working in a repo:
    `show settings -m <module>` is the way to read effective template-merged config.
 4. Keep YAML declarative. Do not invent loops, conditionals, Gradle task wiring, or Maven lifecycle behavior.
 5. Write new paths with the `//` project-root notation, except in `project.yaml`'s `modules:` list.
+6. Before Native/Apple builds or CI changes, read [Native platform support](references/native-platform-support.md).
+   Check host OS/architecture, effective Kotlin version, Xcode/SDK, and build versus test targets separately.
 
 Useful CLI commands:
 
@@ -276,6 +281,10 @@ Selection modes are `auto`, `alwaysProvision`, and `javaHome`. `oracleGraalVM` r
 language limits. It defaults from `jdk.version`. Do not repurpose `jdk.version` for it.
 
 ## Multiplatform
+
+For Native work, a supported target does not imply a supported compiler host or a runnable test target. In particular,
+Linux ARM64 needs cross-compilation on a supported host, and Apple device ARM64 differs from simulator ARM64.
+Use [Native platform support](references/native-platform-support.md) before choosing a matrix or removing targets.
 
 The hierarchy starts at `common` and includes `jvm`, `android`, `web` (`js`, `wasmJs`), `wasmWasi`, and native families
 such as `linux`, `mingw`, `apple`, and `androidNative`. `macosX64`, `watchosArm32`, and `tvosX64` are deprecated.

@@ -46,6 +46,10 @@ and does not override this action input.
 
 ### Platform selection
 
+Read [Native platform support](native-platform-support.md) before selecting Native runners. It covers macOS 27 /
+Xcode 27 host restrictions, Apple target deprecations, and Linux ARM64 compilation on x64 followed by execution
+in a separate ARM64 job. An ARM64 runner or a successful setup action does not imply a supported K/N compiler host.
+
 Since [ktc-check v1.1.0](https://github.com/Heapy/ktc-check/releases/tag/v1.1.0), the `platforms` input accepts comma-
 or whitespace-separated target names. Select targets declared by your modules that can build and run on the runner;
 cross-compiling an executable does not make that runner able to test it. For example, on a Linux x64 runner:

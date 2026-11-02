@@ -45,7 +45,10 @@ common
 Intermediate nodes are platform *families*, leaves are *platforms*. Not all of them are equally supported or tested.
 
 `macosX64`, `watchosArm32`, and `tvosX64` are deprecated. `iosX64` still exists for `kmp/lib` but is not
-accepted by `ios/app` and is being phased out.
+accepted by `ios/app` and is being phased out. It is currently Tier 3, not a deprecated Kotlin target.
+For compiler hosts, Apple SDK compatibility, and build/test matrix decisions, read
+[Native platform support](native-platform-support.md). Kotlin's deprecated `watchosX64` is absent from this KTC
+hierarchy; do not add it as a leaf.
 
 ## Choosing Platforms
 
