@@ -127,7 +127,7 @@ The repositories below target Kotlin Toolchain **0.13.0**. The selector is also 
 | [Heapy/ktc-ktfmt](https://github.com/Heapy/ktc-ktfmt) | `ktfmt` | ktfmt 0.64 | `check ktfmtCheck`; `do ktfmtFormat` | Kotlin formatting with an isolated worker; needs a full JDK 17+ |
 | [Heapy/ktc-bcv](https://github.com/Heapy/ktc-bcv) | `bcv` | binary-compatibility-validator 0.18.1 | `check apiCheck`; `do apiDump` | Public JVM API snapshots, including Kotlin visibility metadata |
 | [Heapy/ktc-kover](https://github.com/Heapy/ktc-kover) | `kover` | Kover 0.9.11 | `check koverCheck`; `do koverReport` | Per-module JVM line coverage, HTML/XML reports, minimum threshold |
-| [Heapy/ktc-dokka](https://github.com/Heapy/ktc-dokka) | `dokka` | Dokka 2.2.0 | `do dokkaHtml` | One HTML API site per JVM main compilation |
+| [Heapy/ktc-dokka](https://github.com/Heapy/ktc-dokka) | `dokka` | Dokka 2.3.0 (plugin 0.5.0) | `do dokkaHtml`; `do dokkaJar` | Per-module JVM, Android and KMP HTML API sites and Javadoc archives |
 | [Heapy/ktc-jib](https://github.com/Heapy/ktc-jib) | `jib` | Jib Core 0.28.2 | `do jibTar`; `do jibPublish` | JVM application JARs packaged as Linux container images |
 | [Heapy/ktc-application](https://github.com/Heapy/ktc-application) | `application` | Commons Compress 1.28.0 | `do installDist`; `do distTar`; `do distZip` | JVM distributions with runtime JARs, Unix/Windows scripts, reproducible archives |
 | [Heapy/ktc-benchmark](https://github.com/Heapy/ktc-benchmark) | `benchmark` | kotlinx-benchmark 0.5.0, JMH 1.37 | `do benchmarkSmoke`; `do benchmark` | JVM, desktop Native, JS, Wasm-JS, and Wasm-WASI benchmarks |
@@ -140,6 +140,16 @@ formatting, baseline updates, documentation, distributions, benchmarks, and imag
 
 ### Setup for the additional integrations
 
+- **Dokka:** install with `./ktc-plugins add Heapy/ktc-dokka --tag v0.5.0 --enable-in library`, or update an
+  existing installation with `./ktc-plugins update dokka --tag v0.5.0`, then review the manifest and lockfile.
+  `dokkaHtml` generates one site per main module; `dokkaJar` first generates HTML, then packages the full site
+  into a reproducible `<module>-javadoc.jar`. KMP modules require `settings.publishing.enabled: true`, `group`
+  and `version` for metadata assembly; documentation generation does not publish artifacts. Common, shared/alias
+  and leaf source sets retain their hierarchy, with distinct Wasm JS and Wasm WASI analysis. Platform-specific
+  sources require their SDKs and supported compilation host; Android analysis uses the release compile classpath.
+  Set `plugins.dokka.suppressAnnotatedWith` to fully qualified annotation names to hide annotated declarations
+  across source sets; it defaults to an empty list and affects documentation only. With Dokka 2.3.0, review new
+  KDoc link diagnostics when using `failOnWarning`.
 - **Application:** enable on a `jvm/app` module, set `settings.jvm.mainClass` explicitly, and retain
   `settings.jvm.runtimeClasspathMode: jars`. Distributions contain runtime JARs and launch scripts; they do not
   bundle a JRE, native executable, or OS installer. Generated launchers need Java 9+ and the application's own
@@ -180,9 +190,13 @@ formatting, baseline updates, documentation, distributions, benchmarks, and imag
 - **Coverage:** Kover runs fresh instrumented JVM tests in a separate build directory. A plain `check` also runs
   ordinary tests, so tests run twice. Initial scope excludes Windows hosts, Android, Native/JS coverage,
   cross-module aggregation, and branch thresholds.
-- **Documentation:** Dokka uses its CLI and symbols engine directly. Dokkatoo is a Gradle integration and is not
-  required. No aggregated site or multiplatform source-set hierarchy is configured. Offline mode is enabled by
-  default, so external API links may be unavailable.
+- **Documentation:** Dokka uses its CLI and K2 symbols engine directly. Dokkatoo is a Gradle integration and is not
+  required. The compiler-state and publication-metadata adapter is pinned to Toolchain 0.13.0 and must be
+  revalidated for Toolchain upgrades. There is no aggregated multi-module site, cross-site navigation or custom
+  Dokka plugin support; Native SDK/cinterop documentation is outside the maintained tests. Offline mode is enabled
+  by default, so external API links may be unavailable. `dokkaJar` is not attached automatically to `kotlin publish`
+  or `kotlin package`: a separate publication integration must attach it as `javadoc` before signing and checksum
+  generation. Kotlin Toolchain 0.13.0 otherwise supplies its own empty Javadoc archive.
 - **Containers:** Jib requires a JVM application, an explicit `mainClass`, and an image reference. Use a JRE base
   compatible with the application's JVM release; the repository's `scratch` example is an archive fixture and
   cannot run Java. Pin production base images by digest. Registry publication requires explicit enablement,
