@@ -1,6 +1,6 @@
 # Build Plugins
 
-Kotlin Toolchain `v0.13.0`. Plugins are local to a project; they cannot be consumed as Maven-published build
+Kotlin Toolchain `v0.14.1`. Plugins are local to a project; they cannot be consumed as Maven-published build
 dependencies (KTC-4871).
 
 Local sources can be shared through [Heapy's plugin installer and catalog](ktc-plugins.md), which describes

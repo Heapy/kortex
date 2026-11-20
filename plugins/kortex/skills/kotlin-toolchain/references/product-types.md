@@ -1,6 +1,6 @@
 # Product Types
 
-Kotlin Toolchain `v0.13.0`. One module produces exactly one product.
+Kotlin Toolchain `v0.14.1`. One module produces exactly one product.
 
 ## Declaring
 
@@ -88,7 +88,7 @@ Duplicate Java resources from dependencies fail packaging in `MergeJavaResWorkAc
 - `pickFirsts` — package only the first match
 - `merges` — concatenate all matches into one entry
 
-Set `settings.android.namespace` explicitly for apps; `applicationId` defaults from it. Use `abiFilters` to
+Set `settings.android.applicationId` explicitly for apps; `namespace` defaults from it. Use `abiFilters` to
 package only ABIs supported by every required native library. Identity, SDK levels, and signing are covered in
 `settings.md`.
 
@@ -126,9 +126,11 @@ Pure Swift APIs are not directly callable from Kotlin. Since `0.13`, SwiftPM can
 to Kotlin on Apple targets, including `kmp/lib`; see [dependencies](dependencies.md#swiftpm-dependencies).
 
 Xcode must already be installed, its license accepted, and first-launch setup completed. The toolchain checks this
-environment and can provision required Xcode components; it does not install Xcode itself. For App Store/TestFlight
-distribution, configure signing, bundle ID, deployment target, and version/build in `module.xcodeproj`, then archive
-and export through Xcode or `xcodebuild`. This is separate from `kotlin publish`, which publishes libraries.
+environment and can provision required Xcode components; it does not install Xcode itself. Configure signing, bundle
+ID, deployment target, and version/build in `module.xcodeproj`. In `0.14`, `kotlin package -m <app> --format ipa`
+packages an IPA, and `kotlin publish testflight -m <app>` uploads through App Store Connect with automatic signing.
+See [publishing](publishing.md#ios-apps-and-testflight) for credentials and export options. Xcode, `xcodebuild`, or
+fastlane remain options for more complex publishing workflows.
 
 ## `js/app`
 

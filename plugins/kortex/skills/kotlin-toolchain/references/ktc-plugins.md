@@ -3,6 +3,8 @@
 [Heapy/ktc-plugins](https://github.com/Heapy/ktc-plugins) installs Kotlin Toolchain build plugins from GitHub as
 local source modules. Each plugin below has its own repository, dependency pins, examples, and verification.
 This is separately maintained Heapy integration guidance for Toolchain **0.13.0**, outside the upstream snapshot.
+The skill's move to **0.14.1** does not establish compatibility for these adapters; check their declared versions
+and exercise the required commands before upgrading a consumer.
 
 Toolchain still loads local `jvm/amper-plugin` modules. The installer downloads sources at an explicit Git ref,
 records their resolved commit and hashes, registers the module in `project.yaml`, and optionally enables it in a

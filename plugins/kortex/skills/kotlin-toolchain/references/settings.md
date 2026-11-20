@@ -1,13 +1,13 @@
 # Settings Reference
 
-Kotlin Toolchain `v0.13.0`. Always confirm against a real project with `./kotlin show settings -m <module>`.
+Kotlin Toolchain `v0.14.1`. Always confirm against a real project with `./kotlin show settings -m <module>`.
 
 `settings` configures the toolchains used to build the module. `test-settings` does the same for building and running
 its tests, and overrides `settings` where they overlap. Both accept `@platform` qualifiers.
 
 ## Defaults At A Glance
 
-| Setting | `0.13.0` |
+| Setting | `0.14.1` |
 | --- | --- |
 | Default JDK major version | 25 |
 | Minimum JDK to run the toolchain | 17 |
@@ -27,8 +27,8 @@ its tests, and overrides `settings` where they overlap. Both accept `@platform` 
 | `settings.lombok.version` | 1.18.48 |
 | `settings.springBoot.version` | 4.1.1 |
 
-The `0.13.0` defaults above were checked against the tagged
-[`DefaultVersions.kt`](https://github.com/JetBrains/kotlin-toolchain/blob/abc7a5f7579e9ef267107782048c76777f0bf932/sources/frontend-api/src/org/jetbrains/amper/frontend/schema/DefaultVersions.kt).
+The `0.14.1` defaults above were checked against the tagged
+[`DefaultVersions.kt`](https://github.com/JetBrains/kotlin-toolchain/blob/f53674bce744f0b5e9ff235110dcc1d565d2c114/sources/frontend-api/src/org/jetbrains/amper/frontend/schema/DefaultVersions.kt).
 The tagged Markdown still says Kotlin `2.4.10`; the shipped default is `2.4.20`.
 
 ## `settings.jvm`
@@ -108,8 +108,8 @@ They do not incrementally compile a module into klibs or accelerate optimized re
 
 | Attribute | Default | Meaning |
 |---|---|---|
-| `namespace` | required for apps; derived for libraries | Package for generated `R` and `BuildConfig` |
-| `applicationId` | from `namespace` | ID on device and in Play Store |
+| `namespace` | app: from `applicationId`; library: derived | Package for generated `R` and `BuildConfig` |
+| `applicationId` | required for apps | ID on device and in Play Store |
 | `compileSdk` | 37 | API level to compile against; int or object |
 | `targetSdk` | from `compileSdk` | |
 | `minSdk` | 24 | |
@@ -120,11 +120,12 @@ They do not incrementally compile a module into klibs or accelerate optimized re
 | `resourcePackaging` | empty | Duplicate Java resource handling. |
 | `abiFilters` | `[]` (all) | ABIs whose native libraries enter the APK/AAB |
 | `parcelize` | disabled | |
+| `desugaring` | disabled | Core library desugaring for Java 8+ APIs |
 
-An `android/app` must set `namespace`; setting only `applicationId` is insufficient. `applicationId` defaults to
-`namespace`. A library can omit `namespace`: it is derived from `publishing.group` plus the sanitized effective
-artifact ID, or otherwise from a module-specific generated name. Pin it when code refers to generated classes.
-The tagged Markdown's `org.example.namespace` default is stale; the schema and diagnostics enforce these rules.
+An `android/app` must set `applicationId`; setting only `namespace` is insufficient in `0.14`. `namespace` defaults to
+`applicationId`. Preserve the existing device/Play Store ID during migration. A library can omit `namespace`: it is
+derived from `publishing.group` plus the sanitized effective artifact ID, or otherwise from a module-specific generated
+name. Pin it when code refers to generated classes.
 
 `abiFilters: [arm64-v8a, x86_64]` restricts packaged `.so` files from both `jniLibs` and dependencies. It does not
 build missing native binaries. The toolchain still warns if selected ABIs carry inconsistent library sets.
@@ -166,6 +167,23 @@ settings:
         - META-INF/versions/9/OSGI-INF/MANIFEST.MF
 ```
 
+### Core Library Desugaring
+
+```yaml
+settings:
+  android:
+    desugaring: enabled
+```
+
+The object form has `enabled: true` and `library`, which accepts Maven coordinates or a catalog reference.
+The default library is `com.android.tools:desugar_jdk_libs:2.1.5`; an omitted version uses `2.1.5`.
+Choose `desugar_jdk_libs_minimal`, `desugar_jdk_libs`, or `desugar_jdk_libs_nio` for the needed API set.
+Changing the library alone does not enable desugaring: set `enabled: true` as well.
+
+Libraries record the requirement in AAR metadata. A consuming app must enable desugaring explicitly and use a
+compatible desugaring library; enabling it only in the library is insufficient. This backports supported Java APIs,
+not arbitrary Android SDK APIs. Keep SDK levels and JVM release settings appropriate for the app.
+
 ### Signing
 
 `settings.android.signing: enabled` reads `keystore.properties` beside `module.yaml`:
@@ -192,12 +210,15 @@ Configure Maven Central publication mode at `settings.publishing.mavenCentral.pu
 | `version` | `null` | Artifact version |
 | `artifactId` | module name | Base artifact ID; for multiplatform libraries a platform suffix may be appended |
 | `pom` | | POM metadata |
-| `signArtifacts` | `false` | PGP-sign artifacts; key from `KOTLIN_TOOLCHAIN_SIGNING_KEY` |
+| `signArtifacts` | `false` | PGP-sign artifacts except Maven Local; key from `KOTLIN_TOOLCHAIN_SIGNING_KEY` |
 | `publishSources` | `false` | Publish per-platform sources JARs |
 | `checksums` | `[md5, sha1]` | Any of `md5`, `sha1`, `sha256`, `sha512` |
 | `mavenCentral` | disabled | Central Portal publication |
 
 Details and the `pom` sub-tree are in `publishing.md`.
+
+`settings.publishing.mavenCentral.notifyKlibsIo` defaults to `false`. Enable it to notify klibs.io of KMP Maven
+coordinates after a successful Central upload. It does not release a deployment left in `manual` mode.
 
 ## `settings.compose`
 

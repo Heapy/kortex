@@ -1,6 +1,6 @@
 # Built-In Technologies
 
-Kotlin Toolchain `v0.13.0`. Prefer the short settings forms unless you need customization.
+Kotlin Toolchain `v0.14.1`. Prefer the short settings forms unless you need customization.
 
 ## Compose Multiplatform
 
@@ -56,20 +56,24 @@ resources as library API.
 In `0.13`, ordinary `kotlin run` automatically enables hot reload for eligible JVM Compose modules; disable it with
 `--no-compose-hot-reload`. The old `--compose-hot-reload-mode` flag is retained as a deprecated alias.
 
-The standalone CLI has a filesystem watcher and an MCP server for the reload loop. **The `v0.13.0` docs
-still carry the old warning that the CLI does not watch the filesystem — that text is stale.** The shipped code
-watches both source and build-model paths, and a change to `module.yaml` triggers a full rebuild-and-reload.
+The standalone CLI watches source and build-model paths; changing `module.yaml` triggers a full rebuild-and-reload.
+To let an agent inspect composables, take screenshots, interact with the UI, and trigger reloads, configure an MCP
+server whose command is `./kotlin` and args are `["compose-hot-reload-mcp-server"]`. Start the app separately with
+hot reload enabled. This requires Compose Hot Reload 1.2.0+ and the same build directory for the app and MCP server.
 
 ## kotlinx.serialization
 
 ```yaml
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled
+
+dependencies:
+  - $kotlin.serialization.json
 ```
 
-`serialization: enabled` gives the compiler plugin, the core runtime, and the catalog without a format. Naming a
-format is a shortcut for `enabled: true` plus that format's dependency.
+`serialization: enabled` gives the compiler plugin, the core runtime, and the catalog without a format. Add the
+formats you need as explicit catalog dependencies. This also allows multiple formats and platform-specific scopes.
 
 Known formats: `json`, `json-io`, `json-okio`, `hocon`, `protobuf`, `cbor`, `properties`.
 
@@ -81,10 +85,14 @@ settings:
     serialization:
       enabled: true
       version: 1.11.0
-      format: json
+
+dependencies:
+  - $kotlin.serialization.json
+  - $kotlin.serialization.protobuf
 ```
 
-`enabled` is implied when `format` is set. `format` is a plain string.
+`serialization: json` and `serialization.format` are deprecated in `0.14`. Replace them with the configuration above;
+preserve dependency scope and platform qualifiers when migrating.
 
 ## Ktor
 
@@ -163,8 +171,8 @@ IDE support for the plugin ships in the Kotlin Toolchain IDEA plugin.
 
 ## Power Assert
 
-Enriches assertion failure messages with intermediate values. Configure it under `settings.kotlin`; the runtime
-library is added implicitly.
+Enriches assertion failure messages with intermediate values. Configure it under `settings.kotlin`; for Kotlin 2.4.0+
+the runtime library is added implicitly.
 
 ```yaml
 settings:
@@ -177,8 +185,8 @@ settings:
 | `enabled` | `false` |
 | `functions` | `[kotlin.assert]` |
 
-Add fully-qualified function names to `functions` to transform assertions beyond `kotlin.assert()`. The Power Assert
-runtime library is added implicitly when the plugin is enabled.
+Add fully-qualified function names to `functions` to transform assertions beyond `kotlin.assert()`. In `0.14`,
+older Kotlin compiler versions no longer receive the unavailable Power Assert runtime dependency (KTC-6057).
 
 ## KSP
 

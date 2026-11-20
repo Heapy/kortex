@@ -7,7 +7,7 @@ JShell, and related development workflows.
 
 - Kotlin Toolchain declarative project setup with `module.yaml`, `project.yaml`, templates, dependencies, plugins,
   and the `kotlin` CLI.
-- Kotlin Toolchain `v0.13.x` guidance and a migration guide for upgrading to this release.
+- Kotlin Toolchain `v0.14.x` guidance and a migration guide for upgrading to this release.
 - Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm, Kotlin/Native, server-side apps, testing,
   publishing, migration, and toolchain provisioning.
 - Modern Kotlin language features (2.0–2.4.x, including 2.4.10 and the 2.4.20-Beta1 EAP) with experimental compiler
@@ -18,7 +18,7 @@ JShell, and related development workflows.
 
 ## Files
 
-- `skills/kotlin-toolchain/SKILL.md` - default Kotlin Toolchain skill for `v0.13.x`; operational base plus a map of
+- `skills/kotlin-toolchain/SKILL.md` - default Kotlin Toolchain skill for `v0.14.x`; operational base plus a map of
   topic references.
 - `skills/kotlin-toolchain/references/` - per-topic detail: CLI, project model, product types, dependencies, settings,
   built-in technologies, multiplatform, templates, publishing, plugins, Maven and Gradle migration, upgrading to

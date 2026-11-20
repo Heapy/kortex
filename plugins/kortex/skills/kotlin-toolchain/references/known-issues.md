@@ -3,25 +3,35 @@
 Get issue status: https://youtrack.jetbrains.com/issue/KTC-XXXX
 
 Issues use the `KTC` tracker project. Re-check status before relying on a workaround; this file records the
-`0.13.0` snapshot.
+`0.14.1` snapshot.
 
-## 0.13.0
+## 0.14.1
 
 - KTC-4871 — plugins still cannot be published.
 - The tagged docs contain stale defaults and feature limitations; see
-  [migration source notes](migrating-0.12-to-0.13.md#corrections-to-the-tagged-markdown).
+  [migration source notes](migrating-0.13-to-0.14.md#corrections-to-the-tagged-markdown).
 
-## Fixed Or Improved In 0.13.0
+## Fixed In 0.14.1
 
-- KTC-5698 / KTC-3585 — Compose resources can now be published with and consumed from KMP libraries.
-- KTC-5576 — Wasm-JS tests run through a Chromium browser runner; this does not add a Wasm-WASI test runner.
-- KTC-4240 / KTC-4791 — Native and JS/Wasm compiler warnings no longer use error logging.
-- KTC-5795 — incremental builds restore deleted `.class` outputs instead of succeeding with missing classes.
-- KTC-5845 — a POM description can satisfy Maven Central validation without duplicating the module description.
-- KTC-5973 — wrapper failures no longer leave the CLI distribution cache corrupted.
+- KTC-6152 updates the CLI runtime for CVE-2026-114938. Projects with separately provisioned JDKs should
+  [refresh their cached JDK](cli.md#refreshing-provisioned-jdks).
 
-Other fixes include KSP/Room failures and hangs, Compose resources in Android AARs, and dependency resolution bugs.
-See the [release notes](https://github.com/JetBrains/kotlin-toolchain/releases/tag/v0.13.0) for the full list.
+## Fixed Or Improved In 0.14.0
+
+- KTC-5980 — Android apps require `applicationId`; `namespace` now defaults from it. This is a breaking change.
+- KTC-5747 — `test` fails when no tests are discovered; discovered but skipped tests still count.
+- KTC-5471 / KTC-6014 — generated sources enter sources JARs; klib identities preserve publication coordinates.
+- KTC-6058 / KTC-6059 — Maven Local ignores signing; unrelated non-publishing modules no longer require the target repo.
+- KTC-6045 / KTC-5983 — Hot Reload notices dependency-module changes; Compose resource incrementality is fixed.
+- KTC-6048 — Android variant ambiguity prefers release. Consumer build type is not used for dependency selection.
+- KTC-4543 / KTC-6037 / KTC-6129 — Native Kotest resolution, incompatible single-platform dependencies, and
+  versionless group/name catalog entries are fixed.
+- KTC-6011 / KTC-6051 / KTC-6033 — executable-JAR name collisions, JDK 8 release packaging, and explicit release
+  targets with newer JDKs are fixed.
+- KTC-6056 — Android checks no longer run both debug and release test tasks by default.
+
+Other fixes include Wasm test reporting, Xcode error output, and versioned/shared incremental snapshots.
+See the [release notes](https://github.com/JetBrains/kotlin-toolchain/releases/tag/v0.14.0) for the full list.
 
 ## Issue List
 

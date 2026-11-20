@@ -10,8 +10,8 @@ descriptors, and the separately maintained formatting, BCV, Kover, Dokka, Jib, A
 and SQLDelight integrations. The [GitHub Actions guide](references/github-actions.md) covers CI, publishing,
 wrapper upgrades, and locked plugin restoration with `Heapy/setup-ktc-plugins`.
 
-The default skill is based on Kotlin Toolchain `v0.13.0` at
-`abc7a5f7579e9ef267107782048c76777f0bf932`. The [migration guide](references/migrating-0.12-to-0.13.md)
+The default skill is based on Kotlin Toolchain `v0.14.1` at
+`f53674bce744f0b5e9ff235110dcc1d565d2c114`. The [migration guide](references/migrating-0.13-to-0.14.md)
 covers upgrading an existing project to this release.
 
 ## Installation
@@ -57,7 +57,7 @@ handle projects whose pinned version differs from the default snapshot.
 
 | Path | Purpose |
 |---|---|
-| [`SKILL.md`](SKILL.md) | Current entry point and operational guidance for `v0.13.x` |
+| [`SKILL.md`](SKILL.md) | Current entry point and operational guidance for `v0.14.x` |
 | [`references/`](references/) | Detailed topic guides loaded only when a task needs them |
 | [`generation/`](generation/) | Current upstream documentation aggregate and regeneration notes |
 | [`scripts/aggregate-upstream-docs.sh`](scripts/aggregate-upstream-docs.sh) | Rebuilds a normalized aggregate from an upstream checkout |

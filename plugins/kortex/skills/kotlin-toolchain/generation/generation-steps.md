@@ -1,64 +1,59 @@
 # Kotlin Toolchain Skill Generation
 
-This file records the current `v0.13.0` snapshot and how to regenerate it. The skill ships one release snapshot;
+This file records the current `v0.14.1` snapshot and how to regenerate it. The skill ships one release snapshot;
 Git history retains previous generations.
 
 ## Sources
 
-Generated on 2026-10-02 from the release published on 2026-10-01.
+Generated on 2026-11-20 from the release published on 2026-11-19.
 
 - Repository: `https://github.com/JetBrains/kotlin-toolchain`
-- Tag: `v0.13.0`
-- SHA: `abc7a5f7579e9ef267107782048c76777f0bf932`
-- Upstream `main` observed at `8f64e5c40ef20eae068e562bf3744815d51ba131`
-- [Release notes](https://github.com/JetBrains/kotlin-toolchain/releases/tag/v0.13.0)
+- Tag: `v0.14.1`
+- SHA: `f53674bce744f0b5e9ff235110dcc1d565d2c114`
+- Upstream `main` observed at `df3992adf0ec18811cde7a0a7546e0a933fc6e1e`
+- [Release notes](https://github.com/JetBrains/kotlin-toolchain/releases/tag/v0.14.1)
 
 ## Reproduce The Aggregate
 
 ```shell
-git clone --depth 1 --branch v0.13.0 --filter=blob:none --sparse \
+git clone --depth 1 --branch v0.14.1 --filter=blob:none --sparse \
   https://github.com/JetBrains/kotlin-toolchain.git <scratch>/upstream
 git -C <scratch>/upstream sparse-checkout set --skip-checks docs examples sources README.md
 bash plugins/kortex/skills/kotlin-toolchain/scripts/aggregate-upstream-docs.sh \
-  <scratch>/upstream v0.13.0 abc7a5f7579e9ef267107782048c76777f0bf932 \
-  plugins/kortex/skills/kotlin-toolchain/generation/upstream-docs-v0.13.0.md
+  <scratch>/upstream v0.14.1 f53674bce744f0b5e9ff235110dcc1d565d2c114 \
+  plugins/kortex/skills/kotlin-toolchain/generation/upstream-docs-v0.14.1.md
 ```
 
 The generator aggregates Markdown files under `docs/src`, sorted by source path. It normalizes CR line endings,
 trailing horizontal whitespace, and final blank lines. Each document carries a source permalink.
 
-The aggregate contains **9,353 lines over 50 Markdown documents**. At generation time, `main` had identical docs
-and README; only 12 example wrapper files differed (+210/-84), so no separate main snapshot was created.
+The aggregate contains **9,758 lines over 53 Markdown documents**. The observed `main` has the same `docs/src` tree.
+The only Markdown change since 0.14.0 is the landing page title. The previous aggregate is retained in Git history.
 
 ## Maintained Guidance
 
 - `SKILL.md` carries the operational base, trigger description, reference map, and defaults.
-- Topic references describe the current release. The migration guide covers upgrading into it, including layout,
-  environment variables, Android identity, hot-reload flags, and changed defaults.
-- The raw aggregate preserves upstream text. Where it is stale, the maintained guidance follows tagged source:
-  Kotlin defaults, Android namespaces, language/API version strings, Wasm-JS tests, and Compose hot reload.
-  The migration guide links the source files used to resolve these discrepancies.
-- Codex sandbox caches and Heapy GitHub Actions are separately maintained integration guidance.
-
-The update includes SwiftPM interop and publication metadata, Compose resource publication, Wasm-JS browser tests,
-JUnit tag expressions, explicit API mode, Native dependency caches, Android ABI filters, wrapper creation,
-Maven-plugin catalog references, and the POM description override. Wasm-WASI has no test runner, and SwiftPM interop
-exposes Objective-C-compatible APIs.
+- Topic references target `0.14.1`. The migration guide covers Android identity reversal, serialization deprecation,
+  empty test discovery, new project creation, download mirrors, Android desugaring, and publication changes.
+- Compiler/framework defaults are unchanged from `0.13.0`; desugaring adds an opt-in library default of `2.1.5`.
+- The raw aggregate preserves upstream text. Maintained guidance follows tagged source where Markdown lags:
+  Kotlin defaults, language/API version strings, and Wasm-JS testing. Source notes also clarify discovery versus
+  execution for empty tests, Android dependency variant preference, and IPA export options.
+- Publishing guidance now covers TestFlight, IPA packaging, signing subkeys, Maven Local's signing exemption,
+  generated sources, klib identity compatibility, and optional klibs.io notifications.
+- Codex sandbox caches, Heapy GitHub Actions, the local plugin catalog, and Native/Apple host notes retain their
+  independently dated provenance. Updating this snapshot does not certify third-party plugins against `0.14.1`.
 
 ## Validation
 
-- Validate skill frontmatter and naming, relative Markdown links, manifest consistency, and `git diff --check`.
-- Rebuild the aggregate independently and compare its bytes.
-- Install exact released wrappers into a temporary `jvm/lib` fixture with
-  `kotlin update --create --target-version 0.13.0 --target-dir <fixture>`.
-  The release reports `0.13.0 (abc7a5f, 2026-10-01)`; tagged example wrappers still pin a development build.
-- Run `./kotlin test --include-tag 'fast & !slow'` with `layout: default`, `explicitApi: strict`, an explicitly typed
-  public library function, ordinary test declarations, a passing `fast` test, and a deliberately failing `slow` test.
-  Main and test compilation passed, exactly the `fast` test ran, and the command exited 0.
-
-The local sandbox blocked a JVM host `sysctl` probe, so release-wrapper setup and the JVM smoke test were run with
-approved broader permissions in the temporary fixture. No Android, Apple, or browser runtime build was run; those
-sections were checked against the tagged schema, task wiring, integration tests, and release notes.
+- Skill frontmatter/naming validation passed; maintained relative Markdown links resolve; `git diff --check` passed.
+- The aggregate was regenerated independently and compared byte-for-byte successfully.
+- The tagged launcher pins Azul Zulu 25.38.201. The release notes distinguish the CLI runtime update from
+  refreshing a JDK previously provisioned for a project.
+- Both fixture wrappers pin 0.14.1. On macOS arm64, the CLI reported `0.14.1 (f53674b, 2026-11-19)`,
+  listed `clean-shared-caches` in its help, and passed a JVM serialization round-trip test.
+- The 0.14.0 snapshot was exercised with JVM serialization, empty and skipped test discovery, and Android settings
+  fixtures. The 0.14.1 patch changes the launcher runtime and preserves those project defaults.
 
 ## Update For A Future Release
 
@@ -68,7 +63,8 @@ sections were checked against the tagged schema, task wiring, integration tests,
 4. Update `SKILL.md`, its trigger description, affected topic references, defaults, and known issues.
 5. Refresh the migration guide for the transition into the new release. Remove superseded snapshots and historical
    guidance; retain source provenance and current documentation corrections.
-6. Preserve the local sandbox and GitHub Actions guidance, then update repository readmes and these generation notes.
-7. Run focused validation and any build fixtures needed for changed behavior.
-8. Set the repository version with `./scripts/release.main.kts <version>` and review the diff. This update targets
-   repository version `0.17.0` across all versioned host manifests.
+6. Preserve independently maintained integration guidance, then update repository readmes and these generation notes.
+7. Validate frontmatter, local reference links, aggregate reproducibility, and `git diff --check`. Run focused CLI
+   fixtures for changed behavior; do not upload or publish artifacts merely to validate documentation.
+8. When preparing a repository release, set its single version with `./scripts/release.main.kts <version>` so all
+   host manifests stay synchronized. A skill snapshot update does not itself require a repository release.

@@ -1,6 +1,10 @@
 # Dependencies And Repositories
 
-Kotlin Toolchain `v0.13.0`.
+Kotlin Toolchain `v0.14.1`.
+
+In `0.14`, resolution disambiguates Android debug/release variants carrying `BuildTypeAttr` by preferring release
+when multiple variants otherwise match. The consumer's build type is not taken into account; do not invent a
+per-dependency YAML variant selector. Versionless catalog entries written with `group`/`name` now work with a BOM.
 
 ## Notation
 

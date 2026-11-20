@@ -1,6 +1,6 @@
 # Module Templates
 
-Kotlin Toolchain `v0.13.0`.
+Kotlin Toolchain `v0.14.1`.
 
 Templates may apply other templates. Scalars are overridden, mappings and lists are appended, and `module.yaml`
 takes precedence. Conflicting scalar values in sibling templates require an explicit resolution.

@@ -1,6 +1,6 @@
 ---
 name: kotlin-toolchain
-description: Use when working with JetBrains Kotlin Toolchain v0.13.x, formerly Amper, including module.yaml, project.yaml, module templates, nested templates, libs.versions.toml, the kotlin CLI wrapper, `//` project paths, Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm (wasm-js, wasm-wasi), Kotlin/Native, Apple platform support and deprecations, macOS/Xcode compatibility, ARM64 hosts and cross-compilation, GitHub Actions runners, server-side apps, dependencies, testing, SwiftPM dependencies, KMP library publishing, Maven Central, build plugins, built-in technologies (Compose, Ktor, Spring Boot, serialization, kotlinx.rpc, DataFrame, Power Assert, KSP, Lombok), Maven and Gradle migration, JDK provisioning, and toolchain caches.
+description: Use when working with JetBrains Kotlin Toolchain v0.14.x, formerly Amper, including module.yaml, project.yaml, module templates, nested templates, libs.versions.toml, the kotlin CLI wrapper, `//` project paths, Kotlin/JVM, Android, iOS, Kotlin Multiplatform, Kotlin/JS, Kotlin/Wasm (wasm-js, wasm-wasi), Kotlin/Native, Apple platform support and deprecations, macOS/Xcode compatibility, ARM64 hosts and cross-compilation, GitHub Actions runners, server-side apps, dependencies, testing, SwiftPM dependencies, KMP library publishing, Maven Central, TestFlight, Android desugaring, download mirrors, build plugins, built-in technologies (Compose, Ktor, Spring Boot, serialization, kotlinx.rpc, DataFrame, Power Assert, KSP, Lombok), Maven and Gradle migration, JDK provisioning, and toolchain caches.
 ---
 
 # Kotlin Toolchain
@@ -13,24 +13,24 @@ Maven project to Kotlin Toolchain. Kotlin Toolchain is not Gradle, not Maven, an
 
 ## Source Snapshot
 
-This skill is generated from the official upstream docs for `v0.13.0`, the default supported version:
+This skill is generated from the official upstream docs for `v0.14.1`, the default supported version:
 
 - Repository: `https://github.com/JetBrains/kotlin-toolchain`
-- Ref: `v0.13.0`
-- SHA: `abc7a5f7579e9ef267107782048c76777f0bf932`
-- Full aggregate: `generation/upstream-docs-v0.13.0.md`
+- Ref: `v0.14.1`
+- SHA: `f53674bce744f0b5e9ff235110dcc1d565d2c114`
+- Full aggregate: `generation/upstream-docs-v0.14.1.md`
 - Generation notes: `generation/generation-steps.md`
 
-Statements here come from those docs, from the `v0.13.0` release notes, and from spot-checks against the tagged source
+Statements here come from those docs, from the 0.14.0 and 0.14.1 release notes, and from spot-checks against the tagged source
 tree. Where the docs lag the code, this skill follows the code and says so. The GitHub Actions and local plugin
 distribution guidance are separately maintained Heapy integrations, not part of that upstream snapshot. The
 [Native host and Apple compatibility notes](references/native-platform-support.md) are separately dated against
 Kotlin, Apple, and runner documentation; they do not change the pinned KTC version.
 
-The tagged docs still contain stale Kotlin defaults, Android namespace defaults, and Wasm-test limitations. This
-skill follows the tagged source for those points; see [migration and source notes](references/migrating-0.12-to-0.13.md).
+The tagged docs still contain stale Kotlin defaults and Wasm-test limitations. This
+skill follows the tagged source for those points; see [migration and source notes](references/migrating-0.13-to-0.14.md).
 
-This skill and its topic references target the tagged `0.13.0` release. Check the project wrapper before applying
+This skill and its topic references target the tagged `0.14.1` release. Check the project wrapper before applying
 version-sensitive defaults or syntax.
 
 The project is Alpha and the docs move quickly. Treat defaults and edge-case syntax as version-sensitive. When precision
@@ -55,13 +55,13 @@ distribution paths. Do not rename those to `kotlin`. The YouTrack project, howev
 | [`references/multiplatform.md`](references/multiplatform.md) | Platform hierarchy, aliases, propagation, cinterop |
 | [`references/native-platform-support.md`](references/native-platform-support.md) | Native host vs target support, Apple Silicon/macOS 27/Xcode 27, deprecated targets, Linux ARM64 build/test split, CI runner selection |
 | [`references/templates.md`](references/templates.md) | Nested templates, precedence, merging, conflict resolution |
-| [`references/publishing.md`](references/publishing.md) | JVM and KMP publishing, Maven Central, `mavenLocal`, signing |
+| [`references/publishing.md`](references/publishing.md) | JVM and KMP publishing, Maven Central, `mavenLocal`, signing, iOS IPA packaging and TestFlight |
 | [`references/github-actions.md`](references/github-actions.md) | Heapy actions for CI, locked plugin restoration, caching, wrapper upgrades, and library publication |
 | [`references/plugins.md`](references/plugins.md) | Authoring `jvm/amper-plugin` modules, `plugin.yaml`, task actions |
 | [`references/ktc-plugins.md`](references/ktc-plugins.md) | Installing and updating local source plugins, `ktc-plugin.yaml`, available Heapy plugins and compatibility limits |
 | [`references/maven-migration.md`](references/maven-migration.md) | `convert-project`, `mavenPlugins`, migration gaps |
 | [`references/gradle-migration.md`](references/gradle-migration.md) | Translating `build.gradle(.kts)`, convention plugins, and source sets by hand |
-| [`references/migrating-0.12-to-0.13.md`](references/migrating-0.12-to-0.13.md) | Upgrading to `0.13` and tagged-doc corrections |
+| [`references/migrating-0.13-to-0.14.md`](references/migrating-0.13-to-0.14.md) | Upgrading to 0.14.1, refreshing provisioned JDKs, Android identity, serialization migration, and tagged-doc corrections |
 | [`references/known-issues.md`](references/known-issues.md) | Tracked defects and workarounds — check before diagnosing odd behavior |
 | [`references/codex-sandbox-caches.md`](references/codex-sandbox-caches.md) | Running the toolchain in a Codex `workspace-write` sandbox |
 
@@ -78,20 +78,22 @@ Run this once per session, the first time this skill is used in a Kotlin Toolcha
    `kotlin.bat` carries the same value as `set kotlin_cli_version=`. A repo without a wrapper has nothing to check —
    skip to `First Moves`.
 
-2. Compare it to `0.13.0`, the version this skill is generated from.
+2. Compare it to `0.14.1`, the version this skill is generated from.
 
 3. If the pin differs, consult that release's tagged docs and the project CLI for version-sensitive behavior.
    Explain an upgrade when relevant; obtain approval unless the user already requested it. Continue compatible
    work while an optional upgrade is undecided.
 
-4. For an authorized upgrade to this snapshot, run `./kotlin update --target-version 0.13.0`. It rewrites `kotlin`
-   and `kotlin.bat` and verifies the new distribution. Apply the migration guide, then re-read the wrapper pin.
+4. For an authorized upgrade to this snapshot, run `./kotlin update --target-version 0.14.1`. It rewrites `kotlin`
+   and `kotlin.bat` and verifies the new distribution. Follow the [migration guide](references/migrating-0.13-to-0.14.md)
+   and re-read the wrapper pin.
+   For 0.14.1, run `./kotlin clean` in each project using a provisioned JDK so it can pick up a patched build.
    Leave the wrapper changes uncommitted unless a commit is part of the user's request.
 
 5. If the user keeps the older version, do not apply the new syntax or defaults to it.
 
 `./kotlin update` without `--target-version` selects the latest release. If the project's version is newer than
-`0.13.0`, prefer its tagged docs and what its CLI reports (`./kotlin show ...`, `--help`) over this snapshot.
+`0.14.1`, prefer its tagged docs and what its CLI reports (`./kotlin show ...`, `--help`) over this snapshot.
 
 A globally installed `kotlin` is not a shortcut past this. It walks up from the current directory looking
 for a project with its own wrapper, and runs that wrapper's version instead of its own.
@@ -112,12 +114,13 @@ When working in a repo:
 
 Useful CLI commands:
 
-- `./kotlin init`
+- `kotlin new <directory>` (new project directory), `kotlin init` (existing directory)
 - `./kotlin build`
 - `./kotlin run -m <module>`
 - `./kotlin test`
 - `./kotlin package`
 - `./kotlin publish <repoId|mavenCentral>` (`-m <module>` selects modules; add `--transitive` for their local deps)
+- `./kotlin publish testflight -m <ios-app>` (preview; uploads to App Store Connect)
 - `./kotlin check [names] [--skip tests] [-m module]`
 - `./kotlin do <command> [-m module]`
 - `./kotlin task :<module>:<task>@<pluginId>` for debugging plugin tasks
@@ -194,7 +197,7 @@ product:
 | `jvm/lib` | `jvm` | publishable |
 | `kmp/lib` | explicit leaf list | publishable |
 | `android/app` | `android` | `build` → APK, `package` → AAB with R8 and signing |
-| `ios/app` | `iosArm64`, `iosSimulatorArm64` | needs `module.xcodeproj`; `iosX64` no longer accepted |
+| `ios/app` | `iosArm64`, `iosSimulatorArm64` | needs `module.xcodeproj`; IPA packaging and TestFlight upload |
 | `js/app` | `js` | incomplete preview, CLI cannot run it |
 | `wasm-js/app` | `wasmJs` | `build` packages a web app; `run` serves it in a browser |
 | `wasm-wasi/app` | `wasmWasi` | incomplete preview, run it with an external WASI runtime |
@@ -238,7 +241,7 @@ and it needs the object form with `publish: true` to also be a publish target. D
 
 ## Settings Defaults
 
-Defaults checked against `DefaultVersions.kt` at the pinned `v0.13.0` tag:
+Defaults checked against `DefaultVersions.kt` at the pinned `v0.14.1` tag:
 
 | Setting | Default |
 |---|---|
@@ -327,9 +330,12 @@ Tests live in `test` and `test@platform`; test-only resources in `testResources`
 library that is added (`kotlin-test-junit5`, `kotlin-test-junit`, or plain `kotlin-test`). JVM test process settings
 live under `settings.jvm.test` or `test-settings.jvm`.
 
-`0.13` runs Wasm-JS tests in provisioned Chromium via Playwright. This does not add a Wasm-WASI test runner.
+Wasm-JS tests run in provisioned Chromium via Playwright. There is no Wasm-WASI test runner.
 JUnit tag filters use `--include-tag` / `--exclude-tag`, for example `./kotlin test -m core --include-tag 'fast & !flaky'`.
 Non-JVM tests count as untagged, so positive tag filters can skip them. See [CLI](references/cli.md).
+
+In `0.14`, `kotlin test` exits with code 1 when no tests are discovered after filtering. Discovered but skipped
+tests still count; a suite where every test is skipped can succeed. Check empty CI selections after upgrading.
 
 `settings.kotlin.explicitApi: strict` enforces library API declarations while ignoring test sources. Native debug
 linking can reuse compiler caches through `settings.kotlin.compileIncrementally`; see [settings](references/settings.md).
@@ -340,8 +346,8 @@ Prefer the short settings forms unless customization is needed:
 
 - `settings.compose: enabled` — Compose compiler/runtime, `$compose.*` catalog, and the components-resources
   dependency. `composeResources` generates accessors.
-- `settings.kotlin.serialization: json` — compiler plugin, runtime, and the JSON format. Known formats: `json`,
-  `json-io`, `json-okio`, `hocon`, `protobuf`, `cbor`, `properties`.
+- `settings.kotlin.serialization: enabled` — compiler plugin, core runtime, and catalog. Add format dependencies
+  explicitly, e.g. `$kotlin.serialization.json`. `serialization: json` and `serialization.format` are deprecated.
 - `settings.kotlin.rpc: enabled` — kotlinx.rpc plugin, runtime, BOM, and `$kotlin.rpc.*`.
 - `settings.kotlin.dataframe: enabled` — DataFrame compiler plugin.
 - `settings.kotlin.powerAssert: enabled` — richer assertion messages; `functions:` extends beyond `kotlin.assert`.
@@ -358,7 +364,8 @@ More in [`references/builtin-tech.md`](references/builtin-tech.md).
 
 ## Android Identity And Signing
 
-An `android/app` must explicitly set `settings.android.namespace`; `applicationId` defaults from it. For Android
+An `android/app` must explicitly set `settings.android.applicationId`; `namespace` defaults from it. Preserve the
+existing application ID when upgrading; set a distinct namespace explicitly if needed. For Android
 libraries, an omitted namespace is derived from publication coordinates or a generated module-specific fallback;
 set it explicitly when source code imports generated `R` / `BuildConfig` classes.
 
@@ -369,6 +376,9 @@ Other keys: `versionCode`, `versionName`, `compileSdk`, `minSdk`, `targetSdk` (d
 
 Duplicate Java resources from dependencies are resolved with `settings.android.resourcePackaging`, which has
 `excludes`, `merges`, and `pickFirsts` glob lists.
+
+`settings.android.desugaring: enabled` enables core library desugaring for Java 8+ APIs on older Android versions.
+Libraries can declare this requirement too; consuming apps must enable it. See [settings](references/settings.md).
 
 Release signing: `settings.android.signing: enabled` reads `keystore.properties` beside `module.yaml` with
 `storeFile`, `storePassword`, `keyAlias`, and `keyPassword`. Override the path with `signing.propertiesFile`. Generate
@@ -385,11 +395,16 @@ can publish only to `mavenLocal`; shared publications must use remote packages.
 A regular Maven repository needs a `repositories` entry with `publish: true` plus credentials, and
 `settings.publishing` with `enabled`, `group`, and `version`. Maven Central additionally needs `mavenCentral: enabled`,
 `signArtifacts: true`, `publishSources: true`, and the POM metadata, with credentials in
-`KOTLIN_TOOLCHAIN_MAVEN_CENTRAL_USERNAME`/`_PASSWORD` and `KOTLIN_TOOLCHAIN_SIGNING_KEY`/`_PASSPHRASE`.
+`KOTLIN_TOOLCHAIN_MAVEN_CENTRAL_USERNAME` / `KOTLIN_TOOLCHAIN_MAVEN_CENTRAL_PASSWORD` and
+`KOTLIN_TOOLCHAIN_SIGNING_KEY` / `KOTLIN_TOOLCHAIN_SIGNING_KEY_PASSPHRASE`.
 
 `publishingMode` is `manual` by default; `auto` releases without inspection, and released Maven Central artifacts are
 permanent. `kotlin publish mavenLocal` installs into the local Maven repository. Details in
 [`references/publishing.md`](references/publishing.md).
+
+`0.14` adds `kotlin publish testflight` for one `ios/app` at a time, with macOS, Xcode, automatic signing, and an
+App Store Connect team API key. `kotlin package --format ipa` packages an iOS app. Read the publishing reference
+for credentials, export options, and the distinction between packaging and uploading.
 
 ## SwiftPM
 
@@ -432,7 +447,7 @@ Check each adapter's configuration, platform, and parser limits before enabling 
 - Sibling templates that disagree on a scalar are a build error, not a silent win for one of them.
 - KSP is KSP2-only, and generated code is platform-specific in KMP.
 - `js/app` and `wasm-wasi/app` cannot be run by the CLI; `wasm-js/app` can, via `run`.
-- Native, JS, and Wasm product types do not support `package`.
+- Native executable, JS, and Wasm product types do not support `package`; `ios/app` supports IPA packaging.
 - iOS requires Xcode integration and `module.xcodeproj`; the build phase is now `Build Kotlin`.
 - Compose resources publish in `0.13`; expose generated accessors only when they belong in the public API.
 - Use `exported` sparingly to avoid leaking implementation dependencies into consumer compile classpaths.

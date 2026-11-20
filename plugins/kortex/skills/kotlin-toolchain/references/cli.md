@@ -1,6 +1,6 @@
 # CLI, Wrapper, And Provisioning
 
-Kotlin Toolchain `v0.13.0`.
+Kotlin Toolchain `v0.14.1`.
 
 ## Getting The CLI
 
@@ -17,7 +17,17 @@ The script installs into `~/.local/bin` and updates `PATH`; restart the shell af
 
 The IntelliJ IDEA new-project wizard generates the wrapper. Creating a `module.yaml` in a blank project makes IDEA
 offer to add it. Since `0.13`, `kotlin update --create` creates missing wrappers without an interactive prompt;
-use `--target-version 0.13.0` to pin the release rather than selecting whatever is latest.
+use `--target-version 0.14.1` to pin the release rather than selecting whatever is latest.
+
+## Refreshing Provisioned JDKs
+
+The 0.14.1 wrapper launches the CLI with Azul Zulu 25.38.201 (JDK 25.0.5.1+2), patched for CVE-2026-114938.
+Project builds can use separately provisioned JDKs. The toolchain caches the selected JDK indefinitely per
+project. Run `./kotlin clean` in the project to refresh the selection on the next build.
+
+For a machine-wide refresh, `./kotlin clean-shared-caches` also clears downloaded dependencies. To keep those
+dependencies, locate the shared cache via `./kotlin --help` under `--shared-cache-dir`, then remove only the
+cached JDK entries from both `download.cache` and `extract.cache`. [Upstream release notes](https://github.com/JetBrains/kotlin-toolchain/releases/tag/v0.14.1)
 
 ## Project-Local Version Detection
 
@@ -33,12 +43,13 @@ Discover everything with `kotlin --help` and `kotlin <command> --help` rather th
 
 | Command | What it does |
 |---|---|
-| `kotlin init` | Create a project; `0.13` adds the interactive KMP wizard |
+| `kotlin new <directory>` | Create a project in a new directory; prompts for a name when interactive |
+| `kotlin init [--target-dir <existing-directory>]` | Initialize an existing directory; current directory by default |
 | `kotlin build` | Compile and link all code |
 | `kotlin run [-m <module>]` | Run an application module |
 | `kotlin test` | Run tests |
-| `kotlin package` | Produce a distributable artifact. `jvm/app` and `android/app` only; `jvm/lib` gains it when Maven Central publishing is on |
-| `kotlin publish <repoId\|mavenCentral\|mavenLocal>` | Publish modules |
+| `kotlin package` | Package a JVM app JAR, Android AAB, or iOS IPA; `jvm/lib` gains a Central bundle when Central publishing is on |
+| `kotlin publish <repoId\|mavenCentral\|mavenLocal\|testflight>` | Publish libraries, or upload one iOS app to TestFlight |
 | `kotlin check [names]` | Run registered checks; `--skip tests`, `-m <module>` |
 | `kotlin do <command>` | Run a custom command registered by a plugin |
 | `kotlin task :<module>:<task>@<pluginId>` | Run one task directly, for debugging plugins |
@@ -49,6 +60,7 @@ Discover everything with `kotlin --help` and `kotlin <command> --help` rather th
 | `kotlin tool convert-project` | Convert a Maven reactor |
 | `kotlin tool generate-keystore` | Create an Android signing keystore |
 | `kotlin tool xcode-integration` | Xcode build-phase entry point |
+| `kotlin compose-hot-reload-mcp-server` | MCP connection to a running Compose Hot Reload app |
 
 `show settings -m <module>` prints the effective configuration after templates and platform propagation are merged. It
 is the fastest way to answer "what does this module actually build with".
@@ -67,6 +79,9 @@ kotlin publish -m my-lib --transitive someRepoId
 `-m`/`--module` can repeat. When the selected modules depend on other local modules the command stops
 and asks you to pass `--transitive` or `--non-transitive` — it will not decide for you.
 
+`testflight` is a built-in destination for one `ios/app`; do not add it to `repositories`. Select an app with `-m`
+when the project has several. `--transitive` is ignored. See [publishing](publishing.md#ios-apps-and-testflight).
+
 ### Tests And Tag Filters
 
 ```shell
@@ -83,6 +98,11 @@ filter is used in a multi-module project, select modules with `-m` / `--include-
 Wasm-JS tests run in Chromium provisioned via Playwright in `0.13`. A Wasm-WASI test runner is not registered.
 Wasm class filters support `*`, not `?`; use package-qualified patterns rather than an uppercase class-name prefix.
 These details come from the tagged CLI and test tasks; the tagged Wasm-JS Markdown still says tests are unsupported.
+
+Since `0.14`, the command exits with code 1 if no tests are discovered across the selected tasks, including when
+filters match nothing. The error lists the applied filters. Discovered but skipped tests count, so all-skipped tests
+can still succeed. This is a discovery check in `test`, not a requirement that every module execute a test, and not
+a new empty-test rule for `check`.
 
 ### Compose Runs
 
@@ -124,8 +144,30 @@ Provisioning is safe to run concurrently. Parallel CLI invocations do not distur
 | `KOTLIN_CLI_JAVA_HOME` | Use this JRE for the CLI instead of provisioning one. You own its validity. |
 | `KOTLIN_CLI_DOWNLOAD_ROOT` | Maven root to fetch the distribution from; defaults to `https://packages.jetbrains.team/maven/p/amper/amper` |
 
-The last three are documented as "use at your own risk". The CLI being a JVM application is an implementation detail
-that may change.
+The Java overrides are documented as "use at your own risk". The CLI being a JVM application is an implementation
+detail that may change.
+
+## Download Mirrors
+
+`0.14` supports these environment overrides. Blank values are ignored; mirrors must preserve the upstream path
+layout. Names and defaults are version-sensitive. A Maven repository override does not redirect every tool download.
+
+| Variable | Controls |
+|---|---|
+| `KOTLIN_DEFAULT_MAVEN_CENTRAL_URL` | Default Maven Central repository, compiler artifacts, and tooling |
+| `KOTLIN_TOOLCHAIN_GOOGLE_REPOSITORY_URL` | Google Maven dependencies and Android tooling |
+| `KOTLIN_TOOLCHAIN_REPOSITORY_URL` | Toolchain tooling and plugin artifacts |
+| `KOTLIN_TOOLCHAIN_KT_BOOTSTRAP_REPOSITORY_URL` | Kotlin development compiler and Native distributions |
+| `KOTLIN_TOOLCHAIN_ANDROID_DOWNLOAD_URL_ROOT` | Android SDK and system-image downloads |
+| `KOTLIN_TOOLCHAIN_JETBRAINS_DOWNLOAD_URL` | JetBrains CDN, including the JDK provisioning list |
+| `KOTLIN_CLI_DOWNLOAD_ROOT` | Wrapper scripts and CLI distribution; `update --repository` wins |
+| `KOTLIN_TOOLCHAIN_NODE_JS_DIST_URL` | Node.js distribution base URL |
+| `KOTLIN_TOOLCHAIN_PNPM_DOWNLOAD_ROOT_URL` | pnpm release downloads |
+| `KOTLIN_TOOLCHAIN_XCBEAUTIFY_DOWNLOAD_ROOT_URL` | xcbeautify release downloads |
+| `KOTLIN_TOOLCHAIN_JAEGER_DOWNLOAD_ROOT_URL` | Jaeger release downloads |
+
+For default URLs and appended paths, search `cli/provisioning.md` in the pinned aggregate. The installer script
+self-updates in this release; that is separate from upgrading a project's pinned wrappers with `kotlin update`.
 
 ## JDK Provisioning
 

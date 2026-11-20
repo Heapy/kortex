@@ -1,6 +1,6 @@
 # Gradle Migration
 
-Kotlin Toolchain `v0.13.0`.
+Kotlin Toolchain `v0.14.1`.
 
 There is no `convert-project` equivalent for Gradle: build scripts are arbitrary code, so a faithful automatic
 translation is not definable. Migration is by hand, module by module. For Maven projects use the converter described in
@@ -27,7 +27,7 @@ root. Only `[versions]` and `[libraries]` are read — `[plugins]` does not appl
 ## Order Of Work
 
 1. Install the global Kotlin CLI if needed, then generate the wrappers with
-   `kotlin update --create --target-version 0.13.0`. Commit both `kotlin` and `kotlin.bat`.
+   `kotlin update --create --target-version 0.14.1`. Commit both `kotlin` and `kotlin.bat`.
 2. Write `project.yaml`. Each `include(":libs:lib1")` becomes a directory path entry, `libs/lib1`. A single-module
    project can skip the file, but still wants it for local plugin declarations.
 3. Turn every convention plugin into a `<name>.module-template.yaml`. Unconditional `subprojects { ... }`
@@ -176,7 +176,7 @@ Test-task configuration maps to `settings.jvm.test`:
 | `./gradlew --stop` | Nothing — there is no daemon |
 
 `./kotlin show tasks` lists internal build tasks and their dependency edges. Use `./kotlin --help` for built-in
-commands and `./kotlin show commands` for plugin commands, as the `0.13` migration guide now recommends.
+commands and `./kotlin show commands` for plugin commands.
 
 Like `gradlew`, the `kotlin` and `kotlin.bat` wrappers are committed to the repository and provision everything on
 first use.

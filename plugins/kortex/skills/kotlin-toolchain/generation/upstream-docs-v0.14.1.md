@@ -1,8 +1,8 @@
-# Kotlin Toolchain upstream docs aggregate (v0.13.0)
+# Kotlin Toolchain upstream docs aggregate (v0.14.1)
 
 - Source repository: https://github.com/JetBrains/kotlin-toolchain
-- Ref: v0.13.0
-- SHA: abc7a5f7579e9ef267107782048c76777f0bf932
+- Ref: v0.14.1
+- SHA: f53674bce744f0b5e9ff235110dcc1d565d2c114
 - Scope: all Markdown files under docs/src at this ref, sorted by path
 
 ## Source file list
@@ -21,7 +21,6 @@
 - docs/src/user-guide/advanced/java-annotation-processing.md
 - docs/src/user-guide/advanced/jdk-provisioning.md
 - docs/src/user-guide/advanced/kotlin-compiler-plugins.md
-- docs/src/user-guide/advanced/ksp.md
 - docs/src/user-guide/advanced/maven-like-layout.md
 - docs/src/user-guide/advanced/maven-plugins.md
 - docs/src/user-guide/advanced/native-interop.md
@@ -29,6 +28,8 @@
 - docs/src/user-guide/builtin-tech/compose-multiplatform.md
 - docs/src/user-guide/builtin-tech/kotlinx-rpc.md
 - docs/src/user-guide/builtin-tech/kotlinx-serialization.md
+- docs/src/user-guide/builtin-tech/ksp/index.md
+- docs/src/user-guide/builtin-tech/ksp/room.md
 - docs/src/user-guide/builtin-tech/ktor.md
 - docs/src/user-guide/builtin-tech/lombok.md
 - docs/src/user-guide/builtin-tech/spring.md
@@ -53,7 +54,9 @@
 - docs/src/user-guide/product-types/overview.md
 - docs/src/user-guide/product-types/wasm-js-app.md
 - docs/src/user-guide/product-types/wasm-wasi-app.md
-- docs/src/user-guide/publishing.md
+- docs/src/user-guide/publishing/android-application.md
+- docs/src/user-guide/publishing/ios-application.md
+- docs/src/user-guide/publishing/libraries.md
 - docs/src/user-guide/templates.md
 - docs/src/user-guide/testing.md
 - docs/src/user-guide/yaml-primer.md
@@ -62,7 +65,7 @@
 
 ### docs/src/cli/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/cli/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/cli/index.md
 - HTML: https://kotlin-toolchain.org/dev/cli/index/
 
 ---
@@ -70,43 +73,28 @@ description: The Kotlin CLI is a command-line tool to build, run, test, and pack
 ---
 # :octicons-terminal-16: Kotlin CLI
 
-The Kotlin CLI is a command-line tool to build, run, test, and package your project without an IDE.
+The Kotlin CLI is a command-line tool to build, run, test, package, and publish your projects without an IDE.
 It is useful both locally and in CI/CD pipelines.
 
 ## Installation
 
-Install the Kotlin CLI using one of the methods below.
-After installation, the `kotlin` command will be available on your `PATH`.
 
-### via SDKMAN
-
-```shell
-sdk update
-sdk install kotlintoolchain
-```
+--8<-- "includes/cli-install.md"
 
 !!! note
 
     The first time you run the Kotlin CLI, it will take some time to download the Kotlin Toolchain distribution.
     Subsequent runs will be faster, as the downloaded files will be cached locally.
 
-    If you just installed via the script, restart your shell (or run `export PATH="$HOME/.local/bin:$PATH"` on
-    Linux/macOS) before using `kotlin`.
+### Alternative: use SDKMAN
 
-### via installer script
+If you already have SDKMAN installed, you can use it to install the CLI:
 
-The installer script downloads the Kotlin CLI wrapper and places it in `~/.local/bin` (on Linux and macOS) or an
-equivalent location on Windows.
-It also updates your shell profile to add that directory to your `PATH`, if needed.
-
---8<-- "includes/cli-install.md"
-
-??? success "IntelliJ IDEA can take care of this for you"
-
-    New projects created using the IntelliJ IDEA wizard will already contain the
-    [wrapper scripts](provisioning.md/#whats-the-wrapper-script).
-    Also, if you create a `module.yaml` file in a blank project, IntelliJ IDEA will offer to set up the wrapper scripts
-    for you. In that case, you can use `./kotlin` from the project root without a global installation.
+```shell
+sdk selfupdate
+sdk update
+sdk install kotlintoolchain
+```
 
 ## Exploring Kotlin CLI commands
 
@@ -119,7 +107,7 @@ kotlin build --help # shows the options for the 'build' command specifically
 
 Here are the most commonly used commands:
 
-- `kotlin init` to create a new Kotlin project
+- `kotlin new` to create a new Kotlin project
 - `kotlin build` to compile and link all code in the project
 - `kotlin run` to run your application
 - `kotlin test` to run tests in the project
@@ -129,7 +117,7 @@ Here are the most commonly used commands:
 
 !!! example "Try it out!"
 
-    Create a new project using the `kotlin init` command and select the *JVM console application* template.
+    Create a new project using the `kotlin new` command and select the *JVM console application* template.
 
     Then build and run the application using `kotlin run`.
 
@@ -180,7 +168,7 @@ See `kotlin update -h` for more information about the available options.
 
 ### docs/src/cli/provisioning.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/cli/provisioning.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/cli/provisioning.md
 - HTML: https://kotlin-toolchain.org/dev/cli/provisioning/
 
 ---
@@ -255,6 +243,49 @@ build.
 You can disable the welcome banner by setting the `KOTLIN_CLI_NO_WELCOME_BANNER` environment variable to a non-empty value.
 For instance, `KOTLIN_CLI_NO_WELCOME_BANNER=1`.
 
+## Customizing download URLs
+
+The Kotlin Toolchain downloads tools and internal dependencies from external locations.
+Each location can be overridden with an environment variable, for instance, to use a mirror or a proxy repository.
+Blank values are ignored.
+
+!!! warning "Subject to change"
+
+    The environment variables below, their names, and their defaults are subject to change in future versions of the Kotlin Toolchain.
+    They may be replaced with a more appropriate way to customize download locations,
+    such as project settings, machine-wide settings, or another mechanism.
+
+### Repositories
+
+The table below lists environment variables that customize the URLs of built-in repositories the Kotlin Toolchain downloads from.
+Each variable affects everything downloaded from its repository.
+
+| Environment variable                         | Default                                                | Used for                                                                                          |
+|----------------------------------------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| `KOTLIN_DEFAULT_MAVEN_CENTRAL_URL`           | `https://repo1.maven.org/maven2`                       | Maven Central: the default dependency repository, Kotlin compiler artifacts, tooling              |
+| `KOTLIN_TOOLCHAIN_GOOGLE_REPOSITORY_URL`               | `https://maven.google.com`                             | Google Maven: the default dependency repository, Android tooling                                  |
+| `KOTLIN_TOOLCHAIN_REPOSITORY_URL`   | `https://packages.jetbrains.team/maven/p/amper/amper`        | Kotlin Toolchain artifacts: tooling, plugin dependencies |
+| `KOTLIN_TOOLCHAIN_KT_BOOTSTRAP_REPOSITORY_URL`            | `https://packages.jetbrains.team/maven/p/kt/bootstrap` | Kotlin `-dev-` versions: compiler artifacts and Kotlin/Native distributions                       |
+| `KOTLIN_TOOLCHAIN_ANDROID_DOWNLOAD_URL_ROOT` | `https://dl.google.com`                                | Android SDK packages and system images                                                            |
+| `KOTLIN_TOOLCHAIN_JETBRAINS_DOWNLOAD_URL`                     | `https://download.jetbrains.com`                       | The JetBrains CDN: the list of JDKs available for [provisioning](../user-guide/advanced/jdk-provisioning.md) |
+
+### Tools
+
+The table below lists environment variables that customize the base URL of a single tool's downloads.
+The Kotlin Toolchain appends the rest of the path, such as the version and file name, to it.
+
+| Environment variable                  | Default                                                       | Used for                                                     |
+|---------------------------------------|---------------------------------------------------------------|--------------------------------------------------------------|
+| `KOTLIN_CLI_DOWNLOAD_ROOT`            | `https://packages.jetbrains.team/maven/p/amper/amper`              | Kotlin wrapper scripts and distribution in `kotlin update`   |
+| `KOTLIN_TOOLCHAIN_NODE_JS_DIST_URL`             | `https://nodejs.org/dist`                                     | Node.js (artifact location: `<URL>/v$version/node-v$version-$os-$arch.$extension"`)                                                     |
+| `KOTLIN_TOOLCHAIN_PNPM_DOWNLOAD_ROOT_URL`       | `https://github.com/pnpm/pnpm/releases/download`              | pnpm (artifact location: `<URL>/v$version/pnpm-$os-$arch.$extension"`)                                                       |
+| `KOTLIN_TOOLCHAIN_XCBEAUTIFY_DOWNLOAD_ROOT_URL` | `https://github.com/cpisciotta/xcbeautify/releases/download`  | xcbeautify (iOS builds. artifact location: `<URL>/$version/xcbeautify-$version-$arch-apple-macosx.zip`)                                      |
+| `KOTLIN_TOOLCHAIN_JAEGER_DOWNLOAD_ROOT_URL`     | `https://github.com/jaegertracing/jaeger/releases/download`   | Jaeger (`kotlin tool jaeger`, artifact location: `<URL>v$version/jaeger-$version-$os-$arch.tar.gz`)                                |
+
+The `--repository` option of `kotlin update` takes precedence over `KOTLIN_CLI_DOWNLOAD_ROOT`.
+
+A mirror specified by an environment variable must keep the layout of the original location, because the Kotlin Toolchain appends the same relative paths to it.
+
 ## Uncharted customization territories
 
 !!! danger "Use at your own risk"
@@ -292,7 +323,7 @@ This is, again, not recommended — please use with care.
 
 ### docs/src/faq.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/faq.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/faq.md
 - HTML: https://kotlin-toolchain.org/dev/faq/
 
 ---
@@ -440,7 +471,7 @@ Yes! The Kotlin Toolchain now includes a preview of a plugin system. See the ded
 
 ### docs/src/getting-started/ide-setup.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/getting-started/ide-setup.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/getting-started/ide-setup.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/ide-setup/
 
 ---
@@ -472,7 +503,7 @@ description: This page describes how to set up your IDE to work with the Kotlin 
 
 ### docs/src/getting-started/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/getting-started/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/getting-started/index.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/index/
 
 ---
@@ -506,7 +537,7 @@ Ready to try the Kotlin Toolchain? Choose the right approach for you:
 
     ---
 
-    Use `./kotlin init` from the [CLI](../cli/index.md#installation), or create a new Kotlin project in IntelliJ IDEA.
+    Use `kotlin init` from the [CLI](../cli/index.md#installation), or create a new Kotlin project in IntelliJ IDEA.
 
 </div>
 
@@ -517,7 +548,7 @@ Ready to try the Kotlin Toolchain? Choose the right approach for you:
 
 ### docs/src/getting-started/migrating-from-gradle.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/getting-started/migrating-from-gradle.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/getting-started/migrating-from-gradle.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/migrating-from-gradle/
 
 ---
@@ -789,7 +820,7 @@ You can now remove your Gradle wrapper and configuration files.
 
 [^1]: The tasks in the Kotlin toolchain are internal. What you want to run is commands instead. You can use
 `kotlin --help` to learn about built-in commands, or run `kotlin show commands` to show the custom commands from plugins.
-[^2]: After setting up the [publishing configuration](../user-guide/publishing.md).
+[^2]: After setting up the [publishing configuration](../user-guide/publishing/libraries.md).
 
 ## Migration reference
 
@@ -934,7 +965,7 @@ Some popular frameworks or technologies that require a Gradle plugin have a buil
 * [Compose Multiplatform](../user-guide/builtin-tech/compose-multiplatform.md)
 * [kotlinx.serialization](../user-guide/builtin-tech/kotlinx-serialization.md)
 * [kotlinx.rpc](../user-guide/builtin-tech/kotlinx-rpc.md)
-* [KSP](../user-guide/advanced/ksp.md)
+* [KSP](../user-guide/builtin-tech/ksp/index.md)
 * [Ktor](../user-guide/builtin-tech/ktor.md)
 * [Spring](../user-guide/builtin-tech/spring.md)
 * [Lombok](../user-guide/builtin-tech/lombok.md)
@@ -1140,7 +1171,7 @@ setup entirely. Read more on the [Testing](../user-guide/testing.md) page.
 
 ### docs/src/getting-started/migrating-from-maven.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/getting-started/migrating-from-maven.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/getting-started/migrating-from-maven.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/migrating-from-maven/
 
 ---
@@ -1357,7 +1388,7 @@ The following Maven features are not handled by the converter and require manual
 
 ### docs/src/getting-started/tutorial.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/getting-started/tutorial.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/getting-started/tutorial.md
 - HTML: https://kotlin-toolchain.org/dev/getting-started/tutorial/
 
 ---
@@ -1769,7 +1800,7 @@ dependencies:
 
 settings:
   android:
-    namespace: com.example.app
+    applicationId: com.example.app
   compose:
     enabled: true
 ```
@@ -1967,7 +1998,7 @@ apply:
 
 settings:
   android:
-    namespace: com.example.app
+    applicationId: com.example.app
 ```
 
 ```yaml title="ios-app/module.yaml"
@@ -1990,7 +2021,7 @@ Check the [user guide](../user-guide/index.md) and explore [example projects]({{
 
 ### docs/src/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/index.md
 - HTML: https://kotlin-toolchain.org/dev/
 
 ---
@@ -2001,7 +2032,7 @@ hide:
 
 <div class="hero" markdown>
 
-<h1>The Kotlin Toolchain</h1>
+<h1>Kotlin Toolchain</h1>
 
 <p class="tagline">
 A unified entry point into Kotlin.
@@ -2015,26 +2046,15 @@ applications with a simple declarative configuration.
 
 ### :octicons-terminal-16: Command Line
 
-<div class="method-label">via SDKMAN</div>
+<div class="method-label">Install the CLI</div>
+
+--8<-- "includes/cli-install.md"
+
+<div class="method-label">Create your first project</div>
 
 ```shell
-sdk update
-sdk install kotlintoolchain
+kotlin new
 ```
-
-<div class="method-label">or via installer script</div>
-
-=== ":material-apple: macOS / :material-linux: Linux"
-
-    ```shell
-    curl -fsSL https://kotl.in/install.sh | sh
-    ```
-
-=== ":material-microsoft-windows: Windows"
-
-    ```powershell
-    powershell -ExecutionPolicy ByPass -c "irm 'https://kotl.in/install.ps1' | iex"
-    ```
 
 <div class="card-footer" markdown>
 [:octicons-arrow-right-16: CLI documentation](cli/index.md)
@@ -2046,7 +2066,7 @@ sdk install kotlintoolchain
 
 ### :intellij-jetbrains: IntelliJ IDEA
 
-Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850-kotlin-toolchain/) in IntelliJ IDEA 2026.1.2+
+Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850-kotlin-toolchain/) in IntelliJ IDEA 2026.2.3+
 
 **File → New → Project → Kotlin**
 
@@ -2102,7 +2122,7 @@ Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850
 
         settings:
           android:
-            namespace: com.example.app
+            applicationId: com.example.app
           compose: enabled
         ```
 
@@ -2128,6 +2148,7 @@ Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850
     dependencies:
       - $compose.foundation: exported
       - $compose.material3: exported
+      - $kotlin.serialization.json
 
     # Android-only dependencies
     dependencies@android:
@@ -2138,7 +2159,7 @@ Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850
     settings:
       # Enable Kotlin serialization
       kotlin:
-        serialization: json
+        serialization: enabled
 
       # Enable the Compose Multiplatform framework
       compose: enabled
@@ -2173,7 +2194,7 @@ The Kotlin Toolchain is [Alpha](https://kotlinlang.org/docs/components-stability
 
 ### docs/src/reference/module.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/reference/module.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/reference/module.md
 - HTML: https://kotlin-toolchain.org/dev/reference/module/
 
 ---
@@ -2473,8 +2494,8 @@ Read more in the [Testing](../user-guide/testing.md) section.
 
 | Attribute                     | Default                 | Description                                                                                                                                                                                                                                     |
 |-------------------------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `applicationId: string`       | (set from `namespace`)  | The ID for the application on a device and in the Google Play Store. [Read more](https://developer.android.com/build/configure-app-module#set-application-id).                                                                                       |
-| `namespace: string`           | `org.example.namespace` | A Kotlin or Java package name for the generated `R` and `BuildConfig` classes. [Read more](https://developer.android.com/build/configure-app-module#set-namespace).                                                                             |
+| `applicationId: string`       | (none; required for apps) |The ID for the application on a device and in the Google Play Store. It must not change across publications of the same application, choose wisely. If you need to change the package name for the generated `R` and `BuildConfig` classes, leave the `applicationId` untouched, and set the `namespace` explicitly. [Read more](https://developer.android.com/build/configure-app-module#set-application-id). |
+| `namespace: string`           | (app: `applicationId`; lib: derived from `group` and `artifactId`) | A Kotlin or Java package name for the generated `R` and `BuildConfig` classes. For applications, defaults to the `applicationId`. [Read more](https://developer.android.com/build/configure-app-module#set-namespace).                                                                         |
 | `compileSdk: object \| int`   | 37                      | The Android SDK version to compile the code against. The code can use only the Android APIs up to that API level. [Read more](https://developer.android.com/reference/tools/gradle-api/com/android/build/api/dsl/CommonExtension#compileSdk()). |
 | `targetSdk: int`              | (set from `compileSdk`) | The target API level for the application. [Read more](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html).                                                                                                               |
 | `minSdk: int`                 | 24                      | Minimum API level needed to run the application. [Read more](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html).                                                                                                        |
@@ -2484,6 +2505,7 @@ Read more in the [Testing](../user-guide/testing.md) section.
 | `resourcePackaging: object`   | (empty)                 | Configure how duplicate Java resources from dependencies are packaged in an Android app. See [Resolving duplicate Java resources](../user-guide/product-types/android-app.md#resolving-duplicate-java-resources).                               |
 | `abiFilters: string list`     | (all ABIs)              | The Android ABIs to package native libraries for. When unset, all ABIs are packaged. See [Filtering native library ABIs](../user-guide/product-types/android-app.md#filtering-native-library-abis). |
 | `parcelize: object \| string` | (disabled)              | Configure [Parcelize](https://developer.android.com/kotlin/parcelize).                                                                                                                                                                          |
+| `desugaring: object \| string` | (disabled)            | Configure [core library desugaring](https://developer.android.com/studio/write/java8-support) to use Java 8+ APIs, such as `java.time`, on older Android versions.                                                                              |
 | `buildToolsVersion: string`   | 37.0.0                  | Version of [SDK Build Tools](https://developer.android.com/tools/releases/build-tools) to use.                                                                                                                                                  |
 
 #### `settings.android.compileSdk`
@@ -2554,6 +2576,53 @@ settings:
     parcelize:
       enabled: true
       additionalAnnotations: [ com.example.MyCommonParcelize ]
+```
+
+#### `settings.android.desugaring`
+
+`settings.android.desugaring` configures [core library desugaring](https://developer.android.com/studio/write/java8-support),
+which makes Java 8+ APIs, such as `java.time`, available on older Android versions. In libraries, enabling it also
+declares this requirement for the applications that consume the library. The value can be the simple `enabled`
+string, or an object with the following attributes:
+
+| Attribute            | Default | Description |
+|----------------------|---------|-------------|
+| `enabled: boolean`   | `false` | Whether to enable core library desugaring. When enabled, Java 8+ APIs, such as `java.time`, can be used on Android versions that don't support them natively. |
+| `library: string`    | `com.android.tools:desugar_jdk_libs:2.1.5` | The [desugar_jdk_libs](https://github.com/google/desugar_jdk_libs) library that provides implementations of the desugared APIs, as `groupId:artifactId[:version]` Maven coordinates or a catalog reference. The version is optional and defaults to the version shown in the Default column. See below for choosing the artifact and the version. |
+
+**Choosing the `library`.** The artifact selects the set of the desugared APIs: the default `desugar_jdk_libs`
+covers the commonly used ones, such as `java.time`, `desugar_jdk_libs_nio` extends it with `java.nio` APIs,
+and `desugar_jdk_libs_minimal` includes the smallest set. The version can be omitted to use the default one.
+[Read more](https://d.android.com/r/tools/api-desugaring-flavors).
+
+The version determines which Java APIs are available on older Android devices:
+newer releases of [desugar_jdk_libs](https://github.com/google/desugar_jdk_libs/blob/master/CHANGELOG.md)
+include more of them. See also the [list of desugared APIs](https://developer.android.com/studio/write/java8-support-table).
+
+* The **default version** is kept compatible with the Android Gradle plugin used by the toolchain and is a
+  good choice in most cases.
+* A **newer version** includes all APIs from the older releases. If a dependency asks for one, the build
+  message names the minimal version to set.
+* An **older version** is never required, includes fewer APIs, and makes sense only as a deliberate choice,
+  such as a library keeping the requirement for its consumers low.
+
+In libraries, the chosen library coordinates are also declared to the applications that consume the
+library, so keeping the defaults is friendly to them as well.
+
+```yaml title="Short form"
+# Enables core library desugaring
+settings:
+  android:
+    desugaring: enabled
+```
+
+```yaml title="Full form"
+# Enables core library desugaring with a specific desugar_jdk_libs artifact and version
+settings:
+  android:
+    desugaring:
+      enabled: true
+      library: com.android.tools:desugar_jdk_libs_nio:2.0.3
 ```
 
 #### `settings.android.signing`
@@ -2749,7 +2818,7 @@ Read more about [testing support](../user-guide/testing.md).
 | `explicitApi: enum`              | `disable`                     | Enforce the [explicit API mode](https://kotlinlang.org/docs/whatsnew14.html#explicit-api-mode-for-library-authors) (`strict`, `warning`, or `disable`). Ignored for test sources. |
 | `freeCompilerArgs: string list`  | `[]`                          | Pass any [compiler option](https://kotlinlang.org/docs/compiler-reference.html#compiler-options) directly.                                                                        |
 | `jsPlainObjects: object \| enum` |                               | Enable the Kotlin JS-plain-objects compiler plugin.                                                                                                                               |
-| `ksp: object`                    |                               | Configure [Kotlin Symbol Processing](../user-guide/advanced/ksp.md).                                                                                                              |
+| `ksp: object`                    |                               | Configure [Kotlin Symbol Processing](../user-guide/builtin-tech/ksp/index.md).                                                                                                              |
 | `languageVersion: enum`          | (major.minor from `version`)  | Provide source compatibility with the specified version of Kotlin.                                                                                                                |
 | `linkerOptions: string list`     | `[]`                          | (Only for [native targets](https://kotlinlang.org/docs/native-target-support.html)) Additional arguments to pass to the linker during binary building.                            |
 | `noArg: object`                  |                               | Configure the [Kotlin no-arg compiler plugin](https://kotlinlang.org/docs/no-arg-plugin.html).                                                                                    |
@@ -2762,64 +2831,13 @@ Read more about [testing support](../user-guide/testing.md).
 | `suppressWarnings: boolean`      | `false`                       | Suppress the compiler from displaying warnings during compilation.                                                                                                                |
 | `verbose: boolean`               | `false`                       | Enable verbose logging output which includes details of the compilation process.                                                                                                  |
 
-The `serialization` attribute is an object with the following properties:
-
-| Attribute          | Default                       | Description                                                                                                                                                                           |
-|--------------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `enabled: boolean` | (enabled if `format` is set)  | Enable the `@Serializable` annotation processing, and add the core serialization library. When enabled, a built-in catalog for kotlinx.serialization format dependencies is provided. Automatically enabled when `format` is specified, `false` otherwise. |
-| `version: string`  | `1.11.0`                      | The version to use for the core serialization library and the serialization formats.                                                                                                  |
-| `format: string`   | `null` (only core lib)        | A shortcut for `enabled: true` and adding the given serialization format dependency. For instance, `json` adds the JSON format in addition to enabling serialization. Known formats: `json`, `json-io`, `json-okio`, `hocon`, `protobuf`, `cbor`, `properties`. |
-
-You can also use a short form and directly specify `serialization: enabled` or `serialization: json`.
-
 Examples:
 
-```yaml
-# Set Kotlin language version and opt-ins
+```yaml title="Set Kotlin language version and opt-ins"
 settings:
   kotlin:
     languageVersion: 2.3
     optIns: [ kotlin.io.path.ExperimentalPathApi ]
-```
-
-```yaml
-# Enable Kotlin Serialization with the JSON format
-settings:
-  kotlin:
-    serialization: json
-```
-
-```yaml
-# Enable Kotlin Serialization with the JSON format and a specific version
-settings:
-  kotlin:
-    serialization:
-      format: json
-      version: 1.9.0
-```
-
-```yaml
-# Enable Kotlin Serialization with multiple formats
-settings:
-  kotlin:
-    serialization: enabled
-
-dependencies:
-  - $kotlin.serialization.json
-  - $kotlin.serialization.protobuf
-```
-
-```yaml
-# Enable Kotlin Serialization with multiple formats and a specific version
-settings:
-  kotlin:
-    serialization:
-      enabled: true
-      version: 1.9.0
-
-dependencies:
-  - $kotlin.serialization.json
-  - $kotlin.serialization.protobuf
 ```
 
 #### `settings.kotlin.allOpen`
@@ -2922,7 +2940,7 @@ settings:
 
 #### `settings.kotlin.ksp`
 
-`settings.kotlin.ksp` configures the [Kotlin Symbol Processing mechanism](../user-guide/advanced/ksp.md),
+`settings.kotlin.ksp` configures the [Kotlin Symbol Processing mechanism](../user-guide/builtin-tech/ksp/index.md),
 which allows processing Kotlin source code with custom processors (usually to generate extra code).
 
 | Attribute                               | Default | Description                                                                                                              |
@@ -2951,6 +2969,54 @@ which enriches assertion failure messages with intermediate values.
 | `applyBom: boolean`                    | `true`   | Apply the kotlinx.rpc BOM to enforce dependency version alignment                                                                                        |
 | `version: string`                      | `0.10.4` | The version of kotlinx.rpc to use                                                                                                                        |
 | `annotationTypeSafetyEnabled: boolean` | `true`   | Controls `@Rpc` annotation type-safety compile-time checkers. Disabling is considered unsafe and is only needed when type-safety analysis fails on valid code. |
+
+#### `settings.kotlin.serialization`
+
+`settings.kotlin.serialization` configures [Kotlin serialization](https://github.com/Kotlin/kotlinx.serialization).
+The value can be the simple `enabled` string, or an object with the following attributes:
+
+| Attribute          | Default  | Description                                                                                                                                                                           |
+|--------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled: boolean` | `false`  | Enable the `@Serializable` annotation processing, and add the core serialization library. When enabled, a built-in catalog for kotlinx.serialization format dependencies is provided. |
+| `version: string`  | `1.11.0` | The version to use for the core serialization library and the serialization formats.                                                                                                  |
+
+!!! warning
+
+    The `serialization: json` shortcut and the `serialization.format` property are deprecated.
+    Use `serialization: enabled` with catalog dependencies instead.
+
+Examples:
+
+```yaml title="Short form with the JSON format"
+settings:
+  kotlin:
+    serialization: enabled
+
+dependencies:
+  - $kotlin.serialization.json
+```
+
+```yaml title="Multiple formats"
+settings:
+  kotlin:
+    serialization: enabled
+
+dependencies:
+  - $kotlin.serialization.json
+  - $kotlin.serialization.protobuf
+```
+
+```yaml title="Multiple formats and a specific version"
+settings:
+  kotlin:
+    serialization:
+      enabled: true
+      version: 1.11.0
+
+dependencies:
+  - $kotlin.serialization.json
+  - $kotlin.serialization.protobuf
+```
 
 ### `settings.ktor`
 
@@ -3008,7 +3074,7 @@ settings:
 ### `settings.publishing`
 
 `settings.publishing` configures the publication of the module to Maven repositories.
-Read more in the [Publishing](../user-guide/publishing.md) section.
+Read more in the [Publishing libraries](../user-guide/publishing/libraries.md) guide.
 
 | Attribute              | Default          | Description                                                                                                                                                                                                                                    |
 |------------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -3017,7 +3083,7 @@ Read more in the [Publishing](../user-guide/publishing.md) section.
 | `version: string`      | `null`           | Version of the published Maven artifact.                                                                                                                                                                                                      |
 | `artifactId: string`   | (module name)    | Base artifact ID of the published Maven artifacts (for multiplatform libraries, a suffix may be appended to distinguish artifacts from different platforms).                                                                                   |
 | `pom: object`          |                  | Custom metadata to configure in the published `pom.xml` file.                                                                                                                                                                                  |
-| `signArtifacts: boolean` | `false`        | If set to true, artifacts published to Maven repositories are signed with a private PGP signing key, and these signatures are published as extra artifacts. The key must be specified via the `KOTLIN_TOOLCHAIN_SIGNING_KEY` environment variable in the ASCII-armored format (and its passphrase, if any, via `KOTLIN_TOOLCHAIN_SIGNING_KEY_PASSPHRASE`). |
+| `signArtifacts: boolean` | `false`        | If set to true, artifacts published to Maven repositories (except Maven Local) are signed with a private PGP signing key, and these signatures are published as extra artifacts. The key must be specified via the `KOTLIN_TOOLCHAIN_SIGNING_KEY` environment variable in the ASCII-armored format (and its passphrase, if any, via `KOTLIN_TOOLCHAIN_SIGNING_KEY_PASSPHRASE`). If the key contains several usable signing subkeys, the one to sign with must be specified via `KOTLIN_TOOLCHAIN_SIGNING_KEY_ID`. |
 | `publishSources: boolean` | `false`       | If set to true, JARs with sources for each platform are published as extra artifacts.                                                                                                                                                          |
 | `checksums: enum list` | `[md5, sha1]`    | The list of checksums to publish for each artifact (possible values: `md5`, `sha1`, `sha256`, `sha512`). By default, only the checksums required by Maven Central are published to reduce the number of files.                                 |
 | `mavenCentral: object` | (disabled)       | Configures publication to Maven Central (via the Publish portal).                                                                                                                                                                              |
@@ -3044,10 +3110,12 @@ Maven Central publication, and is usually the same for the whole project, thus c
 
 `settings.publishing.mavenCentral` configures publication to Maven Central (via the Publish portal):
 
-| Attribute               | Default  | Description                                                                                                                                                                            |
-|-------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `enabled: boolean`      | `false`  | Enables publication to Maven Central, which can then be triggered using `kotlin publish mavenCentral`.                                                                                 |
-| `publishingMode: enum`  | `manual` | Whether the publication should be fully automated, or pause for manual verification. With `manual`, the publication pauses after validation of the uploaded deployment bundle and awaits a manual trigger from the Central Portal UI. With `auto`, it automatically continues and publishes the deployment without manual intervention. |
+| Attribute                | Default  | Description                                                                                                                                                                                                                                                                                                                             |
+|--------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled: boolean`       | `false`  | Enables publication to Maven Central, which can then be triggered using `kotlin publish mavenCentral`.                                                                                                                                                                                                                                  |
+| `publishingMode: enum`   | `manual` | Whether the publication should be fully automated, or pause for manual verification. With `manual`, the publication pauses after validation of the uploaded deployment bundle and awaits a manual trigger from the Central Portal UI. With `auto`, it automatically continues and publishes the deployment without manual intervention. |
+| `notifyKlibsIo: boolean` | `false`  | Enables sending automatic notifications to [klibs.io](https://klibs.io) after successfully publishing to Maven Central. It sends the library's Maven coordinates, so the project can be listed on the platform without waiting for the regular Maven Central scan. Works with Kotlin Multiplatform library modules only.                |
+
 
 ### `settings.springBoot`
 
@@ -3071,7 +3139,7 @@ settings:
 
 ### docs/src/reference/project.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/reference/project.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/reference/project.md
 - HTML: https://kotlin-toolchain.org/dev/reference/project/
 
 ---
@@ -3158,7 +3226,7 @@ Learn more about the [plugin structure](../user-guide/plugins/topics/structure.m
 
 ### docs/src/user-guide/advanced/java-annotation-processing.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/advanced/java-annotation-processing.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/advanced/java-annotation-processing.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/java-annotation-processing/
 
 ---
@@ -3180,7 +3248,7 @@ settings:
 This option is only available for java or android modules (it's a platform-specific).
 
 As with KSP, it's possible to reference a local Kotlin module as a processor. See the
-[KSP section](ksp.md#using-your-own-local-ksp-processor) for more information. Using library catalog entry is also supported.
+[KSP section](../builtin-tech/ksp/index.md#using-your-own-local-ksp-processor) for more information. Using library catalog entry is also supported.
 
 Some annotation processors can be customized by passing options.
 You can pass these options using the `processorOptions` map:
@@ -3198,7 +3266,7 @@ settings:
 
 ### docs/src/user-guide/advanced/jdk-provisioning.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/advanced/jdk-provisioning.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/advanced/jdk-provisioning.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/jdk-provisioning/
 
 ---
@@ -3410,7 +3478,7 @@ settings:
 
 ### docs/src/user-guide/advanced/kotlin-compiler-plugins.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/advanced/kotlin-compiler-plugins.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/advanced/kotlin-compiler-plugins.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/kotlin-compiler-plugins/
 
 ---
@@ -3668,152 +3736,9 @@ You can learn how to configure this plugin in the
     [KEFS guide for plugin authors](https://github.com/Mr3zee/kotlin-external-fir-support/blob/main/PLUGIN_AUTHORS.md).
 
 
-### docs/src/user-guide/advanced/ksp.md
-
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/advanced/ksp.md
-- HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/ksp/
-
----
-description: |
-  Kotlin Symbol Processing (KSP) is a tool that allows feeding Kotlin source code to processors, which can in turn use
-  this information to generate code, classes, or resources, for instance. The Kotlin Toolchain provides built-in support for KSP.
----
-# Kotlin Symbol Processing (KSP)
-
-[Kotlin Symbol Processing](https://kotlinlang.org/docs/ksp-overview.html) is a tool that allows feeding Kotlin source
-code to _processors_, which can in turn use this information to generate code, classes, or resources, for instance.
-The Kotlin Toolchain provides built-in support for KSP.
-
-Some popular libraries also include a KSP processor to enhance their capabilities, such as
-[Room](https://developer.android.com/jetpack/androidx/releases/room) or
-[Moshi](https://github.com/square/moshi#codegen).
-
-!!! info
-
-    The Kotlin Toolchain works with KSP2, so any processors used must be compatible with KSP2.
-    We’re expecting most processors to make this upgrade soon, as KSP1 is no longer part of KSP releases.
-    However, at the moment, you might still see some gaps in support, such as issues with native targets.
-
-To add KSP processors to your module, add their maven coordinates to the `settings.kotlin.ksp.processors` list:
-
-```yaml title="module.yaml"
-settings:
-  kotlin:
-    ksp:
-      processors:
-        - androidx.room:room-compiler:2.7.0-alpha12
-```
-
-## Multiplatform support
-
-In multiplatform modules, all settings from the `settings` section apply to all platforms by default, including KSP
-processors.
-If you only want to add KSP processors for a specific platform, use a `settings` block with a
-[`@platform` qualifier](../multiplatform.md#platform-qualifier):
-
-```yaml title="module.yaml"
-# the Room processor will only process code that compiles to the Android platform
-settings@android:
-  kotlin:
-    ksp:
-      processors:
-        - androidx.room:room-compiler:2.7.0-alpha12
-```
-
-!!! warning "Generated code is not available in common sources"
-
-    In multiplatform modules, KSP is called for each platform separately. This means that any code generated by KSP
-    processors will be available only for the corresponding platform. There is no way at the moment to access the
-    generated code from the common fragment (`src`) or intermediate fragments (e.g. `src@native`).
-
-    This limitation comes from the Kotlin compilation model and how KSP aligns with it. Please follow
-    [the relevant KSP issue](https://github.com/google/ksp/issues/567) for more information.
-
-## Customizing the KSP version
-
-The Kotlin Toolchain only supports KSP2 (the standalone tool), not the deprecated KSP1 implementation based compiler plugin.
-
-That said, you can use any version of KSP2 as follows:
-
-```yaml
-settings:
-  kotlin:
-    ksp:
-      version: 2.3.6
-```
-
-## Passing options to KSP processors
-
-Some processors can be customized by passing options. You can pass these options using the `processorOptions` section:
-
-```yaml
-settings:
-  kotlin:
-    ksp:
-      processors:
-        - androidx.room:room-compiler:2.7.0-alpha12
-      processorOptions:
-        room.schemaLocation: ./schema
-```
-
-Consult the documentation of the processor you want to use for more information about the available options.
-
-!!! note
-
-    Note: all options are passed to all processors by KSP. It's the processor's responsibility to use unique option names
-    to avoid clashes with other processor options.
-
-## Using your own local KSP processor
-
-You can implement your own processor in a Kotlin module as a regular JVM library, and then use it to process code from
-other modules in your project.
-
-Usually, 3 modules are involved:
-
-* The _processor_ module, with the actual processor implementation
-* The _annotations_ module (optional), which contains annotations that the processor looks for in the consumer code
-* The _consumer_ module, which uses KSP with the custom processor
-
-The annotations module is a very simple JVM library module without any required dependencies (it's just here to provide
-some annotations to work with, if necessary):
-
-```yaml title="my-processor-annotations/module.yaml"
-product: jvm/lib
-```
-
-The processor module is a JVM library with a `compile-only` dependency on KSP facilities, and on the custom annotations
-module:
-
-```yaml title="my-processor/module.yaml"
-product: jvm/lib
-
-dependencies:
-  - //my-processor-annotations
-  - com.google.devtools.ksp:symbol-processing-api:2.0.21-1.0.25: compile-only
-```
-
-The consumer module adds a regular dependency on the annotations module, and a reference to the processor module:
-
-```yaml title="my-consumer/module.yaml"
-product: jvm/app
-
-dependencies:
-  - //my-processor-annotations # to be able to annotate the consumer code
-
-settings:
-  kotlin:
-    ksp:
-      processors:
-        - //my-processor # path to the module implementing the KSP processor
-```
-
-For more information about how to write your own processor, check out
-[the KSP documentation](https://kotlinlang.org/docs/ksp-quickstart.html#create-a-processor-of-your-own).
-
-
 ### docs/src/user-guide/advanced/maven-like-layout.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/advanced/maven-like-layout.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/advanced/maven-like-layout.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/maven-like-layout/
 
 ---
@@ -3870,7 +3795,7 @@ layout: maven-like
 
 ### docs/src/user-guide/advanced/maven-plugins.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/advanced/maven-plugins.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/advanced/maven-plugins.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/maven-plugins/
 
 ---
@@ -4075,7 +4000,7 @@ but some plugins may rely on Maven APIs or capabilities that the Kotlin Toolchai
 
 ### docs/src/user-guide/advanced/native-interop.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/advanced/native-interop.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/advanced/native-interop.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/advanced/native-interop/
 
 ---
@@ -4128,7 +4053,7 @@ See the [relevant docs](../plugins/topics/tasks.md#contributing-back-to-the-buil
 
 ### docs/src/user-guide/basics.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/basics.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/basics.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/basics/
 
 ---
@@ -4437,7 +4362,7 @@ Such paths are resolved against **the directory containing the `.yaml` file wher
 
 ### docs/src/user-guide/builtin-tech/compose-multiplatform.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/builtin-tech/compose-multiplatform.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/builtin-tech/compose-multiplatform.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/compose-multiplatform/
 
 ---
@@ -4480,7 +4405,7 @@ Use `settings.compose.enabled` to enable Compose:
 
     settings:
       android:
-        namespace: com.example.app
+        applicationId: com.example.app
       compose: enabled # (2)!
     ```
 
@@ -4614,7 +4539,7 @@ settings:
 ```
 This will make the generated accessors and the `Res` class `public`.
 
-## :jetbrains-compose-hot-reload: Compose Hot Reload (experimental)
+## :jetbrains-compose-hot-reload: Compose Hot Reload
 
 The Kotlin Toolchain supports [Compose Hot Reload](https://github.com/JetBrains/compose-hot-reload), allowing you to see UI changes in
 real-time without restarting the application. This significantly improves the developer experience by shortening the
@@ -4624,33 +4549,41 @@ feedback loop during UI development.
 
 === ":jetbrains-intellij-idea: IntelliJ IDEA"
 
-    To run your application with Compose Hot Reload, simply select the *Run with Compose Hot Reload* option from the
+    To run your application with Compose Hot Reload, simply run your app from the
     IDE:
 
     ![Compose Hot Reload special mode of running application](../../images/hot-reload-run-option.png)
 
-    ??? question "I don't have this option, please help!"
+    ??? question "My application doesn't start in the Hot Reload mode, please help!"
 
         Make sure that:
 
           * you have installed and enabled the [Kotlin Toolchain IDEA plugin](https://plugins.jetbrains.com/plugin/31850-kotlin-toolchain)
           * your module has the `jvm` target (`jvm/app` product type, or a library module with `jvm` platform)
 
+    ??? question "How do I run my app without the Hot Reload mode in the IDE?"
+
+        Modify the run configuration by removing the "Compose Hot Reload" option:
+
+        ![Compose Hot Reload setting in Run configuration](../../images/hot-reload-disable-in-ide.png)
+
     In this mode, IDEA will recompile and hot-reload your application based on file system changes.
 
 === ":octicons-terminal-16: CLI"
 
-    To run your application with Compose Hot Reload from the [command line](../../cli/index.md), use the
-    `--compose-hot-reload` flag:
+    If your JVM application has Compose enabled, you can simply run it from the [command line](../../cli/index.md) with the `kotlin run` command.
+
+    It is equivalent to running it with the `--compose-hot-reload` flag:
 
     ```shell
     ./kotlin run --compose-hot-reload
     ```
 
-    !!! warning "No file-system watch"
+    If you want to run it without Compose Hot Reload, use the `--no-compose-hot-reload` flag:
 
-        At the moment, the Kotlin CLI doesn't watch the file system for changes, so the only way to reap the benefits
-        of Compose Hot Reload is to run the application from the IDE.
+    ```shell
+    ./kotlin run --no-compose-hot-reload
+    ```
 
 When you run your application with Compose Hot Reload enabled:
 
@@ -4658,6 +4591,7 @@ When you run your application with Compose Hot Reload enabled:
   hot-swap capabilities
 - The Java agent for Compose Hot Reload is attached during execution
 - A small Compose Hot Reload devtools icon appears next to the application window, indicating that the feature is active
+- A file watcher is attached to detect changes in your source files and automatically recompile the application
 
 ![Compose Hot Reload dev tools](../../images/hot-reload-devtools.png)
 
@@ -4707,6 +4641,35 @@ A clickable gutter icon will appear on the left side of the composable.
     }
     ```
 
+### Connect an AI agent
+
+Compose Hot Reload provides an [MCP](https://modelcontextprotocol.io) server that lets an AI agent inspect the
+composables of the running application (including screenshots of them), trigger hot reloads, and interact with the
+UI by triggering actions such as button clicks, typing text, and scrolling.
+This is much faster than taking OS screenshots of the desktop app or using mobile simulators.
+
+Start your application with `./kotlin run --compose-hot-reload` (or the *Run with Compose Hot Reload* option in the IDE),
+and configure your agent to launch the MCP server with the `compose-hot-reload-mcp-server` command.
+Most agents read this configuration from an `.mcp.json` file in the project root:
+
+```json
+{
+  "mcpServers": {
+    "Compose Hot Reload": {
+      "command": "./kotlin",
+      "args": [
+        "compose-hot-reload-mcp-server"
+      ]
+    }
+  }
+}
+```
+
+!!! note
+
+    The MCP server requires Compose Hot Reload `1.2.0` or later. It finds the running application via the
+    build directory, so if you customize it, use the same build directory for `run --compose-hot-reload`.
+
 ### Custom Compose Hot Reload version
 
 You can optionally customize the version of Compose Hot Reload used by the Kotlin Toolchain this way:
@@ -4723,7 +4686,7 @@ settings:
 
 ### docs/src/user-guide/builtin-tech/kotlinx-rpc.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/builtin-tech/kotlinx-rpc.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/builtin-tech/kotlinx-rpc.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/kotlinx-rpc/
 
 ---
@@ -4756,7 +4719,7 @@ This will automatically:
 
 ### docs/src/user-guide/builtin-tech/kotlinx-serialization.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/builtin-tech/kotlinx-serialization.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/builtin-tech/kotlinx-serialization.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/kotlinx-serialization/
 
 ---
@@ -4769,36 +4732,38 @@ description: |
 [Kotlin Serialization](https://github.com/Kotlin/kotlinx.serialization) is the official multiplatform and multi-format
 serialization library for Kotlin.
 
-If you need to (de)serialize Kotlin classes to/from JSON, you can enable Kotlin Serialization it in its simplest form:
+To (de)serialize Kotlin classes to/from JSON, enable Kotlin Serialization and add the format dependency:
 ```yaml
 settings:
   kotlin:
-    serialization: json  # JSON or other format
+    serialization: enabled # configures the compiler and serialization runtime library
+
+dependencies:
+  - $kotlin.serialization.json  # JSON or other format
 ```
-This snippet configures the compiler to process `@Serializable` classes, and adds dependencies on the serialization
+This configures the compiler to process `@Serializable` classes, and adds dependencies on the serialization
 runtime and JSON format libraries.
 
-You can also customize the version of the Kotlin Serialization libraries using the full form of the configuration:
+You can also customize the version of the Kotlin Serialization libraries using the full form:
 
 ```yaml
 settings:
   kotlin:
     serialization:
-      format: json
-      version: 1.7.3
+      enabled: true
+      version: 1.11.0
 ```
 
-## More control over serialization formats
+!!! warning
 
-If you don't need serialization format dependencies or if you need more control over them, you can use the following:
-```yaml
-settings:
-  kotlin:
-    serialization: enabled # configures the compiler and serialization runtime library
-```
-This snippet on its own only configures the compiler and the serialization runtime library, but doesn't add any format
-dependency. However, it adds a built-in catalog with official serialization formats libraries, which you can use in
-your `dependencies` section. This is useful in multiple cases:
+    The `serialization: json` shortcut and the `serialization.format` property are deprecated.
+    Use `serialization: enabled` with catalog dependencies instead.
+
+## Serialization formats
+
+`serialization: enabled` only configures the compiler and the serialization runtime library, but doesn't add any format
+dependency. It adds a built-in catalog with official serialization formats libraries, which you can use in
+your `dependencies` section. This gives you control in multiple cases:
 
 * if you need a format dependency only in tests:
   ```yaml
@@ -4842,9 +4807,264 @@ your `dependencies` section. This is useful in multiple cases:
   ```
 
 
+### docs/src/user-guide/builtin-tech/ksp/index.md
+
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/builtin-tech/ksp/index.md
+- HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/ksp/index/
+
+---
+description: |
+  Kotlin Symbol Processing (KSP) is a tool that allows feeding Kotlin source code to processors, which can in turn use
+  this information to generate code, classes, or resources, for instance. The Kotlin Toolchain provides built-in support for KSP.
+---
+# Kotlin Symbol Processing (KSP)
+
+[Kotlin Symbol Processing](https://kotlinlang.org/docs/ksp-overview.html) is a tool that allows feeding Kotlin source
+code to _processors_, which can in turn use this information to generate code, classes, or resources, for instance.
+The Kotlin Toolchain provides built-in support for KSP.
+
+Some popular libraries also include a KSP processor to enhance their capabilities, such as
+[Room](room.md) or
+[Moshi](https://github.com/square/moshi#codegen).
+
+!!! info
+
+    The Kotlin Toolchain works with KSP2, so any processors used must be compatible with KSP2.
+    We’re expecting most processors to make this upgrade soon, as KSP1 is no longer part of KSP releases.
+    However, at the moment, you might still see some gaps in support, such as issues with native targets.
+
+To add KSP processors to your module, add their maven coordinates to the `settings.kotlin.ksp.processors` list:
+
+```yaml title="module.yaml"
+settings:
+  kotlin:
+    ksp:
+      processors:
+        - androidx.room:room-compiler:2.7.0-alpha12
+```
+
+## Multiplatform support
+
+In multiplatform modules, all settings from the `settings` section apply to all platforms by default, including KSP
+processors.
+If you only want to add KSP processors for a specific platform, use a `settings` block with a
+[`@platform` qualifier](../../multiplatform.md#platform-qualifier):
+
+```yaml title="module.yaml"
+# the Room processor will only process code that compiles to the Android platform
+settings@android:
+  kotlin:
+    ksp:
+      processors:
+        - androidx.room:room-compiler:2.7.0-alpha12
+```
+
+!!! warning "Generated code is not available in common sources"
+
+    In multiplatform modules, KSP is called for each platform separately. This means that any code generated by KSP
+    processors will be available only for the corresponding platform. There is no way at the moment to access the
+    generated code from the common fragment (`src`) or intermediate fragments (e.g. `src@native`).
+
+    This limitation comes from the Kotlin compilation model and how KSP aligns with it. Please follow
+    [the relevant KSP issue](https://github.com/google/ksp/issues/567) for more information.
+
+## Customizing the KSP version
+
+The Kotlin Toolchain only supports KSP2 (the standalone tool), not the deprecated KSP1 implementation based compiler plugin.
+
+That said, you can use any version of KSP2 as follows:
+
+```yaml
+settings:
+  kotlin:
+    ksp:
+      version: 2.3.6
+```
+
+## Passing options to KSP processors
+
+Some processors can be customized by passing options. You can pass these options using the `processorOptions` section:
+
+```yaml
+settings:
+  kotlin:
+    ksp:
+      processors:
+        - androidx.room:room-compiler:2.7.0-alpha12
+      processorOptions:
+        room.schemaLocation: ./schema
+```
+
+Consult the documentation of the processor you want to use for more information about the available options.
+
+!!! note
+
+    Note: all options are passed to all processors by KSP. It's the processor's responsibility to use unique option names
+    to avoid clashes with other processor options.
+
+## Using your own local KSP processor
+
+You can implement your own processor in a Kotlin module as a regular JVM library, and then use it to process code from
+other modules in your project.
+
+Usually, 3 modules are involved:
+
+* The _processor_ module, with the actual processor implementation
+* The _annotations_ module (optional), which contains annotations that the processor looks for in the consumer code
+* The _consumer_ module, which uses KSP with the custom processor
+
+The annotations module is a very simple JVM library module without any required dependencies (it's just here to provide
+some annotations to work with, if necessary):
+
+```yaml title="my-processor-annotations/module.yaml"
+product: jvm/lib
+```
+
+The processor module is a JVM library with a `compile-only` dependency on KSP facilities, and on the custom annotations
+module:
+
+```yaml title="my-processor/module.yaml"
+product: jvm/lib
+
+dependencies:
+  - //my-processor-annotations
+  - com.google.devtools.ksp:symbol-processing-api:2.0.21-1.0.25: compile-only
+```
+
+The consumer module adds a regular dependency on the annotations module, and a reference to the processor module:
+
+```yaml title="my-consumer/module.yaml"
+product: jvm/app
+
+dependencies:
+  - //my-processor-annotations # to be able to annotate the consumer code
+
+settings:
+  kotlin:
+    ksp:
+      processors:
+        - //my-processor # path to the module implementing the KSP processor
+```
+
+For more information about how to write your own processor, check out
+[the KSP documentation](https://kotlinlang.org/docs/ksp-quickstart.html#create-a-processor-of-your-own).
+
+
+### docs/src/user-guide/builtin-tech/ksp/room.md
+
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/builtin-tech/ksp/room.md
+- HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/ksp/room/
+
+# Room
+
+[Room](https://developer.android.com/training/data-storage/room) is the persistence library that provides an abstraction
+layer over SQLite allowing your applications to store relevant data locally.
+
+Its components include a runtime library and a KSP processor that should be configured in your module file.
+
+## Configuring Room
+
+You can use [a library catalog](../../../user-guide/dependencies.md#library-catalogs) to simplify further declaration of dependencies in module files:
+
+```toml title="libs.versions.toml"
+[versions]
+room3 = "3.0.3"
+sqlite = "2.7.1"
+
+[libraries]
+androidx-room3-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room3" }
+androidx-room3-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room3" }
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+```
+
+After that, add the runtime dependency and the KSP processor to the module file:
+
+```yaml title="module.yaml"
+product:
+  type: kmp/lib
+  platforms: [ android, iosArm64, iosSimulatorArm64, jvm ]
+
+dependencies:
+  - $libs.androidx.room3.runtime
+  - $libs.androidx.sqlite.bundled
+
+settings:
+  kotlin:
+    ksp:
+      processors:
+        - $libs.androidx.room3.compiler
+```
+
+### Export schemas
+
+Room exports the database schema as a JSON file. It is recommended to store those files in your version control system.
+To specify the schema directory, you need to pass the `room.schemaLocation` argument to the KSP processor:
+
+```yaml
+settings:
+  kotlin:
+    ksp:
+      processors:
+        - $libs.androidx.room3.compiler
+      processorOptions:
+        room.schemaLocation: ./schemas
+```
+
+!!! warning "Separating schema locations"
+
+    In multiplatform modules, KSP is called for each platform separately. This means that several compilations can write
+    to the JSON file concurrently, possibly corrupting it. At the moment, you have to separate schema location for each
+    of the target platforms via using the `@platform` qualifiers:
+
+    ```yaml title="module.yaml"
+        product:
+            type: kmp/lib
+            platforms: [ android, iosArm64, iosSimulatorArm64, jvm ]
+
+        # ...
+
+        settings@android:
+          kotlin:
+            ksp:
+              processorOptions:
+                room.schemaLocation: ./schemas@android
+
+        settings@iosArm64:
+          kotlin:
+            ksp:
+              processorOptions:
+                room.schemaLocation: ./schemas@iosArm64
+
+        settings@iosSimulatorArm64:
+          kotlin:
+            ksp:
+              processorOptions:
+                room.schemaLocation: ./schemas@iosSimulatorArm64
+
+        settings@jvm:
+          kotlin:
+            ksp:
+              processorOptions:
+                room.schemaLocation: ./schemas@jvm
+    ```
+
+    Note that this is required even if your schemas are shared between all platforms.
+    This limitation comes from the Kotlin compilation model and how KSP aligns with it. Please follow
+    [the relevant KSP issue](https://github.com/google/ksp/issues/567) for more information.
+
+    In the meantime, we'll search for the possible solution to remove this boilerplate. You can follow
+    [the releavent issue in our issue tracker](https://youtrack.jetbrains.com/issue/KTC-6081).
+
+## Additional resources
+
+!!! example "Example: [Room with KMP]({{ examples_base_url }}/compose-multiplatform-room)"
+
+For the latest information on Room, please refer to the [official documentation](https://developer.android.com/training/data-storage/room)
+ and the [KMP Room guide](https://developer.android.com/kotlin/multiplatform/room#defining-database).
+
 ### docs/src/user-guide/builtin-tech/ktor.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/builtin-tech/ktor.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/builtin-tech/ktor.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/ktor/
 
 ---
@@ -4890,7 +5110,7 @@ settings:
 
 ### docs/src/user-guide/builtin-tech/lombok.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/builtin-tech/lombok.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/builtin-tech/lombok.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/lombok/
 
 ---
@@ -4922,7 +5142,7 @@ settings:
 
 ### docs/src/user-guide/builtin-tech/spring.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/builtin-tech/spring.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/builtin-tech/spring.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/builtin-tech/spring/
 
 ---
@@ -4981,7 +5201,7 @@ settings:
 
 ### docs/src/user-guide/dependencies.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/dependencies.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/dependencies.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/dependencies/
 
 ---
@@ -5381,7 +5601,7 @@ repositories:
 ```
 
 This is handy to consume libraries that you install locally, for example while testing them before a release.
-The same URL can also be used to [publish](publishing.md#publishing-to-the-local-maven-repository) into it.
+The same URL can also be used to [publish](publishing/libraries.md#publishing-to-the-local-maven-repository) into it.
 
 ### Authentication
 
@@ -5547,7 +5767,7 @@ fun sha256(value: String): String {
 
 ### Publishing libraries with SwiftPM dependencies
 
-When a [published library](publishing.md) declares SwiftPM dependencies, they are published alongside its artifacts so
+When a [published library](publishing/libraries.md) declares SwiftPM dependencies, they are published alongside its artifacts so
 that consumers of the library know which Swift packages they have to fetch and link. Nothing needs to be configured for
 this: the SwiftPM dependencies of the library are described in an additional `-swiftpm-metadata.json` artifact, in the
 same format as the one published by the Kotlin Gradle Plugin.
@@ -5565,7 +5785,7 @@ are published by those dependencies and are collected by walking the whole depen
 
 ### docs/src/user-guide/index.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/index.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/index.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/index/
 
 ---
@@ -5588,7 +5808,7 @@ For a more hands-on experience, check out the [Getting started](../getting-start
 
 ### docs/src/user-guide/multiplatform.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/multiplatform.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/multiplatform.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/multiplatform/
 
 ---
@@ -5860,7 +6080,7 @@ product: android/app
 
 settings@android:    # settings to be used for Android target platform
   android:           # Android toolchain settings
-    namespace: com.example.app
+    applicationId: com.example.app
     compileSdk: 33
   kotlin:        # Kotlin toolchain settings
     languageVersion: 2.3
@@ -5874,7 +6094,7 @@ product: android/app
 
 settings:
   android:           # Android toolchain settings
-    namespace: com.example.app
+    applicationId: com.example.app
     compileSdk: 33
   kotlin:        # Kotlin toolchain settings
     languageVersion: 2.3
@@ -5982,7 +6202,7 @@ See more in the dedicated [Swift support](product-types/ios-app.md#swift-support
 
 ### docs/src/user-guide/plugins/overview.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/plugins/overview.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/plugins/overview.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/overview/
 
 ---
@@ -6062,7 +6282,7 @@ For more information on these features, see the KDocs on these built‑in config
 
 ### docs/src/user-guide/plugins/quick-start.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/plugins/quick-start.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/plugins/quick-start.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/quick-start/
 
 ---
@@ -6527,7 +6747,7 @@ If you haven't already, check the more detailed reference on the specific topics
 
 ### docs/src/user-guide/plugins/topics/checks.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/plugins/topics/checks.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/plugins/topics/checks.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/checks/
 
 ---
@@ -6591,7 +6811,7 @@ checks:
 
 ### docs/src/user-guide/plugins/topics/configuration.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/plugins/topics/configuration.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/plugins/topics/configuration.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/configuration/
 
 ---
@@ -6816,7 +7036,7 @@ And in this case an **explicit YAML type tag** is required to communicate the ex
 
 ### docs/src/user-guide/plugins/topics/custom-commands.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/plugins/topics/custom-commands.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/plugins/topics/custom-commands.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/custom-commands/
 
 ---
@@ -6870,7 +7090,7 @@ commands:
 
 ### docs/src/user-guide/plugins/topics/references.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/plugins/topics/references.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/plugins/topics/references.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/references/
 
 ---
@@ -7045,7 +7265,7 @@ tasks:
 
 ### docs/src/user-guide/plugins/topics/structure.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/plugins/topics/structure.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/plugins/topics/structure.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/structure/
 
 ---
@@ -7138,7 +7358,7 @@ Plugins can be enabled and [configured](configuration.md#plugin-settings) like t
 
 ### docs/src/user-guide/plugins/topics/tasks.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/plugins/topics/tasks.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/plugins/topics/tasks.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/plugins/topics/tasks/
 
 ---
@@ -7506,7 +7726,7 @@ plugin samples in the `build-sources` directory of the Kotlin project.
 
 ### docs/src/user-guide/product-types/android-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/android-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/android-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/android-app/
 
 ---
@@ -7728,52 +7948,8 @@ relative `storeFile` path is resolved from the module directory, so run `generat
 
 ## Publishing
 
-Publish an `android/app` module to Google Play as a signed Android App Bundle (AAB). You need a Google Play Console
-developer account.
-
-### Configure the application
-
-Set a unique application ID and an initial version in `android-app/module.yaml`:
-
-```yaml title="android-app/module.yaml"
-product: android/app
-
-settings:
-  android:
-    applicationId: com.example.myapp
-    versionCode: 1
-    versionName: "1.0"
-```
-
-The `applicationId` uniquely identifies the application in Google Play and cannot be changed after you upload the
-first artifact.
-
-Before uploading the application:
-
-1. [Prepare signing](#signing): create `android-app/keystore.properties` and generate the upload key in
-   `android-app/release.keystore`.
-2. [Package the application](#packaging) with `kotlin package -m android-app`. This produces a signed release AAB and
-   prints its path. Use that AAB for the upload.
-
-### Upload the bundle
-
-If you haven't created the application yet, open [Google Play Console](https://play.google.com/console/) and select
-**Create app** to set it up before uploading your first bundle.
-
-Open the application in Google Play Console, go to **Test and release**, and select the appropriate testing or
-production track. Create a release and upload the generated `.aab` file.
-
-Google Play validates and processes the bundle before making the release available to testers or users.
-
-!!! note "For future uploads"
-
-    Increase `versionCode` in `android-app/module.yaml` before every new upload: Google Play rejects bundles with a
-    previously used version code. Update the user-facing `versionName` when publishing a new application version.
-
-### Build from IntelliJ IDEA or Android Studio
-
-Generating a signed bundle from **Build | Generate Signed App Bundle or APK** is not supported for Kotlin Toolchain
-projects yet. Use the Kotlin CLI to create the AAB.
+See the [Publishing an Android application](../publishing/android-application.md) guide to publish your application
+to Google Play.
 
 ## Parcelize
 
@@ -7837,6 +8013,24 @@ settings:
 ```
 
 
+## Core library desugaring
+
+Java 8+ APIs, such as `java.time` or `java.util.stream`, are not available on older Android versions.
+[Core library desugaring](https://developer.android.com/studio/write/java8-support) makes them available by
+rewriting their usages to a backported implementation bundled into the app. Enable it as follows:
+
+```yaml
+settings:
+  android:
+    desugaring: enabled
+```
+
+The bundled [desugar_jdk_libs](https://github.com/google/desugar_jdk_libs) library can be replaced with the
+`library` option, see the [settings reference](../../reference/module.md#settingsandroiddesugaring)
+for details. In libraries, enabling desugaring also declares the requirement for the
+applications that consume them, so those applications are asked to enable desugaring as well.
+
+
 ## Google Services and Firebase
 
 To enable the [`google-services` plugin](https://developers.google.com/android/guides/google-services-plugin), place
@@ -7854,7 +8048,7 @@ This file will be found and consumed automatically.
 
 ### docs/src/user-guide/product-types/ios-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/ios-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/ios-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/ios-app/
 
 ---
@@ -7969,113 +8163,49 @@ This framework is built from:
 
     All declarations from the source Kotlin code are accessible to Swift, but external dependencies are not.
 
+## Packaging
+
+On macOS, `kotlin package` (or `kotlin package --format=ipa`) archives the application with `xcodebuild archive` and
+exports a signed `.ipa` with `xcodebuild -exportArchive`. The `.ipa` is placed at
+`build/packages/ipa/<module-name>-<variant>.ipa`, for example `build/packages/ipa/ios-app-release.ipa`.
+
+A development team must be selected in the Xcode project (**Signing & Capabilities**). The signing style (automatic or
+manual) is taken from the Xcode project settings, and `-allowProvisioningUpdates` is always passed so that
+automatic signing can create or refresh provisioning profiles.
+
+Use `--ipa-export-options-plist-path` to supply an existing `ExportOptions.plist` file. The file is passed unchanged to
+`xcodebuild -exportArchive`, so it can configure the export method, signing, and other Xcode export options. For example:
+
+```bash
+kotlin package --format=ipa --ipa-export-options-plist-path=ios-app/ExportOptions.plist
+```
+
+Manual signing requires `--ipa-export-options-plist-path`; provide a plist with the provisioning profile mappings for your app.
+Without this option, development export options (`method=debugging`, `destination=export`) are generated for automatic
+signing from the Xcode project signing settings. Development exports work with a free Apple ID (Personal Team) for installing on local devices;
+App Store Connect and ad hoc exports require a paid Apple Developer Program team.
+
+For headless, cloud-managed signing, set the following environment variables:
+
+| Environment variable                  | Description                                                |
+|---------------------------------------|------------------------------------------------------------|
+| `KOTLIN_TOOLCHAIN_ASC_KEY_PATH`        | Path to the App Store Connect API private key (`.p8` file). |
+| `KOTLIN_TOOLCHAIN_ASC_KEY_ID`          | App Store Connect API key ID.                               |
+| `KOTLIN_TOOLCHAIN_ASC_KEY_ISSUER_ID`   | App Store Connect API key issuer ID.                        |
+
+These variables must be provided together when IPA packaging is selected; other package formats ignore them.
+This is the recommended setup for App Store Connect exports and CI.
+Without them, the Apple account signed into Xcode is used.
+
 ## Publishing
 
-The Kotlin Toolchain creates a regular Xcode project for an `ios/app` module. Use that project to configure
-signing, create a release archive, and upload the application to App Store Connect.
-
-You need a Mac with Xcode and an [Apple Developer Program](https://developer.apple.com/programs/) membership.
-
-### Prepare the application
-
-Open the `module.xcodeproj` file of the iOS application module in Xcode, for example:
-
-```bash
-open ios-app/module.xcodeproj
-```
-
-In the project navigator, select the project and then the application target. Configure the following settings before
-creating an archive:
-
-1. Under **Signing & Capabilities**, select your development team and replace the default bundle identifier with a
-   unique identifier for your application.
-2. Under **General | Minimum Deployments**, select the oldest iOS version that your application supports.
-3. Under **Info | Custom iOS Target Properties | Supported interface orientations**, keep only the orientations your
-   application supports.
-4. Add an `AppIcon` asset catalog under the module's `src` directory and provide the application icon. A 1024×1024
-   image is sufficient when the asset uses Xcode's single-size app icon format.
-5. Under **General | Identity**, set the public-facing **Version** and the unique **Build** number.
-
-!!! warning "Use a new build number for every upload"
-
-    App Store Connect rejects another upload with the same version and build number. Increase the **Build** value
-    (`CFBundleVersion`) before every upload. Increase **Version** (`CFBundleShortVersionString`) when publishing a new
-    application version.
-
-Register the same bundle identifier in
-[Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/bundleId/add/bundle),
-then [create the application in App Store Connect](https://appstoreconnect.apple.com/apps). The bundle identifier in
-Xcode, the registered identifier, and the App Store Connect application must match.
-
-### Distribute from the command line
-
-You can ask your coding agent to archive and upload the iOS application to TestFlight, or run the commands below
-manually. Run them from the Kotlin project root and replace the module path and scheme if they differ in your project.
-You can list the available schemes with:
-
-```bash
-xcodebuild -list -project ios-app/module.xcodeproj
-```
-
-Create a release archive:
-
-```bash
-xcodebuild \
-  -project ios-app/module.xcodeproj \
-  -scheme app \
-  -configuration Release \
-  -destination 'generic/platform=iOS' \
-  -archivePath build/release/ios-app.xcarchive \
-  -allowProvisioningUpdates \
-  archive
-```
-
-Create `ios-app/ExportOptions.plist` to configure an App Store Connect upload:
-
-```xml title="ios-app/ExportOptions.plist"
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>method</key>
-    <string>app-store-connect</string>
-    <key>destination</key>
-    <string>upload</string>
-    <key>signingStyle</key>
-    <string>automatic</string>
-</dict>
-</plist>
-```
-
-Export and upload the archive:
-
-```bash
-xcodebuild -exportArchive \
-  -archivePath build/release/ios-app.xcarchive \
-  -exportOptionsPlist ios-app/ExportOptions.plist \
-  -exportPath build/release/export \
-  -allowProvisioningUpdates
-```
-
-With `destination` set to `upload`, the export command uploads the application to App Store Connect. After Apple
-finishes processing the build, it becomes available in App Store Connect and can be assigned to TestFlight testers.
-
-### Distribute from Xcode
-
-You can perform the same archive and upload steps in Xcode:
-
-1. In the macOS menu bar, select **Product | Archive**.
-2. After the archive is created successfully, Xcode opens the Organizer window. Select the new archive and click
-   **Distribute App**.
-3. Select **App Store Connect**, then follow the upload flow.
-
-After Apple finishes processing the build, continue in App Store Connect to distribute it through TestFlight or submit
-it for App Store review.
+See the [Publishing an iOS application](../publishing/ios-application.md) guide to publish your application
+to App Store Connect and TestFlight.
 
 
 ### docs/src/user-guide/product-types/js-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/js-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/js-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/js-app/
 
 ---
@@ -8151,7 +8281,7 @@ There is no extra packaging facilities at the moment, and the `package` command 
 
 ### docs/src/user-guide/product-types/jvm-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/jvm-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/jvm-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/jvm-app/
 
 ---
@@ -8233,7 +8363,7 @@ It provides a convenient, runnable self-contained deployment unit that includes 
 
 ### docs/src/user-guide/product-types/jvm-lib.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/jvm-lib.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/jvm-lib.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/jvm-lib/
 
 ---
@@ -8276,7 +8406,7 @@ my-module/
 
 The `kotlin package` command isn't defined _by default_ for JVM libraries.
 
-If [publishing](../publishing.md) to Maven Central is enabled, then `kotlin package` creates a Maven Central ZIP bundle
+If [publishing](../publishing/libraries.md) to Maven Central is enabled, then `kotlin package` creates a Maven Central ZIP bundle
 that is ready to be uploaded to the Central Portal.
 More specifically, enabling Maven Central publication provides the `maven-central-bundle` packaging format, and because
 it's the only one, it means the `kotlin package` command is effectively `kotlin package --format=maven-central-bundle`.
@@ -8284,12 +8414,12 @@ it's the only one, it means the `kotlin package` command is effectively `kotlin 
 ## Publishing
 
 The `kotlin publish <repository>` command can be used to publish the library to a Maven repository.
-Read more about this in the [publishing](../publishing.md) guide.
+Read more about this in the [publishing](../publishing/libraries.md) guide.
 
 
 ### docs/src/user-guide/product-types/kmp-lib.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/kmp-lib.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/kmp-lib.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/kmp-lib/
 
 ---
@@ -8317,11 +8447,11 @@ Read more about multiplatform topics in the general [Multiplatform modules](../m
 ## Publishing
 
 The `kotlin publish <repository>` command can be used to publish the library to a Maven repository.
-Read more about this in the [publishing](../publishing.md) guide.
+Read more about this in the [publishing](../publishing/libraries.md) guide.
 
 ### docs/src/user-guide/product-types/native-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/native-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/native-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/native-app/
 
 ---
@@ -8402,7 +8532,7 @@ product types.
 
 ### docs/src/user-guide/product-types/overview.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/overview.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/overview.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/overview/
 
 ---
@@ -8436,7 +8566,7 @@ Here is the list of supported product types:
 
 ### docs/src/user-guide/product-types/wasm-js-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/wasm-js-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/wasm-js-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/wasm-js-app/
 
 ---
@@ -8554,7 +8684,7 @@ Tests targeting Wasm JS target are not supported yet, but we are [working on it]
 
 ### docs/src/user-guide/product-types/wasm-wasi-app.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/product-types/wasm-wasi-app.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/product-types/wasm-wasi-app.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/product-types/wasm-wasi-app/
 
 ---
@@ -8620,10 +8750,228 @@ at the moment, but this is subject to change.
 There are no extra packaging facilities at the moment, and the `package` command is not supported for this product type.
 
 
-### docs/src/user-guide/publishing.md
+### docs/src/user-guide/publishing/android-application.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/publishing.md
-- HTML: https://kotlin-toolchain.org/dev/user-guide/publishing/
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/publishing/android-application.md
+- HTML: https://kotlin-toolchain.org/dev/user-guide/publishing/android-application/
+
+---
+description: Learn how to publish an Android application to Google Play.
+---
+# Publishing an Android application
+
+Publish an `android/app` module to Google Play as a signed Android App Bundle (AAB). You need a Google Play Console
+developer account.
+
+## Configure the application
+
+Set a unique application ID and an initial version in `android-app/module.yaml`:
+
+```yaml title="android-app/module.yaml"
+product: android/app
+
+settings:
+  android:
+    applicationId: com.example.myapp
+    versionCode: 1
+    versionName: "1.0"
+```
+
+The `applicationId` uniquely identifies the application in Google Play and cannot be changed after you upload the
+first artifact.
+
+Before uploading the application:
+
+1. [Prepare signing](../product-types/android-app.md#signing): create `android-app/keystore.properties` and generate
+   the upload key in `android-app/release.keystore`.
+2. [Package the application](../product-types/android-app.md#packaging) with `kotlin package -m android-app`.
+   This produces a signed release AAB and prints its path. Use that AAB for the upload.
+
+## Upload the bundle
+
+If you haven't created the application yet, open [Google Play Console](https://play.google.com/console/) and select
+**Create app** to set it up before uploading your first bundle.
+
+Open the application in Google Play Console, go to **Test and release**, and select the appropriate testing or
+production track. Create a release and upload the generated `.aab` file.
+
+Google Play validates and processes the bundle before making the release available to testers or users.
+
+!!! note "For future uploads"
+
+    Increase `versionCode` in `android-app/module.yaml` before every new upload: Google Play rejects bundles with a
+    previously used version code. Update the user-facing `versionName` when publishing a new application version.
+
+## Build from IntelliJ IDEA or Android Studio
+
+Generating a signed bundle from **Build | Generate Signed App Bundle or APK** is not supported for Kotlin Toolchain
+projects yet. Use the Kotlin CLI to create the AAB.
+
+
+### docs/src/user-guide/publishing/ios-application.md
+
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/publishing/ios-application.md
+- HTML: https://kotlin-toolchain.org/dev/user-guide/publishing/ios-application/
+
+---
+description: Learn how to publish an iOS application to App Store Connect and TestFlight.
+---
+# Publishing an iOS application
+
+You need a Mac with Xcode and an [Apple Developer Program](https://developer.apple.com/programs/) membership.
+
+## Publish with `kotlin publish testflight`
+
+!!! info "Preview"
+
+    `kotlin publish testflight` is in preview, and is likely to change. Don't hesitate to
+    [share your feedback](https://youtrack.jetbrains.com/newIssue?project=KTC)!
+
+The special `testflight` repository ID publishes an `ios/app` module to App Store Connect and TestFlight. It is built
+into `kotlin publish` and does not need to be declared in the project's repositories. For example:
+
+```bash
+kotlin publish testflight
+```
+
+If the project has more than one iOS app module, `-m <ios-module-name>` is required to specify which module to publish.
+The command checks for Xcode, ensures automatic signing is selected,
+registers the bundle ID if needed, and uploads a release build. If the App Store Connect app record does not exist, the
+command guides you through creating it. Apple then processes the uploaded build for TestFlight.
+
+The command requires an App Store Connect team API key with API access and an Admin role for automatic provisioning.
+The key is configured with the following environment variables:
+
+| Environment variable                 | Description                                                 |
+|--------------------------------------|-------------------------------------------------------------|
+| `KOTLIN_TOOLCHAIN_ASC_KEY_PATH`      | Path to the App Store Connect API private key (`.p8` file). |
+| `KOTLIN_TOOLCHAIN_ASC_KEY_ID`        | App Store Connect API key ID.                               |
+| `KOTLIN_TOOLCHAIN_ASC_KEY_ISSUER_ID` | App Store Connect API key issuer ID.                        |
+
+In an interactive terminal session, all of these values can be specified interactively instead. The command then
+offers a wizard-like setup that guides you through the necessary steps when you publish for the first time: it prompts
+for the `.p8` key path, Key ID, and Issuer ID, saves them in `app-store-connect-auth.properties` in the module
+directory, and adds that file to `.gitignore`. It also asks you to confirm or fix other parts of the setup, such as the
+bundle ID, the app record, or the encryption declaration.
+
+When running non-interactively (for example, on CI), nothing is asked. The credentials are taken from the
+`app-store-connect-auth.properties` file in the module directory if it exists (for example, saved by an earlier
+interactive run), and from the environment variables otherwise. Values from the file take precedence over the
+environment variables. The command exits with an error if something is missing or wrong at any stage of the setup.
+
+!!! warning "Automatic signing only"
+
+    `kotlin publish testflight` supports automatic signing for straightforward setups and is intended to help you get
+    started. It does not cover manual signing or more complex publishing workflows. For those scenarios, use another
+    tool such as [fastlane](https://docs.fastlane.tools/getting-started/ios/setup/), which can integrate directly with
+    the Xcode project.
+
+## Publish manually
+
+Given that there is a regular [Xcode project](../product-types/ios-app.md#xcode-project) for an `ios/app` module,
+you can use it to configure signing, create a release archive, and upload the application to App Store Connect manually.
+
+### Prepare the application
+
+Open the `module.xcodeproj` file of the iOS application module in Xcode, for example:
+
+```bash
+open ios-app/module.xcodeproj
+```
+
+In the project navigator, select the project and then the application target. Configure the following settings before
+creating an archive:
+
+1. Under **Signing & Capabilities**, select your development team and replace the default bundle identifier with a
+   unique identifier for your application.
+2. Under **General | Minimum Deployments**, select the oldest iOS version that your application supports.
+3. Under **Info | Custom iOS Target Properties | Supported interface orientations**, keep only the orientations your
+   application supports.
+4. Add an `AppIcon` asset catalog under the module's `src` directory and provide the application icon. A 1024×1024
+   image is sufficient when the asset uses Xcode's single-size app icon format.
+5. Under **General | Identity**, set the public-facing **Version** and the unique **Build** number.
+
+!!! warning "Use a new build number for every upload"
+
+    App Store Connect rejects another upload with the same version and build number. Increase the **Build** value
+    (`CFBundleVersion`) before every upload. Increase **Version** (`CFBundleShortVersionString`) when publishing a new
+    application version.
+
+Register the same bundle identifier in
+[Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/bundleId/add/bundle),
+then [create the application in App Store Connect](https://appstoreconnect.apple.com/apps). The bundle identifier in
+Xcode, the registered identifier, and the App Store Connect application must match.
+
+### Distribute from the command line
+
+You can ask your coding agent to archive and upload the iOS application to TestFlight, or run the commands below
+manually. Run them from the Kotlin project root and replace the module path and scheme if they differ in your project.
+You can list the available schemes with:
+
+```bash
+xcodebuild -list -project ios-app/module.xcodeproj
+```
+
+Create a release archive:
+
+```bash
+xcodebuild \
+  -project ios-app/module.xcodeproj \
+  -scheme app \
+  -configuration Release \
+  -destination 'generic/platform=iOS' \
+  -archivePath build/release/ios-app.xcarchive \
+  -allowProvisioningUpdates \
+  archive
+```
+
+Create `ios-app/ExportOptions.plist` to configure an App Store Connect upload:
+
+```xml title="ios-app/ExportOptions.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>app-store-connect</string>
+    <key>destination</key>
+    <string>upload</string>
+    <key>signingStyle</key>
+    <string>automatic</string>
+</dict>
+</plist>
+```
+
+Export and upload the archive:
+
+```bash
+xcodebuild -exportArchive \
+  -archivePath build/release/ios-app.xcarchive \
+  -exportOptionsPlist ios-app/ExportOptions.plist \
+  -exportPath build/release/export \
+  -allowProvisioningUpdates
+```
+
+With `destination` set to `upload`, the export command uploads the application to App Store Connect. After Apple
+finishes processing the build, it becomes available in App Store Connect and can be assigned to TestFlight testers.
+
+### Distribute from Xcode
+
+You can perform the same archive and upload steps in Xcode:
+
+1. In the macOS menu bar, select **Product | Archive**.
+2. After the archive is created successfully, Xcode opens the Organizer window. Select the new archive and click
+   **Distribute App**.
+3. Select **App Store Connect**, then follow the upload flow.
+
+After Apple finishes processing the build, continue in App Store Connect to distribute it through TestFlight or submit
+it for App Store review.
+
+
+### docs/src/user-guide/publishing/libraries.md
+
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/publishing/libraries.md
+- HTML: https://kotlin-toolchain.org/dev/user-guide/publishing/libraries/
 
 ---
 description: |
@@ -8641,15 +8989,12 @@ With a little bit of configuration, you'll be able to publish using the `kotlin 
 
 ## Supported components
 
-All library modules (JVM and multiplatform) can be published to Maven repositories. All Kotlin platforms are supported.
+All library modules (JVM and multiplatform) can be published to Maven repositories.
+All Kotlin platforms are supported, as well as Compose Resources.
 
 Libraries that bind to native C libraries are covered as well: the `cinterop` bindings are published both in their
 commonized form, for use from common code, and per platform, so your users get the same C API you compiled against
 without setting up interop themselves.
-
-!!! note "Compose Multiplatform resources"
-
-    Resources of Compose Multiplatform libraries are not part of the publication yet (see [KTC-5698](https://youtrack.jetbrains.com/issue/KTC-5698/Support-publication-of-composeResources-as-a-part-of-KMP-library-publication)).
 
 ## Interoperability with Maven/Gradle
 
@@ -8816,12 +9161,41 @@ variables (usually done on the CI):
 | `KOTLIN_TOOLCHAIN_MAVEN_CENTRAL_PASSWORD` | The `password` part of your Central Portal [user token](https://central.sonatype.org/publish/generate-portal-token/).                                                  |
 | `KOTLIN_TOOLCHAIN_SIGNING_KEY`            | The ASCII-armored PGP signing key to use to sign artifacts. You can export a private key in this format using the `gpg --export-secret-keys --armor <KEY_ID>` command. |
 | `KOTLIN_TOOLCHAIN_SIGNING_KEY_PASSPHRASE` | (optional) The passphrase to unlock the PGP key, if there is one.                                                                                                      |
+| `KOTLIN_TOOLCHAIN_SIGNING_KEY_ID`         | (optional) The ID of the signing (sub-)key to use, if `KOTLIN_TOOLCHAIN_SIGNING_KEY` contains several usable ones. See [Using a signing subkey](#using-a-signing-subkey). |
+
+!!! note "Signing and Maven Local"
+
+    Artifacts published to Maven Local are never signed, so you don't need a signing key for `kotlin publish mavenLocal`.
+    To check the signatures locally, build the Maven Central bundle with `kotlin package --format=maven-central-bundle`.
 
 !!! question "How do I get a PGP signing key?"
 
     If you have never needed a PGP signing key before, it might not be obvious to get started.
     Follow the instructions to [create and prepare a key](https://central.sonatype.org/publish/requirements/gpg) on the
     Maven Central website.
+
+#### Using a signing subkey
+
+A PGP key can contain several subkeys. Artifacts are signed with the only signing-capable subkey that carries its
+secret key material, so you usually don't have to configure anything.
+
+In particular, you can keep your primary key offline or on a hardware token, and only export the signing subkey:
+
+```shell
+gpg --export-secret-subkeys --armor '<SUBKEY_ID>!'
+```
+
+Such an export also contains the primary key, but only as a stub without any secret key material. Stubs are never
+used for signing.
+
+If several signing subkeys of your key can be used, publication fails with an error listing them, and you must pick
+one explicitly with `KOTLIN_TOOLCHAIN_SIGNING_KEY_ID`. All the forms printed by `gpg --list-keys` are accepted: a
+short key ID, a long key ID, or a full fingerprint.
+
+!!! warning "Avoid subkeys for Maven and Nexus"
+
+    Maven and the Nexus Repository Manager can only verify signatures against primary keys.
+    Avoid signing with a subkey if you want to make sure these tools recognize your signature.
 
 ### Publishing command
 
@@ -8854,10 +9228,41 @@ This can be done using `settings.publishing.mavenCentral.publishingMode: auto`.
     the public and set in stone in Maven Central. If there is a mistake in your publication, you will not be able to
     remove artifacts from Maven Central, because Sonatype has a strict policy about this.
 
+### Notifying klibs.io
+
+If you are publishing Kotlin Multiplatform modules, you can make sure developers can easily find and use your library
+by setting `settings.publishing.mavenCentral.notifyKlibsIo: true`. This will automatically notify
+[klibs.io](https://klibs.io) about your publication, so your project can be listed on the platform without waiting
+for the regular Maven Central scan.
+
+Example configuration:
+
+```yaml
+settings:
+  publishing:
+    mavenCentral:
+      enabled: true
+      notifyKlibsIo: true
+```
+
+You can check the indexing status of your library on klibs.io by visiting
+`https://klibs.io/package/<GROUP_ID>/<ARTIFACT_ID>/<VERSION>/status`.
+Note that for your artifacts to be indexed, they must meet the
+[klibs.io criteria](https://klibs.io/faq#how-do-i-add-a-project).
+
+!!! note "Don't forget to release your artifacts"
+
+    If you are using the default `manual` publishing mode, you must later confirm the publication on the
+    [Maven Central Publisher Portal](https://central.sonatype.com/publishing/deployments) for it to be released.
+    If you don't do it within **4 days**, klibs.io will treat the notification as invalid and will not process it.
+
+By default, notifications are sent to the `https://api.klibs.io/notify/artifacts` endpoint. If you need to use a
+different URL, you can override it by setting the `KOTLIN_TOOLCHAIN_KLIBS_IO_API_URL` environment
+variable.
 
 ### docs/src/user-guide/templates.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/templates.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/templates.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/templates/
 
 ---
@@ -9196,7 +9601,7 @@ apply:
 
 ### docs/src/user-guide/testing.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/testing.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/testing.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/testing/
 
 ---
@@ -9300,7 +9705,7 @@ test-settings:
 
 ### docs/src/user-guide/yaml-primer.md
 
-- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/abc7a5f7579e9ef267107782048c76777f0bf932/docs/src/user-guide/yaml-primer.md
+- Raw: https://raw.githubusercontent.com/JetBrains/kotlin-toolchain/f53674bce744f0b5e9ff235110dcc1d565d2c114/docs/src/user-guide/yaml-primer.md
 - HTML: https://kotlin-toolchain.org/dev/user-guide/yaml-primer/
 
 ---

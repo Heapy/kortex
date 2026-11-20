@@ -1,6 +1,6 @@
-# Publishing Libraries
+# Publishing Libraries And iOS Apps
 
-Kotlin Toolchain `v0.13.0`. Publishing is still in preview and likely to change.
+Kotlin Toolchain `v0.14.1`. Publishing is still in preview and likely to change.
 
 ## What Can Be Published
 
@@ -82,7 +82,8 @@ repositories:
 kotlin publish mavenLocal
 ```
 
-No credentials needed. This is the fastest way to try a library from another project on the same machine.
+No credentials needed. Artifacts published to Maven Local are never signed, even with `signArtifacts: true`.
+To inspect signatures locally, build a Maven Central bundle with `kotlin package --format=maven-central-bundle`.
 
 ## Maven Central
 
@@ -155,8 +156,14 @@ count down. Accepted values: `md5`, `sha1`, `sha256`, `sha512`. The setting also
 | `KOTLIN_TOOLCHAIN_MAVEN_CENTRAL_PASSWORD` | Password part of the token |
 | `KOTLIN_TOOLCHAIN_SIGNING_KEY` | ASCII-armored PGP private key — `gpg --export-secret-keys --armor <KEY_ID>` |
 | `KOTLIN_TOOLCHAIN_SIGNING_KEY_PASSPHRASE` | Optional passphrase for that key |
+| `KOTLIN_TOOLCHAIN_SIGNING_KEY_ID` | Select a signing key/subkey by short ID, long ID, or full fingerprint |
 
 These are normally set on CI, not locally.
+
+The only usable signing subkey is selected automatically; primary-key stubs without private material are ignored.
+If several signing subkeys are usable, publication fails until `KOTLIN_TOOLCHAIN_SIGNING_KEY_ID` selects one.
+Export just a signing subkey with `gpg --export-secret-subkeys --armor '<SUBKEY_ID>!'` when keeping the primary key
+offline. Check consumer signature-verification support before adopting subkeys; upstream notes Maven/Nexus limitations.
 
 ### Publishing Command
 
@@ -183,3 +190,53 @@ settings:
 
 Keep `manual` until the first deployment is proven. Released Maven Central artifacts cannot be removed — Sonatype's
 policy is strict, and `auto` gives you no chance to inspect what went out.
+
+### klibs.io Notification
+
+`settings.publishing.mavenCentral.notifyKlibsIo: true` opts KMP libraries into a notification after a successful
+Central upload; the default is `false`. It sends the Maven coordinates to klibs.io for indexing. With `manual`
+publishing, still release the deployment in Central Portal within four days or klibs.io treats the notification as
+invalid. The endpoint can be overridden with `KOTLIN_TOOLCHAIN_KLIBS_IO_API_URL`. Notification failures log a warning
+without failing an otherwise successful publication.
+
+### Publication Compatibility
+
+`0.14` includes generated sources in published sources JARs and derives klib `unique_name` from publication
+`group:artifact` coordinates (KTC-5471, KTC-6014). When migrating an already-published Gradle library, preserve its
+coordinates and check consumption from an existing client. Publication without `-m` no longer requires the target
+repository in unrelated modules that do not publish.
+
+## iOS Apps And TestFlight
+
+Preview in `0.14`. Run on macOS with Xcode and an Apple Developer Program membership. Set the bundle ID, signing
+team, deployment target, and version/build in the module's `module.xcodeproj`. Use a new build number for each upload.
+
+```shell
+./kotlin package -m ios-app --format ipa
+./kotlin publish testflight -m ios-app
+```
+
+The first command packages an IPA. Automatic signing gets generated development export options by default; manual
+signing requires `--ipa-export-options-plist-path <ExportOptions.plist>`. Custom export options determine the export
+behavior, so inspect them before running. Packaging needs macOS/Xcode; it does not itself mean a TestFlight upload.
+
+The second command uploads a release build to App Store Connect for TestFlight processing. `testflight` is built in,
+not a Maven repository declaration, and does not require `settings.publishing`. Only one `ios/app` can be selected;
+`-m` is required when several exist. `--transitive` is ignored. This flow supports automatic signing for straightforward
+setups; use Xcode, `xcodebuild`, or fastlane for manual signing and more complex workflows.
+
+Configure an App Store Connect **team API key** with API access and the Admin role for automatic provisioning:
+
+| Variable | Value |
+|---|---|
+| `KOTLIN_TOOLCHAIN_ASC_KEY_PATH` | Path to the private `.p8` file |
+| `KOTLIN_TOOLCHAIN_ASC_KEY_ID` | Key ID |
+| `KOTLIN_TOOLCHAIN_ASC_KEY_ISSUER_ID` | Issuer ID |
+
+Interactive publishing can prompt for these values and save them to module-local `app-store-connect-auth.properties`,
+which it adds to `.gitignore`. Keep this file and the `.p8` key out of version control. The publish command takes
+values from the properties file before environment variables; CI fails if setup is incomplete instead of prompting.
+IPA packaging reads the three environment variables as a set: provide all three or none.
+
+The publish wizard checks automatic signing, can register the bundle ID, and guides creation of a missing app record
+and the encryption declaration. It is an external upload and provisioning flow, not a local validation command.
